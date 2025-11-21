@@ -562,7 +562,16 @@ for (let t = 0; t < tokens.length; t++) {
   }
 });
 
-
+// Predefined allowed mappings for G2P
+const allowedMappings = {
+  a: ['a', 'ˈa'],
+  ci: ['tʃ'],
+  c: ['k'],
+  gh: ['g'],
+  g: ['g'],
+  o: ['o'],
+  i: ['j']
+};
 
 function applyG2PMapping(text, ipa) {
   
