@@ -498,48 +498,48 @@ document.getElementById('g2p').addEventListener('click', async () => {
         ipaMap.set(uniqueWords[i], ipaWords[i] || '');
       }
 
-  const g2pTokens = [];
-for (let t = 0; t < tokens.length; t++) {
-  const token = tokens[t];
-  const isWord = /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);
+      const g2pTokens = [];
+      for (let t = 0; t < tokens.length; t++) {
+        const token = tokens[t];
+        const isWord = /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);
 
-  if (!isWord) {
-    g2pTokens.push(token);
-    continue;
-  }
+        if (!isWord) {
+          g2pTokens.push(token);
+          continue;
+        }
 
-  const ipa = ipaMap.get(token) || '';
-  const mapped = applyG2PMapping(token, ipa);
+        const ipa = ipaMap.get(token) || '';
+        const mapped = applyG2PMapping(token, ipa);
 
-  // If mapping failed or incomplete — stop here, recall eSpeak for next word
-  if (mapped === null) {
-    console.warn(`G2P mapping failed for "${token}", recalculating from next word...`);
+        // If mapping failed or incomplete — stop here, recall eSpeak for next word
+        if (mapped === null) {
+          console.warn(`G2P mapping failed for "${token}", recalculating from next word...`);
 
-    // Get remaining tokens after this one
-    const remainingWords = tokens
-      .slice(t)
-      .filter(tt => /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(tt));
+          // Get remaining tokens after this one
+          const remainingWords = tokens
+            .slice(t)
+            .filter(tt => /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(tt));
 
-    if (remainingWords.length > 0) {
-      // Re-run eSpeak on the remaining portion only
-      const newMarked = remainingWords.join('|');
-      const newIpaRaw = await runESpeak(newMarked);
-      const newIpaClean = newIpaRaw.replace(/\|/g, ' ').trim();
-      const newIpaWords = newIpaClean.split(/\s+/);
+          if (remainingWords.length > 0) {
+            // Re-run eSpeak on the remaining portion only
+            const newMarked = remainingWords.join('|');
+            const newIpaRaw = await runESpeak(newMarked);
+            const newIpaClean = newIpaRaw.replace(/\|/g, ' ').trim();
+            const newIpaWords = newIpaClean.split(/\s+/);
 
-      // Rebuild ipaMap for remaining words
-      for (let i = 0; i < remainingWords.length; i++) {
-        ipaMap.set(remainingWords[i], newIpaWords[i] || '');
+            // Rebuild ipaMap for remaining words
+            for (let i = 0; i < remainingWords.length; i++) {
+              ipaMap.set(remainingWords[i], newIpaWords[i] || '');
+            }
+          }
+
+          // Skip this token (unmapped)
+          g2pTokens.push(token);
+          continue;
+        }
+
+        g2pTokens.push(mapped);
       }
-    }
-
-    // Skip this token (unmapped)
-    g2pTokens.push(token);
-    continue;
-  }
-
-  g2pTokens.push(mapped);
-}
 
       // Reconstruct chunk preserving spaces
       let reconstructed = '';
@@ -562,6 +562,7 @@ for (let t = 0; t < tokens.length; t++) {
   }
 });
 
+
 const allowedMappings = {
   a: ['a', 'ˈa'],
   bb: ['bː'],
@@ -571,48 +572,17 @@ const allowedMappings = {
   gh: ['g'],
   g: ['g'],
   o: ['o'],
-  i: ['j'],
+  i: ['j']
 };
 
-
-function isAllowedMapping(text, ipa) {
-  // Check if each grapheme in the word is fully allowed
-  for (const [grapheme, allowedPhonemes] of Object.entries(allowedMappings)) {
-    if (text.includes(grapheme)) {
-      // Check if the corresponding IPA contains any of the allowed phonemes
-      let hasValidPhoneme = false;
-      for (const phoneme of allowedPhonemes) {
-        if (ipa.includes(phoneme)) {
-          hasValidPhoneme = true;
-          break; // If at least one phoneme is found, it's valid for this grapheme
-        }
-      }
-      
-      // If no allowed phoneme is found, reject
-      if (!hasValidPhoneme) {
-        console.warn(`No valid IPA phoneme found for "${grapheme}" in "${ipa}"`);
-        return false;
-      }
-    }
-  }
-
-  return true; // All graphemes have valid IPA matches
-}
-
-
-
 function applyG2PMapping(text, ipa) {
-    // New: skip word if IPA contains mappings not allowed
-if (!isAllowedMapping(text, ipa)) {
-  console.warn(`G2P mapping failed for "${text}" (IPA: "${ipa}")`);
-  return null;  // Skip this word and leave it as-is
-}
-
   
   const result = [];
   let ipaIndex = 0;
   let i = 0;
   const lowerText = text.toLowerCase();
+
+
 
   // Predefined mappings for G2P
   const g2pMappings = {
@@ -630,21 +600,12 @@ if (!isAllowedMapping(text, ipa)) {
     "vv": "vː", 
   };
 
-  function startsWithIpa(ipa, pattern) {
-    const variations = [`${pattern}`, `ˈ${pattern}`, `ˌ${pattern}`, `\u200D${pattern}`, `ˈ\u200D${pattern}`, `\u200Dˈ${pattern}`];
-    for (const variant of variations) {
-      if (ipa.startsWith(variant)) return { match: variant, len: variant.length };
-    }
-    return null;
+  // Check if the word's transcription is in the allowed mappings
+  function isAllowedMapping(word) {
+    return allowedMappings.hasOwnProperty(word);
   }
 
-  // Check if 'tʃː' or 'dʒː' is followed by any of the specified vowels
-  function isFollowedByVowel(ipa, index) {
-    const following = ipa.slice(index + 3); // Skip 'ː' and check the following character
-    return following.startsWith('i') || following.startsWith('ˈi') || following.startsWith('j') || following.startsWith('ˈj') ||
-           following.startsWith('e') || following.startsWith('ˈe') || following.startsWith('ɛ') || following.startsWith('ˈɛ');
-  }
-
+  
   // Process the word-by-word logic
   while (i < text.length && ipaIndex < ipa.length) {
     const letter = text[i];
@@ -1499,7 +1460,13 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
       continue;
     }
     
-
+   // If the word's IPA is not allowed, output the original word
+    if (!isAllowedMapping(lowerText.slice(i, i + 2))) {
+      result.push(`${text.slice(i, i + 2)}`);  // Keep the original word
+      i += 2;
+      ipaIndex += ipaChar.length; // Move IPA index forward by the length of IPA character
+      continue;
+    }
     
     // Default behavior: Process the IPA character normally
     if (ipaChar === 'ˈ' || ipaChar === 'ˌ') {
@@ -1525,11 +1492,6 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
 
   
 
-  // If mapping finished but IPA wasn't fully consumed, or vice versa → stop
-  if (ipaIndex < ipa.length - 1 || i < text.length - 1) {
-    console.warn(`Partial mapping detected for "${text}" (IPA: "${ipa}")`);
-    return null; // indicate failure to map
-  }
 
   return result.join('');
 
