@@ -562,27 +562,22 @@ for (let t = 0; t < tokens.length; t++) {
   }
 });
 
-// Allowed G2P mappings
 const allowedMappings = {
-  a: 'a',
-  a: 'ˈa',
-  b: 'b',
-  c: 'k',
-  ci: 'tʃ',
-  gh: 'g',
-  g: 'g',
-  o: 'o',
-  // add the rest of your allowed mappings here
+  a: ['a', 'ˈa'],
+  b: ['b'],
+  c: ['k'],
+  ci: ['tʃ'],
+  gh: ['g'],
+  g: ['g'],
+  o: ['o'],
 };
 
 
-  function isAllowedMapping(text, ipa) {
-  // Loop over all allowed graphemes
-  for (const [grapheme, phoneme] of Object.entries(allowedMappings)) {
-    // If the text contains this grapheme
+function isAllowedMapping(text, ipa) {
+  for (const [grapheme, phonemes] of Object.entries(allowedMappings)) {
     if (text.includes(grapheme)) {
-      // But the IPA does not contain the corresponding phoneme → not allowed
-      if (!ipa.includes(phoneme)) {
+      // Ensure at least one of the allowed phonemes exists in IPA
+      if (!phonemes.some(p => ipa.includes(p))) {
         return false;
       }
     }
