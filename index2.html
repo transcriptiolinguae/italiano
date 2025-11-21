@@ -576,22 +576,36 @@ const allowedMappings = {
 
 
 function isAllowedMapping(text, ipa) {
-  for (const [grapheme, phonemes] of Object.entries(allowedMappings)) {
+  // Check if each grapheme in the word is fully allowed
+  for (const [grapheme, allowedPhonemes] of Object.entries(allowedMappings)) {
     if (text.includes(grapheme)) {
-      // Ensure at least one of the allowed phonemes exists in IPA
-      if (!phonemes.some(p => ipa.includes(p))) {
+      // Check if the corresponding IPA contains any of the allowed phonemes
+      let hasValidPhoneme = false;
+      for (const phoneme of allowedPhonemes) {
+        if (ipa.includes(phoneme)) {
+          hasValidPhoneme = true;
+          break; // If at least one phoneme is found, it's valid for this grapheme
+        }
+      }
+      
+      // If no allowed phoneme is found, reject
+      if (!hasValidPhoneme) {
         return false;
       }
     }
   }
-  return true;
+
+  return true; // All graphemes have valid IPA matches
 }
+
 
 function applyG2PMapping(text, ipa) {
     // New: skip word if IPA contains mappings not allowed
-  if (!isAllowedMapping(text, ipa)) {
-    return null; // signals caller to output original word
-  }
+if (!isAllowedMapping(text, ipa)) {
+  console.warn(`G2P mapping failed for "${text}" (IPA: "${ipa}")`);
+  return null;  // Skip this word and leave it as-is
+}
+
   
   const result = [];
   let ipaIndex = 0;
