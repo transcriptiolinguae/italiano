@@ -576,30 +576,29 @@ const allowedMappings = {
 
 
 function isAllowedMapping(text, ipa) {
-  console.log(`Checking mapping for text: "${text}", IPA: "${ipa}"`);
-  
+  // Check if each grapheme in the word is fully allowed
   for (const [grapheme, allowedPhonemes] of Object.entries(allowedMappings)) {
     if (text.includes(grapheme)) {
-      console.log(`Found grapheme: "${grapheme}"`);
-      
+      // Check if the corresponding IPA contains any of the allowed phonemes
       let hasValidPhoneme = false;
       for (const phoneme of allowedPhonemes) {
         if (ipa.includes(phoneme)) {
-          console.log(`Valid phoneme found: "${phoneme}"`);
           hasValidPhoneme = true;
-          break;
+          break; // If at least one phoneme is found, it's valid for this grapheme
         }
       }
-
+      
+      // If no allowed phoneme is found, reject
       if (!hasValidPhoneme) {
-        console.warn(`No valid phoneme for grapheme "${grapheme}" in IPA "${ipa}"`);
+        console.warn(`No valid IPA phoneme found for "${grapheme}" in "${ipa}"`);
         return false;
       }
     }
   }
 
-  return true;
+  return true; // All graphemes have valid IPA matches
 }
+
 
 
 function applyG2PMapping(text, ipa) {
