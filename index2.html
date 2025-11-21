@@ -576,26 +576,30 @@ const allowedMappings = {
 
 
 function isAllowedMapping(text, ipa) {
-  // Check if each grapheme in the word is fully allowed
+  console.log(`Checking mapping for text: "${text}", IPA: "${ipa}"`);
+  
   for (const [grapheme, allowedPhonemes] of Object.entries(allowedMappings)) {
     if (text.includes(grapheme)) {
-      // Check if the corresponding IPA contains any of the allowed phonemes
+      console.log(`Found grapheme: "${grapheme}"`);
+      
       let hasValidPhoneme = false;
       for (const phoneme of allowedPhonemes) {
         if (ipa.includes(phoneme)) {
+          console.log(`Valid phoneme found: "${phoneme}"`);
           hasValidPhoneme = true;
-          break; // If at least one phoneme is found, it's valid for this grapheme
+          break;
         }
       }
-      
-      // If no allowed phoneme is found, reject
+
       if (!hasValidPhoneme) {
+        console.warn(`No valid phoneme for grapheme "${grapheme}" in IPA "${ipa}"`);
         return false;
       }
     }
   }
 
-  return true; // All graphemes have valid IPA matches
+  return true;
+}
 }
 
 
