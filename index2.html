@@ -570,75 +570,6 @@ document.getElementById('g2p').addEventListener('click', async () => {
 });
 
 
-const allowedMappings = {
-  a: ['a', 'ˈa'],
-  ci: ['tʃ'],
-  c: ['k'],
-  gh: ['g'],
-  g: ['g'],
-  o: ['o'],
-  i: ['j']
-};
-
-
-// Function to check if the G2P mapping contains only allowed mappings
-function validateG2PMapping(text, ipa) {
-  const invalidMappings = [];
-  
-  // List of allowed mappings
-  const allowedMappings = {
-    a: ['a', 'ˈa'],
-    ci: ['tʃ'],
-    c: ['k'],
-    gh: ['g'],
-    g: ['g'],
-    o: ['o'],
-    i: ['j']
-  };
-
-  // Helper function to check if a string exists in the allowed mappings
-  function isValidMapping(key, ipa) {
-    // Check if the mapping key exists in allowedMappings
-    if (allowedMappings[key]) {
-      return allowedMappings[key].includes(ipa);
-    }
-    return false;
-  }
-
-  // Iterate through each character in the word to validate mappings
-  let ipaIndex = 0;
-  let i = 0;
-  while (i < text.length && ipaIndex < ipa.length) {
-    const char = text[i].toLowerCase();
-    let ipaChar = ipa[ipaIndex];
-    
-    // Check for two-character sequences (like "ci", "gh", etc.)
-    if (i < text.length - 1) {
-      const twoChars = text.slice(i, i + 2).toLowerCase();
-      if (allowedMappings[twoChars] && allowedMappings[twoChars].includes(ipa.slice(ipaIndex, ipaIndex + 1))) {
-        ipaIndex += 1;
-        i += 2;
-        continue;
-      }
-    }
-
-    // Check for single-character mappings
-    if (allowedMappings[char] && !allowedMappings[char].includes(ipaChar)) {
-      invalidMappings.push(`Invalid mapping for '${char}' -> '${ipaChar}'`);
-    }
-    
-    ipaIndex++;
-    i++;
-  }
-
-  if (invalidMappings.length > 0) {
-    // If there are invalid mappings, throw an error
-    console.error('Invalid G2P mappings detected:', invalidMappings);
-    return false;
-  }
-
-  return true;
-}
 
 
 function applyG2PMapping(text, ipa) {
@@ -647,6 +578,55 @@ function applyG2PMapping(text, ipa) {
   let ipaIndex = 0;
   let i = 0;
   const lowerText = text.toLowerCase();
+
+
+   // Predefined mappings for G2P
+  const g2pMappings = {
+    "a": ["a", "ˈa"],   // a → a or ˈa
+    "ci": ["tʃ"],       // ci → tʃ
+    "c": ["k"],         // c → k
+    "gh": ["g"],        // gh → g
+    "g": ["g"],         // g → g
+    "o": ["o"],         // o → o
+    "i": ["j"],         // i → j
+  };
+
+  function isValidMapping(mapping, ipaChar) {
+    return mapping.some(m => ipaChar.startsWith(m));
+  }
+
+  // Iterate over the text and IPA
+  while (i < text.length && ipaIndex < ipa.length) {
+    const letter = text[i];
+    let ipaChar = ipa[ipaIndex];
+
+    // Check if the letter has a valid mapping in g2pMappings
+    const lowerLetter = letter.toLowerCase();
+    if (g2pMappings[lowerLetter]) {
+      const ipaMatch = g2pMappings[lowerLetter];
+
+      // Check if the current IPA character matches one of the allowed mappings
+      if (isValidMapping(ipaMatch, ipaChar)) {
+        result.push(`${letter}(${ipaChar})`);
+        ipaIndex++;  // Move to next IPA character
+        i++;         // Move to next character in text
+        continue;
+      } else {
+        // Handle case where no valid mapping is found
+        console.warn(`Invalid G2P mapping detected for "${letter}" with IPA "${ipaChar}"`);
+        result.push(`${letter}()`);
+        i++;
+        continue;
+      }
+    } else {
+      // If no valid mapping for this character, just push as-is
+      result.push(`${letter}(${ipaChar})`);
+      ipaIndex++;
+      i++;
+    }
+  }
+
+
 
   // Predefined mappings for G2P
   const g2pMappings = {
@@ -1564,14 +1544,12 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
 
   
 
-  // If mapping finished but IPA wasn't fully consumed, or vice versa → stop
-  if (ipaIndex < ipa.length - 1 || i < text.length - 1) {
-    console.warn(`Partial mapping detected for "${text}" (IPA: "${ipa}")`);
-    return null; // indicate failure to map
+  // If IPA characters are remaining but text is exhausted, it's a problem
+  if (ipaIndex < ipa.length) {
+    console.warn(`Remaining IPA characters detected, but no corresponding text: "${ipa.slice(ipaIndex)}"`);
   }
 
-  return result.join('');
-
+  return result.join('');  // Join the result and return the mapped string
 }
 
 
