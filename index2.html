@@ -562,9 +562,37 @@ for (let t = 0; t < tokens.length; t++) {
   }
 });
 
+// Allowed G2P mappings
+const allowedMappings = {
+  a: 'a',
+  b: 'b',
+  c: 'k',
+  gh: 'g',
+  g: 'g',
+  ci: 'tʃ',
+  // add the rest of your allowed mappings here
+};
 
+
+  function isAllowedMapping(text, ipa) {
+  // Loop over all allowed graphemes
+  for (const [grapheme, phoneme] of Object.entries(allowedMappings)) {
+    // If the text contains this grapheme
+    if (text.includes(grapheme)) {
+      // But the IPA does not contain the corresponding phoneme → not allowed
+      if (!ipa.includes(phoneme)) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
 
 function applyG2PMapping(text, ipa) {
+    // New: skip word if IPA contains mappings not allowed
+  if (!isAllowedMapping(text, ipa)) {
+    return null; // signals caller to output original word
+  }
   
   const result = [];
   let ipaIndex = 0;
