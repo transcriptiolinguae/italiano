@@ -452,21 +452,27 @@ document.getElementById('convertInline').addEventListener('click', async () => {
 function validateOrReturnOriginal(originalWord, mappedString) {
   const allowedMappings = {
     a: ['a', 'ˈa'],
+    bb: ['bː'],
     b: ['b', 'ˈb'],
     cci: ['tʃː'],
     ch: ['k'],
     ci: ['tʃ'],
     c: ['k'],
+    dd: ['dː'],
     d: ['d', 'ˈd'],
     e: ['e', 'ˈe', 'ɛ', 'ˈɛ'],
+    ff: ['fː'],
     f: ['f', 'ˈf'],
     gh: ['g'],
     g: ['g', 'ˈg'],
     i: ['i', 'ˈi', 'j', 'ˈj'],
+    ll: ['lː'],
     l: ['l', 'ˈl'],
+    mm: ['mː'],
     m: ['m', 'ˈm'],
     n: ['n'],
     o: ['o', 'ˈo', 'ɔ)', 'ˈɔ)'],
+    pp: ['pː'],
     p: ['p', 'ˈp'],
     rr: ['rː'],
     r: ['r', 'ˈr'],
@@ -475,6 +481,7 @@ function validateOrReturnOriginal(originalWord, mappedString) {
     tt: ['tː'],
     t: ['t', 'ˈt'],
     u: ['u', 'ˈu'],
+    vv: ['vː'],
     v: ['v', 'ˈv']
   };
 
