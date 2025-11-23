@@ -498,55 +498,31 @@ document.getElementById('g2p').addEventListener('click', async () => {
         ipaMap.set(uniqueWords[i], ipaWords[i] || '');
       }
 
-      // Check for invalid G2P mappings
-      const isValid = validateG2PMapping(chunk, ipaClean);
-      if (!isValid) {
-        setOutput("Invalid G2P mapping detected.");
-        return;
-      }
+  const g2pTokens = [];
+for (let t = 0; t < tokens.length; t++) {
+  const token = tokens[t];
+  const isWord = /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);
 
-      const g2pTokens = [];
-      for (let t = 0; t < tokens.length; t++) {
-        const token = tokens[t];
-        const isWord = /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);
+  if (!isWord) {
+    g2pTokens.push(token);
+    continue;
+  }
 
-        if (!isWord) {
-          g2pTokens.push(token);
-          continue;
-        }
+  const ipa = ipaMap.get(token) || '';
+let mapped = applyG2PMapping(token, ipa);
 
-        const ipa = ipaMap.get(token) || '';
-        const mapped = applyG2PMapping(token, ipa);
+// If mapping failed or incomplete — keep original
+if (mapped === null) {
+  console.warn(`G2P mapping failed for "${token}", recalculating from next word...`);
+  g2pTokens.push(token);
+  continue;
+}
 
-        // If mapping failed or incomplete — stop here, recall eSpeak for next word
-        if (mapped === null) {
-          console.warn(`G2P mapping failed for "${token}", recalculating from next word...`);
+// 🔥 NEW: validate mapping
+mapped = validateOrReturnOriginal(token, mapped);
 
-          // Get remaining tokens after this one
-          const remainingWords = tokens
-            .slice(t)
-            .filter(tt => /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(tt));
+g2pTokens.push(mapped);
 
-          if (remainingWords.length > 0) {
-            // Re-run eSpeak on the remaining portion only
-            const newMarked = remainingWords.join('|');
-            const newIpaRaw = await runESpeak(newMarked);
-            const newIpaClean = newIpaRaw.replace(/\|/g, ' ').trim();
-            const newIpaWords = newIpaClean.split(/\s+/);
-
-            // Rebuild ipaMap for remaining words
-            for (let i = 0; i < remainingWords.length; i++) {
-              ipaMap.set(remainingWords[i], newIpaWords[i] || '');
-            }
-          }
-
-          // Skip this token (unmapped)
-          g2pTokens.push(token);
-          continue;
-        }
-
-        g2pTokens.push(mapped);
-      }
 
       // Reconstruct chunk preserving spaces
       let reconstructed = '';
@@ -571,7 +547,6 @@ document.getElementById('g2p').addEventListener('click', async () => {
 
 
 
-
 function applyG2PMapping(text, ipa) {
   
   const result = [];
@@ -580,54 +555,34 @@ function applyG2PMapping(text, ipa) {
   const lowerText = text.toLowerCase();
 
 
-   // Predefined mappings for G2P
-  const g2pMappings = {
-    "a": ["a", "ˈa"],   // a → a or ˈa
-    "ci": ["tʃ"],       // ci → tʃ
-    "c": ["k"],         // c → k
-    "gh": ["g"],        // gh → g
-    "g": ["g"],         // g → g
-    "o": ["o"],         // o → o
-    "i": ["j"],         // i → j
+
+  function validateOrReturnOriginal(originalWord, mappedString) {
+  const allowedMappings = {
+    a: ['a', 'ˈa'],
+    ci: ['tʃ'],
+    c: ['k'],
+    gh: ['g'],
+    g: ['g'],
+    o: ['o'],
+    i: ['j']
   };
 
-  function isValidMapping(mapping, ipaChar) {
-    return mapping.some(m => ipaChar.startsWith(m));
+  const regex = /([A-Za-z]+)\(([^()]+)\)/g;
+  let match;
+
+  while ((match = regex.exec(mappedString)) !== null) {
+    const letters = match[1].toLowerCase();
+    const ipa = match[2];
+
+    // letter sequence not in allowed list → return original
+    if (!allowedMappings[letters]) return originalWord;
+
+    // ipa value not allowed → return original
+    if (!allowedMappings[letters].includes(ipa)) return originalWord;
   }
 
-  // Iterate over the text and IPA
-  while (i < text.length && ipaIndex < ipa.length) {
-    const letter = text[i];
-    let ipaChar = ipa[ipaIndex];
-
-    // Check if the letter has a valid mapping in g2pMappings
-    const lowerLetter = letter.toLowerCase();
-    if (g2pMappings[lowerLetter]) {
-      const ipaMatch = g2pMappings[lowerLetter];
-
-      // Check if the current IPA character matches one of the allowed mappings
-      if (isValidMapping(ipaMatch, ipaChar)) {
-        result.push(`${letter}(${ipaChar})`);
-        ipaIndex++;  // Move to next IPA character
-        i++;         // Move to next character in text
-        continue;
-      } else {
-        // Handle case where no valid mapping is found
-        console.warn(`Invalid G2P mapping detected for "${letter}" with IPA "${ipaChar}"`);
-        result.push(`${letter}()`);
-        i++;
-        continue;
-      }
-    } else {
-      // If no valid mapping for this character, just push as-is
-      result.push(`${letter}(${ipaChar})`);
-      ipaIndex++;
-      i++;
-    }
-  }
-
-
-
+  return mappedString;
+}
   // Predefined mappings for G2P
   const g2pMappings = {
     "bb": "bː",
@@ -664,12 +619,7 @@ function applyG2PMapping(text, ipa) {
     const letter = text[i];
     let ipaChar = ipa[ipaIndex];
 
-    // If the letter is not in allowedMappings, stop the processing and return null
-    if (!validateG2PMappings(text, ipa)) {
-      console.warn(`Invalid G2P mapping for "${text}" with IPA "${ipa}"`);
-      result.push(text); // Return the word as is
-      break;
-    }
+
 
 
         if (ipaChar === 'd' && ipa[ipaIndex + 1] === 'z' && ipa[ipaIndex + 2] === 'ː') {
@@ -1482,81 +1432,4 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
 
         if (!/i|ˈi|j|ˈj|e|ˈe|ɛ|ˈɛ/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
           // map "ci" with "tʃ" to "ci(tʃ)"
-          result.push(`${letter}${text[i + 1]}(gː)`);
-          i += 2; // Skip past "ci"
-          ipaIndex += 3; // Skip past the "tʃ" in IPA
-          continue; // Skip the rest of the processing for this "ci"
-        }
-      }
-    }
-
-       // gg(gː)
-                if (lowerText[i] === 'g' && lowerText[i + 1] === 'g') {
-      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
-      if (ipa[ipaIndex] === 'g' && ipa[ipaIndex + 1] === 'ː') {
-          result.push(`${letter}${text[i + 1]}(gː)`);
-          i += 2; // Skip past "ci"
-          ipaIndex += 2; // Skip past the "tʃ" in IPA
-          continue; // Skip the rest of the processing for this "ci"
-        }
-      }
-    
-
-
-
-
-
-
-
-
- // Check for predefined G2P mapping (e.g., bb -> bː, cc -> kː, etc.)
-    const mappedIpa = g2pMappings[lowerText.slice(i, i + 2)];
-    if (mappedIpa) {
-      result.push(`${text.slice(i, i + 2)}(${mappedIpa})`);
-      i += 2;  // Skip the next letter, since we just processed 2 chars
-      ipaIndex += mappedIpa.length;  // Move IPA index forward by the length of mapped IPA
-      continue;
-    }
-    
-
-    
-    // Default behavior: Process the IPA character normally
-    if (ipaChar === 'ˈ' || ipaChar === 'ˌ') {
-      ipaIndex++;
-      ipaChar = ipa[ipaIndex];
-      result.push(`${letter}(ˈ${ipaChar})`);
-    } else {
-      result.push(`${letter}(${ipaChar})`);
-    }
-
-
-
-          
-    ipaIndex++;
-    i++;
-  }
-
-  // If anything left in text, append with empty IPA
-  while (i < text.length) {
-    result.push(`${text[i]}()`);
-    i++;
-  }
-
-  
-
-  // If IPA characters are remaining but text is exhausted, it's a problem
-  if (ipaIndex < ipa.length) {
-    console.warn(`Remaining IPA characters detected, but no corresponding text: "${ipa.slice(ipaIndex)}"`);
-  }
-
-  return result.join('');  // Join the result and return the mapped string
-}
-
-
-</script>
-
-
-
-
-</body>
-</html>
+          result.
