@@ -488,13 +488,17 @@ function validateOrReturnOriginal(originalWord, mappedString) {
     v: ['v', 'ˈv']
   };
 
-  const regex = /([A-Za-z]+)\(([^()]+)\)/g;
+  const regex = /([\p{L}]+)\(([^()]*)\)/gu;
+
   let match;
 
   while ((match = regex.exec(mappedString)) !== null) {
     const letters = match[1].toLowerCase();
     const ipa = match[2];
-
+    
+    // NEW: empty mapping
+    if (ipa.trim() === '') return originalWord;
+    
     // letter sequence not in allowed list → return original
     if (!allowedMappings[letters]) return originalWord;
 
