@@ -452,16 +452,27 @@ document.getElementById('convertInline').addEventListener('click', async () => {
 function validateOrReturnOriginal(originalWord, mappedString) {
   const allowedMappings = {
     a: ['a', 'ˈa'],
-    b: ['b'],
+    b: ['b', 'ˈb'],
     cci: ['tʃː'],
+    ch: ['k'],
     ci: ['tʃ'],
     c: ['k'],
-    e: ['e', 'ˈɛ'],
+    d: ['d', 'ˈd'],
+    e: ['e', 'ˈe', 'ɛ', 'ˈɛ'],
+    f: ['f', 'ˈf'],
     gh: ['g'],
-    g: ['g'],
+    g: ['g', 'ˈg'],
+    i: ['i', 'ˈi', 'j', 'ˈj'],
+    l: ['l', 'ˈl'],
+    m: ['m', 'ˈm'],
     n: ['n'],
-    o: ['o'],
-    i: ['j']
+    o: ['o', 'ˈo', 'ɔ)', 'ˈɔ)'],
+    p: ['p', 'ˈp'],
+    r: ['r', 'ˈr'],
+    s: ['s', 'ˈs'],
+    t: ['t', 'ˈt'],
+    u: ['u', 'ˈu'],
+    v: ['v', 'ˈv']
   };
 
   const regex = /([A-Za-z]+)\(([^()]+)\)/g;
