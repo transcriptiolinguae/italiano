@@ -541,7 +541,7 @@ document.getElementById('g2p').addEventListener('click', async () => {
       // Collect unique words for batch IPA generation
       const uniqueWords = [...new Set(
         tokens.filter(t =>
-          /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
+          /^[\p{L}]+(?:'[\p{L}]+)*$/u.test(t)
         )
       )];
 
@@ -560,7 +560,7 @@ document.getElementById('g2p').addEventListener('click', async () => {
   const g2pTokens = [];
 for (let t = 0; t < tokens.length; t++) {
   const token = tokens[t];
-  const isWord = /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);
+  const isWord = /^[\p{L}]+(?:'[\p{L}]+)*$/u.test(token);
 
   if (!isWord) {
     g2pTokens.push(token);
