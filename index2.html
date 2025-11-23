@@ -308,7 +308,8 @@ document.getElementById('convert').addEventListener('click', async () => {
     for (const chunk of chunks) {
       // Tokenize text into words, numbers, punctuation, etc.
       const tokens = chunk.match(
-        /[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
+        /[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*|'[\p{L}\p{M}]+|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
+
       );
       if (!tokens) {
         finalResult += chunk;
@@ -392,7 +393,7 @@ document.getElementById('convertInline').addEventListener('click', async () => {
 
     for (const chunk of chunks) {
       // Tokenize the chunk into words, numbers, punctuation
-      const tokens = chunk.match(/[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu);
+      const tokens = chunk.match(/[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*|'[\p{L}\p{M}]+|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu);
       if (!tokens) {
         finalResult += chunk; // fallback
         continue;
@@ -531,7 +532,7 @@ document.getElementById('g2p').addEventListener('click', async () => {
 
     for (const chunk of chunks) {
       const tokens = chunk.match(
-        /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
+        /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
       );
       if (!tokens) {
         finalResult += chunk;
@@ -541,7 +542,7 @@ document.getElementById('g2p').addEventListener('click', async () => {
       // Collect unique words for batch IPA generation
       const uniqueWords = [...new Set(
         tokens.filter(t =>
-          /^[\p{L}]+(?:'[\p{L}]+)*$/u.test(t)
+           /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
         )
       )];
 
@@ -560,7 +561,7 @@ document.getElementById('g2p').addEventListener('click', async () => {
   const g2pTokens = [];
 for (let t = 0; t < tokens.length; t++) {
   const token = tokens[t];
-  const isWord = /^[\p{L}]+(?:'[\p{L}]+)*$/u.test(token);
+  const isWord = /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);
 
   if (!isWord) {
     g2pTokens.push(token);
