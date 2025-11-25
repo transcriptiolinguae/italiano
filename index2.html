@@ -640,12 +640,12 @@ function applyG2PMapping(text, ipa) {
     const letter = text[i];
     let ipaChar = ipa[ipaIndex];
   
-    // ADD THIS
+    // ★ FIX: keep apostrophes exactly as in original text
     if (letter === "'") {
-        output += "'";
+        result.push("'");
         i++;
         continue;
-      }
+    }
 
 
         if (ipaChar === 'd' && ipa[ipaIndex + 1] === 'z' && ipa[ipaIndex + 2] === 'ː') {
