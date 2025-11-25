@@ -531,7 +531,9 @@ document.getElementById('g2p').addEventListener('click', async () => {
 
     for (const chunk of chunks) {
       const tokens = chunk.match(
-        /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
+    //  /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
+          /[\p{L}]+(?:'[\p{L}]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
+
       );
       if (!tokens) {
         finalResult += chunk;
