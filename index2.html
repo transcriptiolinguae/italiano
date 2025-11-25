@@ -449,61 +449,7 @@ document.getElementById('convertInline').addEventListener('click', async () => {
 
 
 
-function validateOrReturnOriginal(originalWord, mappedString) {
-  const allowedMappings = {
-    a: ['a', 'ˈa'],
-    bb: ['bː'],
-    b: ['b', 'ˈb'],
-    cci: ['tʃː'],
-    cch: ['kː'],
-    ch: ['k'],
-    ci: ['tʃ'],
-    c: ['k'],
-    dd: ['dː'],
-    d: ['d', 'ˈd'],
-    e: ['e', 'ˈe', 'ɛ', 'ˈɛ'],
-    ff: ['fː'],
-    f: ['f', 'ˈf'],
-    gh: ['g'],
-    gn: ['ɲ'],
-    g: ['g', 'ˈg'],
-    i: ['i', 'ˈi', 'j', 'ˈj'],
-    ll: ['lː'],
-    l: ['l', 'ˈl'],
-    mm: ['mː'],
-    m: ['m', 'ˈm'],
-    n: ['n'],
-    o: ['o', 'ˈo', 'ɔ)', 'ˈɔ)'],
-    pp: ['pː'],
-    p: ['p', 'ˈp'],
-    rr: ['rː'],
-    r: ['r', 'ˈr'],
-    ss: ['sː'],
-    s: ['s', 'ˈs'],
-    tt: ['tː'],
-    t: ['t', 'ˈt'],
-    u: ['u', 'ˈu'],
-    ù: ['u', 'ˈu'],
-    vv: ['vː'],
-    v: ['v', 'ˈv']
-  };
 
-  const regex = /([A-Za-z]+)\(([^()]+)\)/g;
-  let match;
-
-  while ((match = regex.exec(mappedString)) !== null) {
-    const letters = match[1].toLowerCase();
-    const ipa = match[2];
-
-    // letter sequence not in allowed list → return original
-    if (!allowedMappings[letters]) return originalWord;
-
-    // ipa value not allowed → return original
-    if (!allowedMappings[letters].includes(ipa)) return originalWord;
-  }
-
-  return mappedString;
-}
 
   // G2P button
 // G2P button
@@ -1530,7 +1476,61 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
   return result.join('');
 
 }
+function validateOrReturnOriginal(originalWord, mappedString) {
+  const allowedMappings = {
+    a: ['a', 'ˈa'],
+    bb: ['bː'],
+    b: ['b', 'ˈb'],
+    cci: ['tʃː'],
+    cch: ['kː'],
+    ch: ['k'],
+    ci: ['tʃ'],
+    c: ['k'],
+    dd: ['dː'],
+    d: ['d', 'ˈd'],
+    e: ['e', 'ˈe', 'ɛ', 'ˈɛ'],
+    ff: ['fː'],
+    f: ['f', 'ˈf'],
+    gh: ['g'],
+    gn: ['ɲ'],
+    g: ['g', 'ˈg'],
+    i: ['i', 'ˈi', 'j', 'ˈj'],
+    ll: ['lː'],
+    l: ['l', 'ˈl'],
+    mm: ['mː'],
+    m: ['m', 'ˈm'],
+    n: ['n'],
+    o: ['o', 'ˈo', 'ɔ)', 'ˈɔ)'],
+    pp: ['pː'],
+    p: ['p', 'ˈp'],
+    rr: ['rː'],
+    r: ['r', 'ˈr'],
+    ss: ['sː'],
+    s: ['s', 'ˈs'],
+    tt: ['tː'],
+    t: ['t', 'ˈt'],
+    u: ['u', 'ˈu'],
+    ù: ['u', 'ˈu'],
+    vv: ['vː'],
+    v: ['v', 'ˈv']
+  };
 
+  const regex = /([A-Za-z]+)\(([^()]+)\)/g;
+  let match;
+
+  while ((match = regex.exec(mappedString)) !== null) {
+    const letters = match[1].toLowerCase();
+    const ipa = match[2];
+
+    // letter sequence not in allowed list → return original
+    if (!allowedMappings[letters]) return originalWord;
+
+    // ipa value not allowed → return original
+    if (!allowedMappings[letters].includes(ipa)) return originalWord;
+  }
+
+  return mappedString;
+}
 
 </script>
 
