@@ -532,8 +532,10 @@ document.getElementById('g2p').addEventListener('click', async () => {
     for (const chunk of chunks) {
       const tokens = chunk.match(
       /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
-
       );
+// ovo
+      console.log("TOKENS:", tokens);
+
       if (!tokens) {
         finalResult += chunk;
         continue;
@@ -546,6 +548,12 @@ document.getElementById('g2p').addEventListener('click', async () => {
         )
       )];
 
+      // ovo
+      console.log("WORD FILTER MATCH:", tokens.map(t => (
+  /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*$/.test(t)
+)));
+console.log("UNIQUE WORDS:", uniqueWords);
+      
       // Build marked string for eSpeak
       const markedInput = uniqueWords.join('|');
       const ipaRaw = await runESpeak(markedInput);
