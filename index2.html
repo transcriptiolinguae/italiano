@@ -533,8 +533,6 @@ document.getElementById('g2p').addEventListener('click', async () => {
       const tokens = chunk.match(
       /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
       );
-// ovo
-      console.log("TOKENS:", tokens);
 
       if (!tokens) {
         finalResult += chunk;
@@ -548,11 +546,7 @@ document.getElementById('g2p').addEventListener('click', async () => {
         )
       )];
 
-      // ovo
-      console.log("WORD FILTER MATCH:", tokens.map(t => (
-  /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*$/.test(t)
-)));
-console.log("UNIQUE WORDS:", uniqueWords);
+
       
       // Build marked string for eSpeak
       const markedInput = uniqueWords.join('|');
@@ -639,26 +633,18 @@ function applyG2PMapping(text, ipa) {
     "vv": "vː", 
   };
 
-  function startsWithIpa(ipa, pattern) {
-    const variations = [`${pattern}`, `ˈ${pattern}`, `ˌ${pattern}`, `\u200D${pattern}`, `ˈ\u200D${pattern}`, `\u200Dˈ${pattern}`];
-    for (const variant of variations) {
-      if (ipa.startsWith(variant)) return { match: variant, len: variant.length };
-    }
-    return null;
-  }
-
-  // Check if 'tʃː' or 'dʒː' is followed by any of the specified vowels
-  function isFollowedByVowel(ipa, index) {
-    const following = ipa.slice(index + 3); // Skip 'ː' and check the following character
-    return following.startsWith('i') || following.startsWith('ˈi') || following.startsWith('j') || following.startsWith('ˈj') ||
-           following.startsWith('e') || following.startsWith('ˈe') || following.startsWith('ɛ') || following.startsWith('ˈɛ');
-  }
+ 
 
   // Process the word-by-word logic
   while (i < text.length && ipaIndex < ipa.length) {
     const letter = text[i];
     let ipaChar = ipa[ipaIndex];
-
+  
+    // ADD THIS
+    if (letter === "'") {
+        output += "'";
+        i++;
+        continue;
 
 
 
