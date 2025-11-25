@@ -451,7 +451,8 @@ document.getElementById('convertInline').addEventListener('click', async () => {
 
 function validateOrReturnOriginal(originalWord, mappedString) {
   const allowedMappings = {
-    a: ['a', 'ˈa'],
+    'a: ['ˈa'],
+    a: ['a', 'ˈa'],    
     bb: ['bː'],
     b: ['b', 'ˈb'],
     cci: ['tʃː'],
