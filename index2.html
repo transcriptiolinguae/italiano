@@ -365,46 +365,14 @@ document.getElementById('convert').addEventListener('click', async () => {
 });
 
 
-/********************************************************************
- * AFI + TESTO  (full working version)
- * - skips unsafe words (ṣ, ṭ, Arabic, Greek, etc.)
- * - re-runs eSpeak if a mapping fails
- * - preserves whitespace exactly
- * - continues IPA output even after bad words
- ********************************************************************/
-
-// Words eSpeak can safely process in Italian
-function isEspeakSafeWord(word) {
-  // Letters, accents, apostrophes, hyphens are OK
-  // Characters like ṣ ṭ ḥ q̇ etc. make eSpeak output invalid IPA
-  return /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ'’-]+$/u.test(word);
-}
-
-// Batch-run eSpeak and return Map(word → IPA)
-async function batchEspeakToMap(words) {
-  if (!words.length) return new Map();
-
-  const marked = words.join("|");
-  const ipaRaw = await runESpeak(marked);
-  const ipaClean = ipaRaw.replace(/\|/g, " ").trim();
-  const ipaList = ipaClean.split(/\s+/);
-
-  const map = new Map();
-  for (let i = 0; i < words.length; i++) {
-    map.set(words[i], ipaList[i] || "");
-  }
-  return map;
-}
-
-// ===============================================
-// MAIN FUNCTION
-// ===============================================
-
-document.getElementById("convertInline").addEventListener("click", async () => {
+// ===========================
+// Testo e AFI button (FIXED)
+// ===========================
+document.getElementById('convertInline').addEventListener('click', async () => {
   showProgressPlaceholder();
 
   if (!wasmReady) {
-    alert("Please wait, WASM is still loading...");
+    alert('Please wait, WASM is still loading...');
     return;
   }
 
@@ -416,10 +384,9 @@ document.getElementById("convertInline").addEventListener("click", async () => {
 
   try {
     const chunks = splitTextByLength(rawInput, 500);
-    let finalResult = "";
+    let finalResult = '';
 
     for (const chunk of chunks) {
-      // Tokenize properly
       const tokens = chunk.match(
         /[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
       );
@@ -429,95 +396,86 @@ document.getElementById("convertInline").addEventListener("click", async () => {
         continue;
       }
 
-      // Extract unique SAFE words for first eSpeak pass
-      const safeWords = [...new Set(
+      // UNIQUE WORDS FOR BATCH IPA
+      const uniqueWords = [...new Set(
         tokens.filter(t =>
-          /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(t) &&
-          isEspeakSafeWord(t)
+          /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(t)
         )
       )];
 
-      // First pass
-      let ipaMap = await batchEspeakToMap(safeWords);
+      let ipaMap = new Map();
+      async function populateIPA(words) {
+        if (words.length === 0) return;
+        const marked = words.join('|');
+        const ipaRaw = await runESpeak(marked);
+        const ipaList = ipaRaw.replace(/\|/g, ' ').trim().split(/\s+/);
+        for (let i = 0; i < words.length; i++) {
+          ipaMap.set(words[i], ipaList[i] || '');
+        }
+      }
 
-      let resultTokens = [];
+      // First batch
+      await populateIPA(uniqueWords);
 
-      // ---------------------
-      // Process each token
-      // ---------------------
-      for (let index = 0; index < tokens.length; index++) {
-        const token = tokens[index];
-        const isWord = /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token);
+      const outTokens = [];
 
-        if (!isWord) {
-          // punctuation, number, symbol
-          resultTokens.push(token);
+      for (let t = 0; t < tokens.length; t++) {
+        const token = tokens[t];
+
+        // If not a word → keep as-is
+        if (!/^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token)) {
+          outTokens.push(token);
           continue;
         }
 
-        // Skip unsafe eSpeak words without stopping IPA for later words
-        if (!isEspeakSafeWord(token)) {
-          console.warn("Skipping unsafe word:", token);
-          resultTokens.push(token);
-          continue;
-        }
+        let ipa = ipaMap.get(token) || '';
 
-        // Retrieve IPA
-        let ipa = ipaMap.get(token) || "";
-        let mapped = token + (ipa ? `(${ipa})` : "");
-        let validated = validateOrReturnOriginal(token, mapped);
+        // ================================
+        // VALIDATE IPA (same rules as G2P)
+        // ================================
+        let inline = `${token} (${ipa})`;
+        let validated = validateOrReturnOriginal(token, inline);
 
-        let mappingFailed = (validated === token);
+        if (validated === token) {
+          // ❌ IPA invalid → keep original word
+          outTokens.push(token);
 
-        // If failed → re-run eSpeak on remaining SAFE words
-        if (mappingFailed) {
-          console.warn(`AFI+Testo: mapping failed for "${token}", re-running eSpeak…`);
-
-          const remainingSafeWords = tokens
-            .slice(index)
+          // 🔥 Re-run eSpeak starting from THIS token
+          const remainingWords = tokens
+            .slice(t)
             .filter(tt =>
-              /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(tt) &&
-              isEspeakSafeWord(tt)
+              /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(tt)
             );
 
-          if (remainingSafeWords.length) {
-            const newMap = await batchEspeakToMap(remainingSafeWords);
-            for (const w of remainingSafeWords) {
-              ipaMap.set(w, newMap.get(w) || "");
-            }
-          }
-
-          // Retry the same token once
-          ipa = ipaMap.get(token) || "";
-          mapped = token + (ipa ? `(${ipa})` : "");
-          validated = validateOrReturnOriginal(token, mapped);
+          await populateIPA(remainingWords); // refresh IPA map
+          continue;
         }
 
-        resultTokens.push(validated);
+        // IPA OK → include
+        outTokens.push(validated);
       }
 
-      // ---------------------
-      // Reassemble chunk preserving whitespace
-      // ---------------------
-      let rebuilt = "";
-      let i = 0;
-      let j = 0;
+      // Rebuild while preserving original spaces
+      let reconstructed = '';
+      let idx = 0;
+
+      outTokensIndex = 0;
 
       for (const token of tokens) {
-        while (chunk[i] && /\s/.test(chunk[i])) {
-          rebuilt += chunk[i++];
+        while (chunk[idx] && /\s/.test(chunk[idx])) {
+          reconstructed += chunk[idx++];
         }
-        rebuilt += resultTokens[j++];
-        i += token.length;
+        reconstructed += outTokens.shift();
+        idx += token.length;
       }
 
-      finalResult += rebuilt;
+      finalResult += reconstructed;
     }
 
-    setOutput(finalResult);
-  } catch (err) {
-    console.error("Error during AFI+Testo:", err);
-    setOutput("Error during AFI+Testo: " + err.message);
+    setOutput(finalResult.trim());
+  } catch (e) {
+    console.error('Error in Testo e AFI:', e);
+    setOutput('Error in Testo e AFI: ' + e.message);
   }
 });
 
