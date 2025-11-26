@@ -595,15 +595,9 @@ if (mapped === null) {
       }
     }
 
-// Retry mapping for the failed word using the updated ipaMap
-const newIpa = ipaMap.get(token) || '';
-const retriedMapping = applyG2PMapping(token, newIpa);
-
-// If still fails, fallback to original
-g2pTokens.push(retriedMapping || token);
-
-// Don't continue; let the loop naturally go to the next token
-
+    // Skip this token (unmapped)
+    g2pTokens.push(token);
+    continue;
   }
 
 // 🔥 NEW: validate mapping
