@@ -438,19 +438,31 @@ document.getElementById('convertInline').addEventListener('click', async () => {
 
       }
 
-      if (remainingWords.length > 0) {
+// If mapping failed or incomplete — keep original
+if (mapped === null) {
+  console.warn(`G2P mapping failed for "${token}", recalculating from next word...`);
+    // Get remaining tokens after this one
+    const remainingWords = tokens
+      .slice(t)
+      .filter(tt => /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(tt));
+
+    if (remainingWords.length > 0) {
       // Re-run eSpeak on the remaining portion only
       const newMarked = remainingWords.join('|');
       const newIpaRaw = await runESpeak(newMarked);
       const newIpaClean = newIpaRaw.replace(/\|/g, ' ').trim();
       const newIpaWords = newIpaClean.split(/\s+/);
-        const remainingWords = tokens
 
       // Rebuild ipaMap for remaining words
       for (let i = 0; i < remainingWords.length; i++) {
         ipaMap.set(remainingWords[i], newIpaWords[i] || '');
       }
     }
+
+    // Skip this token (unmapped)
+    g2pTokens.push(token);
+    continue;
+  }
     
 
 
