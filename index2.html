@@ -438,6 +438,20 @@ document.getElementById('convertInline').addEventListener('click', async () => {
 
       }
 
+      if (remainingWords.length > 0) {
+      // Re-run eSpeak on the remaining portion only
+      const newMarked = remainingWords.join('|');
+      const newIpaRaw = await runESpeak(newMarked);
+      const newIpaClean = newIpaRaw.replace(/\|/g, ' ').trim();
+      const newIpaWords = newIpaClean.split(/\s+/);
+
+      // Rebuild ipaMap for remaining words
+      for (let i = 0; i < remainingWords.length; i++) {
+        ipaMap.set(remainingWords[i], newIpaWords[i] || '');
+      }
+    }
+
+
       // Maintain spacing with previous chunks
       while (rawInput[charIndex] && /\s/.test(rawInput[charIndex])) {
         chunkResult = rawInput[charIndex++] + chunkResult;
