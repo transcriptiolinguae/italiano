@@ -447,65 +447,7 @@ document.getElementById('convertInline').addEventListener('click', async () => {
   }
 });
 
-// Validation function (must be included)
-function validateOrReturnOriginal(originalWord, mappedString) {
-  const allowedMappings = {
-    a: ['a', 'ˈa'],    
-    bb: ['bː'],
-    b: ['b', 'ˈb'],
-    cci: ['tʃː'],
-    cch: ['kː'],
-    cc: ['tʃː'],    
-    ch: ['k'],
-    ci: ['tʃ'],
-    c: ['k', 'tʃ'],
-    dd: ['dː'],
-    d: ['d', 'ˈd'],
-    e: ['e', 'ˈe', 'ɛ', 'ˈɛ'],
-    ff: ['fː'],
-    f: ['f', 'ˈf'],
-    gh: ['g'],
-    gn: ['ɲ'],
-    g: ['g', 'ˈg', 'dʒ'],
-    i: ['i', 'ˈi', 'j', 'ˈj'],
-    ll: ['lː'],
-    l: ['l', 'ˈl'],
-    mm: ['mː'],
-    m: ['m', 'ˈm'],
-    n: ['n'],
-    o: ['o', 'ˈo', 'ɔ', 'ˈɔ'],
-    pp: ['pː'],
-    p: ['p', 'ˈp'],
-    rr: ['rː'],
-    r: ['r', 'ˈr'],
-    ss: ['sː'],
-    s: ['s', 'ˈs', 'z'],
-    tt: ['tː'],
-    t: ['t', 'ˈt'],
-    u: ['u', 'ˈu'],
-    ù: ['u', 'ˈu'],
-    vv: ['vː'],
-    v: ['v', 'ˈv']
-  };
 
-  // Match sequences like letter(ipa)
-  const regex = /([a-z]+)\(([^()]*)\)/gi;
-  let match;
-  
-  while ((match = regex.exec(mappedString)) !== null) {
-    const letters = match[1].toLowerCase();
-    const ipa = match[2];
-
-    // Letter sequence not allowed → return original
-    if (!allowedMappings[letters]) return originalWord;
-
-    // IPA empty or not in allowed values → return original
-    if (!ipa || !allowedMappings[letters].includes(ipa)) return originalWord;
-  }
-
-  // Everything valid → return mapped string
-  return mappedString;
-}
 
 
 function validateOrReturnOriginal(originalWord, mappedString) {
