@@ -366,7 +366,7 @@ document.getElementById('convert').addEventListener('click', async () => {
 
 
 // ===========================
-// Testo e AFI button (FIXED)
+// Testo e AFI button (FINAL FIXED VERSION)
 // ===========================
 document.getElementById('convertInline').addEventListener('click', async () => {
   showProgressPlaceholder();
@@ -397,7 +397,7 @@ document.getElementById('convertInline').addEventListener('click', async () => {
       }
 
       // -----------------------------------------------------
-      // Collect UNIQUE words for batch IPA generation
+      // Collect UNIQUE WORDS for batch IPA generation
       // -----------------------------------------------------
       const uniqueWords = [...new Set(
         tokens.filter(t =>
@@ -407,49 +407,65 @@ document.getElementById('convertInline').addEventListener('click', async () => {
 
       let ipaMap = new Map();
 
+      // -----------------------------------------------------
+      // Helper: populate IPA map
+      // -----------------------------------------------------
       async function populateIPA(words) {
-        if (words.length === 0) return;
-        const marked = words.join('|');
+        if (!words.length) return;
+
+        const marked = words.join("|");
         const ipaRaw = await runESpeak(marked);
-        const ipaList = ipaRaw.replace(/\|/g, ' ').trim().split(/\s+/);
+        const ipaList = ipaRaw.replace(/\|/g, " ").trim().split(/\s+/);
+
         for (let i = 0; i < words.length; i++) {
-          ipaMap.set(words[i], ipaList[i] || '');
+          ipaMap.set(words[i], ipaList[i] || "");
         }
       }
 
-      // Initial batch import
+      // Initial IPA fetch
       await populateIPA(uniqueWords);
 
       const outTokens = [];
 
       // -----------------------------------------------------
-      // Process each token
+      // Whole-word IPA validator for Testo+AFI
+      // -----------------------------------------------------
+      function validateWholeWordIPA(originalWord, ipa) {
+        const allowedIPA = /^[a-zɲʎʃʒʦʣŋˈˌːɔɛaieuo]+$/i;
+
+        if (!ipa || ipa.trim() === "") return originalWord;
+        if (!allowedIPA.test(ipa.replace(/\s+/g, ""))) return originalWord;
+
+        return `${originalWord} (${ipa})`;
+      }
+
+      // -----------------------------------------------------
+      // Process all tokens
       // -----------------------------------------------------
       for (let t = 0; t < tokens.length; t++) {
         const token = tokens[t];
 
-        // Not a word → keep as-is
-        if (!/^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token)) {
+        const isWord = /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token);
+        if (!isWord) {
           outTokens.push(token);
           continue;
         }
 
-  let validated = validateWholeWordIPA(token, ipa);
-        // Validate IPA using your rules
-        let validated = validateOrReturnOriginal(token, inlineVersion);
+        let ipa = ipaMap.get(token) || "";
+
+        // Validate whole-word IPA
+        let validated = validateWholeWordIPA(token, ipa);
 
         if (validated === token) {
-          // ❌ IPA INVALID → keep original word
+          // ❌ IPA invalid → keep original word
           outTokens.push(token);
 
-          // 🔥 Re-run eSpeak from THIS word onward
+          // 🔥 Re-run IPA for remaining words
           const remainingWords = tokens
             .slice(t)
-            .filter(tt =>
-              /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(tt)
-            );
+            .filter(tt => /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(tt));
 
-          await populateIPA(remainingWords); // refresh IPA for remaining words
+          await populateIPA(remainingWords);
           continue;
         }
 
@@ -458,9 +474,9 @@ document.getElementById('convertInline').addEventListener('click', async () => {
       }
 
       // -----------------------------------------------------
-      // Rebuild chunk preserving spacing exactly
+      // Rebuild chunk with spacing preserved
       // -----------------------------------------------------
-      let reconstructed = '';
+      let reconstructed = "";
       let idx = 0;
       let outIdx = 0;
 
@@ -468,6 +484,7 @@ document.getElementById('convertInline').addEventListener('click', async () => {
         while (chunk[idx] && /\s/.test(chunk[idx])) {
           reconstructed += chunk[idx++];
         }
+
         reconstructed += outTokens[outIdx++];
         idx += token.length;
       }
@@ -476,14 +493,11 @@ document.getElementById('convertInline').addEventListener('click', async () => {
     }
 
     setOutput(finalResult.trim());
-
   } catch (e) {
-    console.error('Error in Testo e AFI:', e);
-    setOutput('Error in Testo e AFI: ' + e.message);
+    console.error("Error in Testo e AFI:", e);
+    setOutput("Error in Testo e AFI: " + e.message);
   }
 });
-
-
 
 
 
