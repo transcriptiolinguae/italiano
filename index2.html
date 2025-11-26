@@ -373,20 +373,26 @@ document.getElementById('convertInline').addEventListener('click', async () => {
     return;
   }
 
-  const rawInput = normalizeCurlyApostrophes(inputElem.value.trim());
+  const rawInput = inputElem.value.trim();
   if (!rawInput) {
     showPlaceholder();
     return;
   }
 
   try {
-    const chunks = splitTextByLength(rawInput, 500);
+    // Normalize curly apostrophes
+    const normalized = rawInput.replace(/[’‘]/g, "'");
+
+    // Split input into 500-character chunks
+    const chunks = splitTextByLength(normalized, 500);
     let finalResult = '';
+    let charIndex = 0;
 
     for (const chunk of chunks) {
+      // Tokenize the chunk into words, numbers, punctuation
       const tokens = chunk.match(/[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu);
       if (!tokens) {
-        finalResult += chunk;
+        finalResult += chunk; // fallback
         continue;
       }
 
@@ -403,7 +409,7 @@ document.getElementById('convertInline').addEventListener('click', async () => {
         ipaMap.set(wordTokens[i], ipaWords[i] || '');
       }
 
-      // Reconstruct chunk with inline IPA **with validation**
+      // Reconstruct chunk with inline IPA + validation
       let chunkResult = '';
       let idx = 0;
       for (const token of tokens) {
@@ -415,14 +421,21 @@ document.getElementById('convertInline').addEventListener('click', async () => {
         idx += token.length;
 
         if (/^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token)) {
-          let mapped = applyG2PMapping(token, ipaMap.get(token) || '');
-          // Validate the mapping
-          mapped = mapped ? validateOrReturnOriginal(token, mapped) : token;
-          chunkResult += mapped;
+          const ipa = ipaMap.get(token) || '';
+          const mapped = `${originalToken}${ipa ? ' (' + ipa + ')' : ''}`;
+
+          // ✅ Validate mapping
+          chunkResult += validateOrReturnOriginal(token, mapped);
         } else {
           chunkResult += originalToken;
         }
       }
+
+      // Maintain spacing with previous chunks
+      while (rawInput[charIndex] && /\s/.test(rawInput[charIndex])) {
+        chunkResult = rawInput[charIndex++] + chunkResult;
+      }
+      charIndex += chunk.length;
 
       finalResult += chunkResult;
     }
@@ -434,7 +447,65 @@ document.getElementById('convertInline').addEventListener('click', async () => {
   }
 });
 
+// Validation function (must be included)
+function validateOrReturnOriginal(originalWord, mappedString) {
+  const allowedMappings = {
+    a: ['a', 'ˈa'],    
+    bb: ['bː'],
+    b: ['b', 'ˈb'],
+    cci: ['tʃː'],
+    cch: ['kː'],
+    cc: ['tʃː'],    
+    ch: ['k'],
+    ci: ['tʃ'],
+    c: ['k', 'tʃ'],
+    dd: ['dː'],
+    d: ['d', 'ˈd'],
+    e: ['e', 'ˈe', 'ɛ', 'ˈɛ'],
+    ff: ['fː'],
+    f: ['f', 'ˈf'],
+    gh: ['g'],
+    gn: ['ɲ'],
+    g: ['g', 'ˈg', 'dʒ'],
+    i: ['i', 'ˈi', 'j', 'ˈj'],
+    ll: ['lː'],
+    l: ['l', 'ˈl'],
+    mm: ['mː'],
+    m: ['m', 'ˈm'],
+    n: ['n'],
+    o: ['o', 'ˈo', 'ɔ', 'ˈɔ'],
+    pp: ['pː'],
+    p: ['p', 'ˈp'],
+    rr: ['rː'],
+    r: ['r', 'ˈr'],
+    ss: ['sː'],
+    s: ['s', 'ˈs', 'z'],
+    tt: ['tː'],
+    t: ['t', 'ˈt'],
+    u: ['u', 'ˈu'],
+    ù: ['u', 'ˈu'],
+    vv: ['vː'],
+    v: ['v', 'ˈv']
+  };
 
+  // Match sequences like letter(ipa)
+  const regex = /([a-z]+)\(([^()]*)\)/gi;
+  let match;
+  
+  while ((match = regex.exec(mappedString)) !== null) {
+    const letters = match[1].toLowerCase();
+    const ipa = match[2];
+
+    // Letter sequence not allowed → return original
+    if (!allowedMappings[letters]) return originalWord;
+
+    // IPA empty or not in allowed values → return original
+    if (!ipa || !allowedMappings[letters].includes(ipa)) return originalWord;
+  }
+
+  // Everything valid → return mapped string
+  return mappedString;
+}
 
 
 function validateOrReturnOriginal(originalWord, mappedString) {
