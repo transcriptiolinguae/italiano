@@ -444,6 +444,7 @@ document.getElementById('convertInline').addEventListener('click', async () => {
       const newIpaRaw = await runESpeak(newMarked);
       const newIpaClean = newIpaRaw.replace(/\|/g, ' ').trim();
       const newIpaWords = newIpaClean.split(/\s+/);
+        const remainingWords = tokens
 
       // Rebuild ipaMap for remaining words
       for (let i = 0; i < remainingWords.length; i++) {
