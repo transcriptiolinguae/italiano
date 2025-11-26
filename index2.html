@@ -449,67 +449,6 @@ document.getElementById('convertInline').addEventListener('click', async () => {
 
 
 
-function validateOrReturnOriginal(originalWord, mappedString) {
-  const allowedMappings = {
-    a: ['a', 'ˈa'],    
-    bb: ['bː'],
-    b: ['b', 'ˈb'],
-    cci: ['tʃː'],
-    cch: ['kː'],
-    cc: ['tʃː'],    
-    ch: ['k'],
-    ci: ['tʃ'],
-    c: ['k', 'tʃ'],
-    dd: ['dː'],
-    d: ['d', 'ˈd'],
-    e: ['e', 'ˈe', 'ɛ', 'ˈɛ'],
-    ff: ['fː'],
-    f: ['f', 'ˈf'],
-    gh: ['g'],
-    gn: ['ɲ'],
-    g: ['g', 'ˈg'],
-    i: ['i', 'ˈi', 'j', 'ˈj'],
-    ll: ['lː'],
-    l: ['l', 'ˈl'],
-    mm: ['mː'],
-    m: ['m', 'ˈm'],
-    n: ['n'],
-    o: ['o', 'ˈo', 'ɔ', 'ˈɔ'],
-    pp: ['pː'],
-    p: ['p', 'ˈp'],
-    rr: ['rː'],
-    r: ['r', 'ˈr'],
-    ss: ['sː'],
-    s: ['s', 'ˈs', 'z'],
-    tt: ['tː'],
-    t: ['t', 'ˈt'],
-    u: ['u', 'ˈu'],
-    ù: ['u', 'ˈu'],
-    vv: ['vː'],
-    v: ['v', 'ˈv']
-  };
-
-  const regex = /([\p{L}]+)\(([^()]*)\)/gu;
-
-  let match;
-
-  while ((match = regex.exec(mappedString)) !== null) {
-    const letters = match[1].toLowerCase();
-    const ipa = match[2];
-    
-    // NEW: empty mapping
-    if (ipa.trim() === '') return originalWord;
-    
-    // letter sequence not in allowed list → return original
-    if (!allowedMappings[letters]) return originalWord;
-
-    // ipa value not allowed → return original
-    if (!allowedMappings[letters].includes(ipa)) return originalWord;
-  }
-
-  return mappedString;
-}
-
   // G2P button
 // G2P button
 document.getElementById('g2p').addEventListener('click', async () => {
