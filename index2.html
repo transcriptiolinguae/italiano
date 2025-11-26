@@ -364,9 +364,7 @@ document.getElementById('convert').addEventListener('click', async () => {
   }
 });
 
-
-
-  // Testo e AFI button
+// Testo e AFI button
 document.getElementById('convertInline').addEventListener('click', async () => {
   showProgressPlaceholder();
 
@@ -382,19 +380,14 @@ document.getElementById('convertInline').addEventListener('click', async () => {
   }
 
   try {
-    // Normalize curly apostrophes
-    const normalized = rawInput.replace(/[’‘]/g, "'");
-
-    // Split input into 500-character chunks
+    const normalized = normalizeCurlyApostrophes(rawInput);
     const chunks = splitTextByLength(normalized, 500);
     let finalResult = '';
-    let charIndex = 0;
 
     for (const chunk of chunks) {
-      // Tokenize the chunk into words, numbers, punctuation
       const tokens = chunk.match(/[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu);
       if (!tokens) {
-        finalResult += chunk; // fallback
+        finalResult += chunk;
         continue;
       }
 
@@ -405,10 +398,10 @@ document.getElementById('convertInline').addEventListener('click', async () => {
       const ipaClean = ipaRaw.replace(/\|/g, ' ').trim();
       const ipaWords = ipaClean.split(/\s+/);
 
-      // Build word → IPA map
       const ipaMap = new Map();
       for (let i = 0; i < wordTokens.length; i++) {
-        ipaMap.set(wordTokens[i], ipaWords[i] || '');
+        // If IPA mapping failed, default to original word
+        ipaMap.set(wordTokens[i], ipaWords[i] || wordTokens[i]);
       }
 
       // Reconstruct chunk with inline IPA
@@ -423,18 +416,12 @@ document.getElementById('convertInline').addEventListener('click', async () => {
         idx += token.length;
 
         if (/^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token)) {
-          const ipa = ipaMap.get(token) || '';
-          chunkResult += `${originalToken}${ipa ? ' (' + ipa + ')' : ''}`;
+          const ipa = ipaMap.get(token) || token; // fallback to original word
+          chunkResult += `${originalToken}${ipa !== token ? ' (' + ipa + ')' : ''}`;
         } else {
           chunkResult += originalToken;
         }
       }
-
-      // Maintain spacing with previous chunks
-      while (rawInput[charIndex] && /\s/.test(rawInput[charIndex])) {
-        chunkResult = rawInput[charIndex++] + chunkResult;
-      }
-      charIndex += chunk.length;
 
       finalResult += chunkResult;
     }
@@ -445,7 +432,6 @@ document.getElementById('convertInline').addEventListener('click', async () => {
     setOutput('Error during IPA conversion: ' + e.message);
   }
 });
-
 
 
 
