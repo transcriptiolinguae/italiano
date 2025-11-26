@@ -176,136 +176,181 @@
   <pre id="output" class="placeholder">Trascrizione</pre>
 
 <script type="module">
- import initESpeak from './espeak-ng.js';
+  import initESpeak from './espeak-ng.js';
 
-// Normalize curly apostrophes
+  // Normalize curly apostrophes to straight apostrophes
 function normalizeCurlyApostrophes(text) {
   return text.replace(/[’‘]/g, "'");
 }
+  
+  const outputElem = document.getElementById('output');
+  const inputElem = document.getElementById('input');
 
-const outputElem = document.getElementById('output');
-const inputElem = document.getElementById('input');
-let wasmReady = false;
+  let wasmReady = false;
 
-window.addEventListener('load', async () => {
-  try {
-    await initESpeak({ print: () => {}, printErr: () => {} });
-    wasmReady = true;
-    console.log('eSpeak NG WASM loaded and ready');
-  } catch (e) {
-    console.error('Error loading WASM:', e);
-    outputElem.classList.remove('placeholder');
-    outputElem.innerText = 'Error loading eSpeak WASM module.';
-  }
-});
-
-function printErrFiltered(err) {
-  if (err.includes('still waiting on run dependencies') || err.includes('dependency: wasm-instantiate') || err.includes('(end of list)')) return;
-  console.error('eSpeak stderr:', err);
-}
-
-async function runESpeak(text) {
-  let ipaOutput = '';
-  await initESpeak({
-    arguments: ['-v', 'it', '--ipa=3', text],
-    print: (text) => { ipaOutput += text; },
-    printErr: printErrFiltered
+  window.addEventListener('load', async () => {
+    try {
+      await initESpeak({
+        print: () => {},
+        printErr: () => {}
+      });
+      wasmReady = true;
+      console.log('eSpeak NG WASM loaded and ready');
+    } catch (e) {
+      console.error('Error loading WASM:', e);
+      outputElem.classList.remove('placeholder');
+      outputElem.innerText = 'Error loading eSpeak WASM module.';
+    }
   });
-  return ipaOutput
-    .replace(/[\u0300-\u036F\u200B-\u200D\uFEFF]/g, '')
-    .replace(/rɾ/g, 'rː')
-    .replace(/mm/g, 'mː')
-    .replace(/ff/g, 'fː')
-    .replace(/vv/g, 'vː')
-    .replace(/ll/g, 'lː')
-    .replace(/kk/g, 'kː')
-    .replace(/nn/g, 'nː')
-    .replace(/ɲɲ/g, 'ɲː')
-    .replace(/oo/g, 'oː')
-    .replace(/ss/g, 'sː')
-    .replace(/tt/g, 't')
-    .replace(/dd/g, 'd')
-    .replace(/ɾ/g, 'r')
-    .replace(/ɪ/g, 'i')
-    .replace(/ʊ/g, 'u')
-    .replace(/ɡ/g, 'g')
-    .trim();
-}
 
-function showPlaceholder() { outputElem.className = 'placeholder'; outputElem.innerText = 'Trascrizione'; }
-function showProgressPlaceholder() { outputElem.className = 'placeholder'; outputElem.innerText = 'Trascrizione in corso...'; }
-function setOutput(text) { outputElem.classList.remove('placeholder'); outputElem.innerText = text; }
+  function printErrFiltered(err) {
+    if (
+      err.includes('still waiting on run dependencies') ||
+      err.includes('dependency: wasm-instantiate') ||
+      err.includes('(end of list)')
+    ) {
+      return;
+    }
+    console.error('eSpeak stderr:', err);
+  }
 
+  async function runESpeak(text) {
+    let ipaOutput = '';
+    await initESpeak({
+      arguments: ['-v', 'it', '--ipa=3', text],
+      print: (text) => {
+        ipaOutput += text;
+      },
+      printErr: printErrFiltered
+    });
+
+    return ipaOutput
+      .replace(/[\u0300-\u036F\u200B-\u200D\uFEFF]/g, '') // <--- strip hidden chars
+      .replace(/rɾ/g, 'rː')
+      .replace(/mm/g, 'mː')
+      .replace(/ff/g, 'fː')
+      .replace(/vv/g, 'vː')
+      .replace(/ll/g, 'lː')
+      .replace(/kk/g, 'kː')
+      .replace(/nn/g, 'nː')
+      .replace(/ɲɲ/g, 'ɲː')
+      .replace(/oo/g, 'oː')      
+      .replace(/ss/g, 'sː')
+      .replace(/tt/g, 't')
+      .replace(/dd/g, 'd')
+      .replace(/ɾ/g, 'r')
+      .replace(/ɪ/g, 'i')
+      .replace(/ʊ/g, 'u')
+      .replace(/ɡ/g, 'g')
+      .trim();
+  }
+
+  function showPlaceholder() {
+    outputElem.className = 'placeholder';
+    outputElem.innerText = 'Trascrizione';
+  }
+
+  function showProgressPlaceholder() {
+    outputElem.className = 'placeholder';
+    outputElem.innerText = 'Trascrizione in corso...';
+  }
+
+  function setOutput(text) {
+    outputElem.classList.remove('placeholder');
+    outputElem.innerText = text;
+  }
+
+  // AFI button
+// ------------------------
+// AFI button + helper
+// ------------------------
+
+// Helper: Split text into manageable chunks (max 500 characters)
 function splitTextByLength(text, maxLength = 500) {
   const chunks = [];
   let start = 0;
   while (start < text.length) {
     let end = start + maxLength;
+
+    // Try not to cut off words in the middle
     if (end < text.length) {
       const lastSpace = text.lastIndexOf(' ', end);
-      if (lastSpace > start) end = lastSpace;
+      if (lastSpace > start) {
+        end = lastSpace;
+      }
     }
+
     chunks.push(text.slice(start, end));
     start = end;
   }
   return chunks;
 }
 
-// Validate mapping
-function validateOrReturnOriginal(originalWord, mappedString) {
-  const allowedMappings = {
-    a: ['a', 'ˈa'], bb: ['bː'], b: ['b', 'ˈb'], cci: ['tʃː'], cch: ['kː'], cc: ['tʃː'], ch: ['k'], ci: ['tʃ'],
-    c: ['k', 'tʃ'], dd: ['dː'], d: ['d', 'ˈd'], e: ['e', 'ˈe', 'ɛ', 'ˈɛ'], ff: ['fː'], f: ['f', 'ˈf'], gh: ['g'],
-    gn: ['ɲ'], g: ['g', 'ˈg', 'dʒ'], i: ['i', 'ˈi', 'j', 'ˈj'], ll: ['lː'], l: ['l', 'ˈl'], mm: ['mː'], m: ['m', 'ˈm'],
-    n: ['n'], o: ['o', 'ˈo', 'ɔ', 'ˈɔ'], pp: ['pː'], p: ['p', 'ˈp'], rr: ['rː'], r: ['r', 'ˈr'], ss: ['sː'], s: ['s', 'ˈs', 'z'],
-    tt: ['tː'], t: ['t', 'ˈt'], u: ['u', 'ˈu'], ù: ['u', 'ˈu'], vv: ['vː'], v: ['v', 'ˈv']
-  };
-  const regex = /([\p{L}]+)\(([^()]*)\)/gu;
-  let match;
-  while ((match = regex.exec(mappedString)) !== null) {
-    const letters = match[1].toLowerCase();
-    const ipa = match[2];
-    if (ipa.trim() === '' || !allowedMappings[letters] || !allowedMappings[letters].includes(ipa)) return originalWord;
-  }
-  return mappedString;
-}
-
-// ------------------------
-// AFI button
-// ------------------------
+// AFI button handler (preserves punctuation, numbers, and sentence structure)
 document.getElementById('convert').addEventListener('click', async () => {
   showProgressPlaceholder();
-  if (!wasmReady) { alert('Please wait, WASM is still loading...'); return; }
+
+  if (!wasmReady) {
+    alert('Please wait, WASM is still loading...');
+    return;
+  }
 
   const rawInput = inputElem.value.trim();
-  if (!rawInput) { showPlaceholder(); return; }
+  if (!rawInput) {
+    showPlaceholder();
+    return;
+  }
 
   try {
     const chunks = splitTextByLength(rawInput, 500);
     let finalResult = '';
 
     for (const chunk of chunks) {
-      const tokens = chunk.match(/[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu);
-      if (!tokens) { finalResult += chunk; continue; }
-
-      const wordTokens = tokens.filter(t => /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(t));
-      const markedInput = wordTokens.join('|');
-      let ipaRaw = await runESpeak(markedInput);
-      let ipaWords = ipaRaw.replace(/\|/g, ' ').trim().split(/\s+/);
-
-      // Validate IPA per word
-      const ipaMap = new Map();
-      for (let i = 0; i < wordTokens.length; i++) {
-        const validated = validateOrReturnOriginal(wordTokens[i], ipaWords[i] || '');
-        ipaMap.set(wordTokens[i], validated);
+      // Tokenize text into words, numbers, punctuation, etc.
+      const tokens = chunk.match(
+        /[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
+      );
+      if (!tokens) {
+        finalResult += chunk;
+        continue;
       }
 
-      // Rebuild chunk
+      // Get only the actual words for eSpeak
+      const wordTokens = tokens.filter(t =>
+        /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(t)
+      );
+
+      // Send all words to eSpeak at once, separated by "|"
+      const markedInput = wordTokens.join('|');
+      const ipaRaw = await runESpeak(markedInput);
+      const ipaClean = ipaRaw.replace(/\|/g, ' ').trim();
+      const ipaWords = ipaClean.split(/\s+/);
+
+      // Map each word → IPA result
+      const ipaMap = new Map();
+      for (let i = 0; i < wordTokens.length; i++) {
+        ipaMap.set(wordTokens[i], ipaWords[i] || '');
+      }
+
+      // Rebuild the original text, replacing words with their IPA equivalents
       let reconstructed = '';
       let charIndex = 0;
+
       for (const token of tokens) {
-        while (chunk[charIndex] && /\s/.test(chunk[charIndex])) { reconstructed += chunk[charIndex++]; }
-        reconstructed += /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token) ? ipaMap.get(token) : token;
+        // Preserve all spaces exactly as they appear
+        while (chunk[charIndex] && /\s/.test(chunk[charIndex])) {
+          reconstructed += chunk[charIndex++];
+        }
+
+        const isWord = /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token);
+        if (isWord) {
+          // Replace with IPA if available
+          reconstructed += ipaMap.get(token) || token;
+        } else {
+          // Leave punctuation, numbers, symbols untouched
+          reconstructed += token;
+        }
+
         charIndex += token.length;
       }
 
@@ -319,47 +364,85 @@ document.getElementById('convert').addEventListener('click', async () => {
   }
 });
 
-// ------------------------
-// Testo e AFI button
-// ------------------------
+
+
+  // Testo e AFI button
 document.getElementById('convertInline').addEventListener('click', async () => {
   showProgressPlaceholder();
-  if (!wasmReady) { alert('Please wait, WASM is still loading...'); return; }
 
-  const rawInput = normalizeCurlyApostrophes(inputElem.value.trim());
-  if (!rawInput) { showPlaceholder(); return; }
+  if (!wasmReady) {
+    alert('Please wait, WASM is still loading...');
+    return;
+  }
+
+  const rawInput = inputElem.value.trim();
+  if (!rawInput) {
+    showPlaceholder();
+    return;
+  }
 
   try {
-    const chunks = splitTextByLength(rawInput, 500);
+    // Normalize curly apostrophes
+    const normalized = rawInput.replace(/[’‘]/g, "'");
+
+    // Split input into 500-character chunks
+    const chunks = splitTextByLength(normalized, 500);
     let finalResult = '';
     let charIndex = 0;
 
     for (const chunk of chunks) {
+      // Tokenize the chunk into words, numbers, punctuation
       const tokens = chunk.match(/[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu);
-      if (!tokens) { finalResult += chunk; continue; }
+      if (!tokens) {
+        finalResult += chunk; // fallback
+        continue;
+      }
 
       const wordTokens = tokens.filter(t => /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(t));
       const markedInput = wordTokens.join('|');
-      let ipaRaw = await runESpeak(markedInput);
-      let ipaWords = ipaRaw.replace(/\|/g, ' ').trim().split(/\s+/);
 
+      const ipaRaw = await runESpeak(markedInput);
+      const ipaClean = ipaRaw.replace(/\|/g, ' ').trim();
+      const ipaWords = ipaClean.split(/\s+/);
+
+      // Build word → IPA map
       const ipaMap = new Map();
       for (let i = 0; i < wordTokens.length; i++) {
-        const validated = validateOrReturnOriginal(wordTokens[i], ipaWords[i] || '');
-        ipaMap.set(wordTokens[i], validated);
+        ipaMap.set(wordTokens[i], ipaWords[i] || '');
       }
 
+      // Reconstruct chunk with inline IPA
       let chunkResult = '';
       let idx = 0;
       for (const token of tokens) {
-        while (chunk[idx] && /\s/.test(chunk[idx])) { chunkResult += chunk[idx++]; }
+        while (chunk[idx] && /\s/.test(chunk[idx])) {
+          chunkResult += chunk[idx++];
+        }
+
         const originalToken = chunk.slice(idx, idx + token.length);
         idx += token.length;
-        if (/^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token)) {
-          const ipa = ipaMap.get(token) || '';
-          chunkResult += `${originalToken}${ipa ? ' (' + ipa + ')' : ''}`;
-        } else { chunkResult += originalToken; }
+
+   if (/^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token)) {
+  const ipa = ipaMap.get(token) || '';
+  
+  // Build preliminary inline mapping
+  let mapped = originalToken + (ipa ? `(${ipa})` : '');
+
+  // Validate mapping; if invalid, fallback to original word
+  mapped = validateOrReturnOriginal(originalToken, mapped);
+
+  chunkResult += mapped;
+} else {
+  chunkResult += originalToken;
+}
+
       }
+
+      // Maintain spacing with previous chunks
+      while (rawInput[charIndex] && /\s/.test(rawInput[charIndex])) {
+        chunkResult = rawInput[charIndex++] + chunkResult;
+      }
+      charIndex += chunk.length;
 
       finalResult += chunkResult;
     }
@@ -370,6 +453,70 @@ document.getElementById('convertInline').addEventListener('click', async () => {
     setOutput('Error during IPA conversion: ' + e.message);
   }
 });
+
+
+
+
+function validateOrReturnOriginal(originalWord, mappedString) {
+  const allowedMappings = {
+    a: ['a', 'ˈa'],    
+    bb: ['bː'],
+    b: ['b', 'ˈb'],
+    cci: ['tʃː'],
+    cch: ['kː'],
+    cc: ['tʃː'],    
+    ch: ['k'],
+    ci: ['tʃ'],
+    c: ['k', 'tʃ'],
+    dd: ['dː'],
+    d: ['d', 'ˈd'],
+    e: ['e', 'ˈe', 'ɛ', 'ˈɛ'],
+    ff: ['fː'],
+    f: ['f', 'ˈf'],
+    gh: ['g'],
+    gn: ['ɲ'],
+    g: ['g', 'ˈg', 'dʒ'],
+    i: ['i', 'ˈi', 'j', 'ˈj'],
+    ll: ['lː'],
+    l: ['l', 'ˈl'],
+    mm: ['mː'],
+    m: ['m', 'ˈm'],
+    n: ['n'],
+    o: ['o', 'ˈo', 'ɔ', 'ˈɔ'],
+    pp: ['pː'],
+    p: ['p', 'ˈp'],
+    rr: ['rː'],
+    r: ['r', 'ˈr'],
+    ss: ['sː'],
+    s: ['s', 'ˈs', 'z'],
+    tt: ['tː'],
+    t: ['t', 'ˈt'],
+    u: ['u', 'ˈu'],
+    ù: ['u', 'ˈu'],
+    vv: ['vː'],
+    v: ['v', 'ˈv']
+  };
+
+  const regex = /([\p{L}]+)\(([^()]*)\)/gu;
+
+  let match;
+
+  while ((match = regex.exec(mappedString)) !== null) {
+    const letters = match[1].toLowerCase();
+    const ipa = match[2];
+    
+    // NEW: empty mapping
+    if (ipa.trim() === '') return originalWord;
+    
+    // letter sequence not in allowed list → return original
+    if (!allowedMappings[letters]) return originalWord;
+
+    // ipa value not allowed → return original
+    if (!allowedMappings[letters].includes(ipa)) return originalWord;
+  }
+
+  return mappedString;
+}
 
   // G2P button
 // G2P button
