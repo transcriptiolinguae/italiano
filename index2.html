@@ -366,27 +366,26 @@ document.getElementById('convert').addEventListener('click', async () => {
 
 
 
-// Testo e AFI button — FULL UPDATED FUNCTION
-document.getElementById('convertInline').addEventListener('click', async () => {
+// =====================
+// AFI + TEXT (WORKING VERSION)
+// =====================
+document.getElementById("convertInline").addEventListener("click", async () => {
   showProgressPlaceholder();
 
   if (!wasmReady) {
-    alert('Please wait, WASM is still loading...');
+    alert("Please wait, WASM is still loading...");
     return;
   }
 
-  const rawInput = inputElem.value.trim();
+  const rawInput = normalizeCurlyApostrophes(inputElem.value.trim());
   if (!rawInput) {
     showPlaceholder();
     return;
   }
 
   try {
-    const normalized = normalizeCurlyApostrophes(rawInput);
-    const chunks = splitTextByLength(normalized, 500);
-
-    let finalResult = '';
-    let globalIndex = 0;
+    const chunks = splitTextByLength(rawInput, 500);
+    let finalResult = "";
 
     for (const chunk of chunks) {
       const tokens = chunk.match(
@@ -398,98 +397,101 @@ document.getElementById('convertInline').addEventListener('click', async () => {
         continue;
       }
 
-      // Collect unique words
-      const wordTokens = [...new Set(
+      // Unique words for batch IPA
+      const uniqueWords = [...new Set(
         tokens.filter(t =>
           /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(t)
         )
       )];
 
-      // Run eSpeak on all words
-      const markedInput = wordTokens.join('|');
-      const ipaRaw = await runESpeak(markedInput);
-      const ipaClean = ipaRaw.replace(/\|/g, ' ').trim();
-      const ipaWords = ipaClean.split(/\s+/);
+      // First eSpeak pass
+      let ipaMap = await batchEspeakToMap(uniqueWords);
 
-      const ipaMap = new Map();
-      for (let i = 0; i < wordTokens.length; i++) {
-        ipaMap.set(wordTokens[i], ipaWords[i] || '');
-      }
-
-      // --- START RECONSTRUCTION ---
-      let chunkResult = '';
-      let idx = 0;
+      let resultTokens = [];
 
       for (let t = 0; t < tokens.length; t++) {
         const token = tokens[t];
-
-        // Preserve whitespace exactly
-        while (chunk[idx] && /\s/.test(chunk[idx])) {
-          chunkResult += chunk[idx++];
-        }
-
-        const originalToken = chunk.slice(idx, idx + token.length);
-        idx += token.length;
-
         const isWord = /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token);
+
         if (!isWord) {
-          chunkResult += originalToken;
+          resultTokens.push(token);
           continue;
         }
 
-        // GET IPA
-        let ipa = ipaMap.get(token) || '';
+        let ipa = ipaMap.get(token) || "";
+        let mapped = token + (ipa ? `(${ipa})` : "");
 
-        // Create inline mapping
-        let mapped = originalToken + (ipa ? `(${ipa})` : '');
-        let validated = validateOrReturnOriginal(originalToken, mapped);
+        // Validate mapping
+        let validated = validateOrReturnOriginal(token, mapped);
 
-        let mappingFailed = (validated === originalToken);
+        let mappingFailed = (validated === token);
 
-        // If mapping failed → re-run eSpeak on remaining words
         if (mappingFailed) {
-          console.warn(`AFI+Testo: IPA failed for "${token}", re-running eSpeak...`);
+          console.warn(`AFI+TESTO: Failed mapping for "${token}" → rerunning eSpeak`);
 
+          // Re-run eSpeak on remaining words
           const remainingWords = tokens
             .slice(t)
-            .filter(tt => /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(tt));
+            .filter(tt =>
+              /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(tt)
+            );
 
-          if (remainingWords.length > 0) {
-            const newMarked = remainingWords.join('|');
-            const newIpaRaw = await runESpeak(newMarked);
-            const newIpaClean = newIpaRaw.replace(/\|/g, ' ').trim();
-            const newIpaWords = newIpaClean.split(/\s+/);
+          const newMap = await batchEspeakToMap(remainingWords);
 
-            // update ipaMap
-            for (let i = 0; i < remainingWords.length; i++) {
-              ipaMap.set(remainingWords[i], newIpaWords[i] || '');
-            }
+          // Update IPA map
+          for (const w of remainingWords) {
+            ipaMap.set(w, newMap.get(w) || "");
           }
 
-          // Use original token for this word
-          chunkResult += originalToken;
-          continue;
+          // Retry the current one
+          ipa = ipaMap.get(token) || "";
+          mapped = token + (ipa ? `(${ipa})` : "");
+          validated = validateOrReturnOriginal(token, mapped);
         }
 
-        // Mapping OK
-        chunkResult += validated;
+        resultTokens.push(validated);
       }
 
-      // Preserve inter-chunk spaces
-      while (rawInput[globalIndex] && /\s/.test(rawInput[globalIndex])) {
-        finalResult += rawInput[globalIndex++];
-      }
-      globalIndex += chunk.length;
+      // Rebuild chunk preserving spaces
+      let reconstructed = "";
+      let idx = 0;
+      let r = 0;
 
-      finalResult += chunkResult;
+      for (const token of tokens) {
+        while (chunk[idx] && /\s/.test(chunk[idx])) {
+          reconstructed += chunk[idx++];
+        }
+        reconstructed += resultTokens[r++];
+        idx += token.length;
+      }
+
+      finalResult += reconstructed;
     }
 
     setOutput(finalResult);
   } catch (e) {
-    console.error('Error during IPA conversion:', e);
-    setOutput('Error during IPA conversion: ' + e.message);
+    console.error("Error in AFI+Testo:", e);
+    setOutput("Error in AFI+Testo: " + e.message);
   }
 });
+
+
+// Helper: run eSpeak on many words at once and return a Map(word → IPA)
+async function batchEspeakToMap(wordList) {
+  if (wordList.length === 0) return new Map();
+
+  const marked = wordList.join("|");
+  const raw = await runESpeak(marked);
+  const clean = raw.replace(/\|/g, " ").trim();
+  const ipaList = clean.split(/\s+/);
+
+  const map = new Map();
+  for (let i = 0; i < wordList.length; i++) {
+    map.set(wordList[i], ipaList[i] || "");
+  }
+  return map;
+}
+
 
 
 
