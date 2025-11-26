@@ -434,9 +434,7 @@ document.getElementById('convertInline').addEventListener('click', async () => {
           continue;
         }
 
-        let ipa = ipaMap.get(token) || '';
-        let inlineVersion = `${token} (${ipa})`;
-
+  let validated = validateWholeWordIPA(token, ipa);
         // Validate IPA using your rules
         let validated = validateOrReturnOriginal(token, inlineVersion);
 
