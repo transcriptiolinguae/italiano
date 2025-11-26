@@ -366,7 +366,7 @@ document.getElementById('convert').addEventListener('click', async () => {
 
 
 
-  // Testo e AFI button
+// Testo e AFI button — FULL UPDATED FUNCTION
 document.getElementById('convertInline').addEventListener('click', async () => {
   showProgressPlaceholder();
 
@@ -382,39 +382,48 @@ document.getElementById('convertInline').addEventListener('click', async () => {
   }
 
   try {
-    // Normalize curly apostrophes
-    const normalized = rawInput.replace(/[’‘]/g, "'");
-
-    // Split input into 500-character chunks
+    const normalized = normalizeCurlyApostrophes(rawInput);
     const chunks = splitTextByLength(normalized, 500);
+
     let finalResult = '';
-    let charIndex = 0;
+    let globalIndex = 0;
 
     for (const chunk of chunks) {
-      // Tokenize the chunk into words, numbers, punctuation
-      const tokens = chunk.match(/[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu);
+      const tokens = chunk.match(
+        /[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
+      );
+
       if (!tokens) {
-        finalResult += chunk; // fallback
+        finalResult += chunk;
         continue;
       }
 
-      const wordTokens = tokens.filter(t => /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(t));
-      const markedInput = wordTokens.join('|');
+      // Collect unique words
+      const wordTokens = [...new Set(
+        tokens.filter(t =>
+          /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(t)
+        )
+      )];
 
+      // Run eSpeak on all words
+      const markedInput = wordTokens.join('|');
       const ipaRaw = await runESpeak(markedInput);
       const ipaClean = ipaRaw.replace(/\|/g, ' ').trim();
       const ipaWords = ipaClean.split(/\s+/);
 
-      // Build word → IPA map
       const ipaMap = new Map();
       for (let i = 0; i < wordTokens.length; i++) {
         ipaMap.set(wordTokens[i], ipaWords[i] || '');
       }
 
-      // Reconstruct chunk with inline IPA
+      // --- START RECONSTRUCTION ---
       let chunkResult = '';
       let idx = 0;
-      for (const token of tokens) {
+
+      for (let t = 0; t < tokens.length; t++) {
+        const token = tokens[t];
+
+        // Preserve whitespace exactly
         while (chunk[idx] && /\s/.test(chunk[idx])) {
           chunkResult += chunk[idx++];
         }
@@ -422,61 +431,55 @@ document.getElementById('convertInline').addEventListener('click', async () => {
         const originalToken = chunk.slice(idx, idx + token.length);
         idx += token.length;
 
-       if (/^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token)) {
-const ipa = ipaMap.get(token) || '';
+        const isWord = /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token);
+        if (!isWord) {
+          chunkResult += originalToken;
+          continue;
+        }
 
-// If IPA empty → treat as failed mapping
-let mappingFailed = !ipa;
+        // GET IPA
+        let ipa = ipaMap.get(token) || '';
 
-// Build initial mapping
-let mapped = originalToken + (ipa ? `(${ipa})` : '');
+        // Create inline mapping
+        let mapped = originalToken + (ipa ? `(${ipa})` : '');
+        let validated = validateOrReturnOriginal(originalToken, mapped);
 
-// Validate mapping
-const validated = validateOrReturnOriginal(originalToken, mapped);
+        let mappingFailed = (validated === originalToken);
 
-// If validation returned the original word → mapping failed
-if (validated === originalToken) {
-  mappingFailed = true;
-}
+        // If mapping failed → re-run eSpeak on remaining words
+        if (mappingFailed) {
+          console.warn(`AFI+Testo: IPA failed for "${token}", re-running eSpeak...`);
 
-// If mapping failed → re-run espeak on remaining words
-if (mappingFailed) {
-  console.warn(`Inline AFI: mapping failed for "${token}", re-running eSpeak...`);
+          const remainingWords = tokens
+            .slice(t)
+            .filter(tt => /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(tt));
 
-  // Gather remaining words
-  const remainingWords = tokens
-    .slice(tokens.indexOf(token))
-    .filter(tt => /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(tt));
+          if (remainingWords.length > 0) {
+            const newMarked = remainingWords.join('|');
+            const newIpaRaw = await runESpeak(newMarked);
+            const newIpaClean = newIpaRaw.replace(/\|/g, ' ').trim();
+            const newIpaWords = newIpaClean.split(/\s+/);
 
-  if (remainingWords.length > 0) {
-    const newMarked = remainingWords.join('|');
-    const newIpaRaw = await runESpeak(newMarked);
-    const newIpaClean = newIpaRaw.replace(/\|/g, ' ').trim();
-    const newIpaWords = newIpaClean.split(/\s+/);
+            // update ipaMap
+            for (let i = 0; i < remainingWords.length; i++) {
+              ipaMap.set(remainingWords[i], newIpaWords[i] || '');
+            }
+          }
 
-    // update ipaMap
-    for (let i = 0; i < remainingWords.length; i++) {
-      ipaMap.set(remainingWords[i], newIpaWords[i] || '');
-    }
-  }
+          // Use original token for this word
+          chunkResult += originalToken;
+          continue;
+        }
 
-  // Use original word for this token, keep going
-  chunkResult += originalToken;
-  continue;
-}
-
-// Mapping OK → use validated version
-chunkResult += validated;
-} else {
-  chunkResult += originalToken;
-}
-
-
-      // Maintain spacing with previous chunks
-      while (rawInput[charIndex] && /\s/.test(rawInput[charIndex])) {
-        chunkResult = rawInput[charIndex++] + chunkResult;
+        // Mapping OK
+        chunkResult += validated;
       }
-      charIndex += chunk.length;
+
+      // Preserve inter-chunk spaces
+      while (rawInput[globalIndex] && /\s/.test(rawInput[globalIndex])) {
+        finalResult += rawInput[globalIndex++];
+      }
+      globalIndex += chunk.length;
 
       finalResult += chunkResult;
     }
