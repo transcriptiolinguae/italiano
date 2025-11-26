@@ -396,7 +396,9 @@ document.getElementById('convertInline').addEventListener('click', async () => {
         continue;
       }
 
-      // UNIQUE WORDS FOR BATCH IPA
+      // -----------------------------------------------------
+      // Collect UNIQUE words for batch IPA generation
+      // -----------------------------------------------------
       const uniqueWords = [...new Set(
         tokens.filter(t =>
           /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(t)
@@ -404,6 +406,7 @@ document.getElementById('convertInline').addEventListener('click', async () => {
       )];
 
       let ipaMap = new Map();
+
       async function populateIPA(words) {
         if (words.length === 0) return;
         const marked = words.join('|');
@@ -414,58 +417,60 @@ document.getElementById('convertInline').addEventListener('click', async () => {
         }
       }
 
-      // First batch
+      // Initial batch import
       await populateIPA(uniqueWords);
 
       const outTokens = [];
 
+      // -----------------------------------------------------
+      // Process each token
+      // -----------------------------------------------------
       for (let t = 0; t < tokens.length; t++) {
         const token = tokens[t];
 
-        // If not a word → keep as-is
+        // Not a word → keep as-is
         if (!/^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token)) {
           outTokens.push(token);
           continue;
         }
 
         let ipa = ipaMap.get(token) || '';
+        let inlineVersion = `${token} (${ipa})`;
 
-        // ================================
-        // VALIDATE IPA (same rules as G2P)
-        // ================================
-        let inline = `${token} (${ipa})`;
-        let validated = validateOrReturnOriginal(token, inline);
+        // Validate IPA using your rules
+        let validated = validateOrReturnOriginal(token, inlineVersion);
 
         if (validated === token) {
-          // ❌ IPA invalid → keep original word
+          // ❌ IPA INVALID → keep original word
           outTokens.push(token);
 
-          // 🔥 Re-run eSpeak starting from THIS token
+          // 🔥 Re-run eSpeak from THIS word onward
           const remainingWords = tokens
             .slice(t)
             .filter(tt =>
               /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(tt)
             );
 
-          await populateIPA(remainingWords); // refresh IPA map
+          await populateIPA(remainingWords); // refresh IPA for remaining words
           continue;
         }
 
-        // IPA OK → include
+        // IPA OK
         outTokens.push(validated);
       }
 
-      // Rebuild while preserving original spaces
+      // -----------------------------------------------------
+      // Rebuild chunk preserving spacing exactly
+      // -----------------------------------------------------
       let reconstructed = '';
       let idx = 0;
-
-      outTokensIndex = 0;
+      let outIdx = 0;
 
       for (const token of tokens) {
         while (chunk[idx] && /\s/.test(chunk[idx])) {
           reconstructed += chunk[idx++];
         }
-        reconstructed += outTokens.shift();
+        reconstructed += outTokens[outIdx++];
         idx += token.length;
       }
 
@@ -473,12 +478,12 @@ document.getElementById('convertInline').addEventListener('click', async () => {
     }
 
     setOutput(finalResult.trim());
+
   } catch (e) {
     console.error('Error in Testo e AFI:', e);
     setOutput('Error in Testo e AFI: ' + e.message);
   }
 });
-
 
 
 
