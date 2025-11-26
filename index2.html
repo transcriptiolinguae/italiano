@@ -365,9 +365,8 @@ document.getElementById('convert').addEventListener('click', async () => {
 });
 
 
-// ===========================
-// Testo e AFI button (FINAL FIXED VERSION)
-// ===========================
+
+  // Testo e AFI button
 document.getElementById('convertInline').addEventListener('click', async () => {
   showProgressPlaceholder();
 
@@ -376,128 +375,77 @@ document.getElementById('convertInline').addEventListener('click', async () => {
     return;
   }
 
-  const rawInput = normalizeCurlyApostrophes(inputElem.value.trim());
+  const rawInput = inputElem.value.trim();
   if (!rawInput) {
     showPlaceholder();
     return;
   }
 
   try {
-    const chunks = splitTextByLength(rawInput, 500);
+    // Normalize curly apostrophes
+    const normalized = rawInput.replace(/[’‘]/g, "'");
+
+    // Split input into 500-character chunks
+    const chunks = splitTextByLength(normalized, 500);
     let finalResult = '';
+    let charIndex = 0;
 
     for (const chunk of chunks) {
-      const tokens = chunk.match(
-        /[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
-      );
-
+      // Tokenize the chunk into words, numbers, punctuation
+      const tokens = chunk.match(/[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu);
       if (!tokens) {
-        finalResult += chunk;
+        finalResult += chunk; // fallback
         continue;
       }
 
-      // -----------------------------------------------------
-      // Collect UNIQUE WORDS for batch IPA generation
-      // -----------------------------------------------------
-      const uniqueWords = [...new Set(
-        tokens.filter(t =>
-          /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(t)
-        )
-      )];
+      const wordTokens = tokens.filter(t => /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(t));
+      const markedInput = wordTokens.join('|');
 
-      let ipaMap = new Map();
+      const ipaRaw = await runESpeak(markedInput);
+      const ipaClean = ipaRaw.replace(/\|/g, ' ').trim();
+      const ipaWords = ipaClean.split(/\s+/);
 
-      // -----------------------------------------------------
-      // Helper: populate IPA map
-      // -----------------------------------------------------
-      async function populateIPA(words) {
-        if (!words.length) return;
-
-        const marked = words.join("|");
-        const ipaRaw = await runESpeak(marked);
-        const ipaList = ipaRaw.replace(/\|/g, " ").trim().split(/\s+/);
-
-        for (let i = 0; i < words.length; i++) {
-          ipaMap.set(words[i], ipaList[i] || "");
-        }
+      // Build word → IPA map
+      const ipaMap = new Map();
+      for (let i = 0; i < wordTokens.length; i++) {
+        ipaMap.set(wordTokens[i], ipaWords[i] || '');
       }
 
-      // Initial IPA fetch
-      await populateIPA(uniqueWords);
-
-      const outTokens = [];
-
-      // -----------------------------------------------------
-      // Whole-word IPA validator for Testo+AFI
-      // -----------------------------------------------------
-      function validateWholeWordIPA(originalWord, ipa) {
-        const allowedIPA = /^[a-zɲʎʃʒʦʣŋˈˌːɔɛaieuo]+$/i;
-
-        if (!ipa || ipa.trim() === "") return originalWord;
-        if (!allowedIPA.test(ipa.replace(/\s+/g, ""))) return originalWord;
-
-        return `${originalWord} (${ipa})`;
-      }
-
-      // -----------------------------------------------------
-      // Process all tokens
-      // -----------------------------------------------------
-      for (let t = 0; t < tokens.length; t++) {
-        const token = tokens[t];
-
-        const isWord = /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token);
-        if (!isWord) {
-          outTokens.push(token);
-          continue;
-        }
-
-        let ipa = ipaMap.get(token) || "";
-
-        // Validate whole-word IPA
-        let validated = validateWholeWordIPA(token, ipa);
-
-        if (validated === token) {
-          // ❌ IPA invalid → keep original word
-          outTokens.push(token);
-
-          // 🔥 Re-run IPA for remaining words
-          const remainingWords = tokens
-            .slice(t)
-            .filter(tt => /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(tt));
-
-          await populateIPA(remainingWords);
-          continue;
-        }
-
-        // IPA OK
-        outTokens.push(validated);
-      }
-
-      // -----------------------------------------------------
-      // Rebuild chunk with spacing preserved
-      // -----------------------------------------------------
-      let reconstructed = "";
+      // Reconstruct chunk with inline IPA
+      let chunkResult = '';
       let idx = 0;
-      let outIdx = 0;
-
       for (const token of tokens) {
         while (chunk[idx] && /\s/.test(chunk[idx])) {
-          reconstructed += chunk[idx++];
+          chunkResult += chunk[idx++];
         }
 
-        reconstructed += outTokens[outIdx++];
+        const originalToken = chunk.slice(idx, idx + token.length);
         idx += token.length;
+
+        if (/^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token)) {
+          const ipa = ipaMap.get(token) || '';
+          chunkResult += `${originalToken}${ipa ? ' (' + ipa + ')' : ''}`;
+        } else {
+          chunkResult += originalToken;
+        }
       }
 
-      finalResult += reconstructed;
+      // Maintain spacing with previous chunks
+      while (rawInput[charIndex] && /\s/.test(rawInput[charIndex])) {
+        chunkResult = rawInput[charIndex++] + chunkResult;
+      }
+      charIndex += chunk.length;
+
+      finalResult += chunkResult;
     }
 
-    setOutput(finalResult.trim());
+    setOutput(finalResult);
   } catch (e) {
-    console.error("Error in Testo e AFI:", e);
-    setOutput("Error in Testo e AFI: " + e.message);
+    console.error('Error during IPA conversion:', e);
+    setOutput('Error during IPA conversion: ' + e.message);
   }
 });
+
 
 
 
