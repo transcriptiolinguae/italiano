@@ -373,15 +373,14 @@ document.getElementById('convertInline').addEventListener('click', async () => {
     return;
   }
 
-  const rawInput = inputElem.value.trim();
+  const rawInput = normalizeCurlyApostrophes(inputElem.value.trim());
   if (!rawInput) {
     showPlaceholder();
     return;
   }
 
   try {
-    const normalized = normalizeCurlyApostrophes(rawInput);
-    const chunks = splitTextByLength(normalized, 500);
+    const chunks = splitTextByLength(rawInput, 500);
     let finalResult = '';
 
     for (const chunk of chunks) {
@@ -398,13 +397,13 @@ document.getElementById('convertInline').addEventListener('click', async () => {
       const ipaClean = ipaRaw.replace(/\|/g, ' ').trim();
       const ipaWords = ipaClean.split(/\s+/);
 
+      // Build word → IPA map
       const ipaMap = new Map();
       for (let i = 0; i < wordTokens.length; i++) {
-        // If IPA mapping failed, default to original word
-        ipaMap.set(wordTokens[i], ipaWords[i] || wordTokens[i]);
+        ipaMap.set(wordTokens[i], ipaWords[i] || '');
       }
 
-      // Reconstruct chunk with inline IPA
+      // Reconstruct chunk with inline IPA **with validation**
       let chunkResult = '';
       let idx = 0;
       for (const token of tokens) {
@@ -416,8 +415,10 @@ document.getElementById('convertInline').addEventListener('click', async () => {
         idx += token.length;
 
         if (/^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token)) {
-          const ipa = ipaMap.get(token) || token; // fallback to original word
-          chunkResult += `${originalToken}${ipa !== token ? ' (' + ipa + ')' : ''}`;
+          let mapped = applyG2PMapping(token, ipaMap.get(token) || '');
+          // Validate the mapping
+          mapped = mapped ? validateOrReturnOriginal(token, mapped) : token;
+          chunkResult += mapped;
         } else {
           chunkResult += originalToken;
         }
@@ -432,6 +433,7 @@ document.getElementById('convertInline').addEventListener('click', async () => {
     setOutput('Error during IPA conversion: ' + e.message);
   }
 });
+
 
 
 
