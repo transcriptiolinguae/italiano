@@ -576,23 +576,23 @@ for (let t = 0; t < tokens.length; t++) {
 
 // If mapping failed or incomplete — keep original
 if (mapped === null) {
-  console.warn(`G2P mapping failed for "${token}", recalculating from next word...`);
-    // Get remaining tokens after this one
-    const remainingWords = tokens
-      .slice(t)
-      .filter(tt => /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(tt));
+console.warn(`G2P mapping failed for "${token}"`);
+    
+    // Re-run eSpeak only for remaining words
+    const remainingWords = tokens.slice(t).filter(isWord => ...);
+    const newMarked = remainingWords.join('|');
+    const newIpaRaw = await runESpeak(newMarked);
+    const newIpaWords = newIpaRaw.replace(/\|/g, ' ').trim().split(/\s+/);
 
-    if (remainingWords.length > 0) {
-      // Re-run eSpeak on the remaining portion only
-      const newMarked = remainingWords.join('|');
-      const newIpaRaw = await runESpeak(newMarked);
-      const newIpaClean = newIpaRaw.replace(/\|/g, ' ').trim();
-      const newIpaWords = newIpaClean.split(/\s+/);
-
-      // Rebuild ipaMap for remaining words
-      for (let i = 0; i < remainingWords.length; i++) {
+    // Rebuild ipaMap for remaining words
+    for (let i = 0; i < remainingWords.length; i++) {
         ipaMap.set(remainingWords[i], newIpaWords[i] || '');
-      }
+    }
+
+    // Reset ipaIndex and other states
+    // Optionally, re-run applyG2PMapping for the failed word
+    mapped = applyG2PMapping(token, newIpaWords[0]);
+}
     }
 
     // Skip this token (unmapped)
