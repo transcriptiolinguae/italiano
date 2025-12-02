@@ -761,7 +761,7 @@ async function computeIPAMap(words) {
 
 
 
-// NEW BUTTON: Frase per frase (sentence by sentence)
+// Add new button: Frase per frase
 document.getElementById("frasePerFrase").addEventListener("click", async () => {
   showProgressPlaceholder();
 
@@ -777,7 +777,7 @@ document.getElementById("frasePerFrase").addEventListener("click", async () => {
   }
 
   try {
-    // Split into sentences
+    // Split input into sentences
     const sentences = rawInput.match(/[^.!?]+[.!?]+|[^.!?]+$/g);
     if (!sentences) {
       setOutput(rawInput);
@@ -790,7 +790,7 @@ document.getElementById("frasePerFrase").addEventListener("click", async () => {
       const cleanSentence = sentence.trim();
       if (!cleanSentence) continue;
 
-      // Tokenize sentence
+      // Tokenize sentence into words and punctuation
       const tokens = cleanSentence.match(
         /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
       );
@@ -800,13 +800,13 @@ document.getElementById("frasePerFrase").addEventListener("click", async () => {
         continue;
       }
 
-      // Extract unique words
+      // Extract unique words for IPA generation
       const wordTokens = tokens.filter(t =>
         /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
       );
       const uniqueWords = [...new Set(wordTokens)];
 
-      // Run eSpeak to get IPA
+      // Run eSpeak on unique words
       const ipaRaw = await runESpeak(uniqueWords.join("|"));
       const ipaClean = ipaRaw.replace(/\|/g, " ").trim();
       const ipaWords = ipaClean.split(/\s+/);
@@ -817,37 +817,24 @@ document.getElementById("frasePerFrase").addEventListener("click", async () => {
         ipaMap.set(uniqueWords[i], ipaWords[i] || "");
       }
 
-      // Map each word using G2P AFI logic
-      const g2pSentenceTokens = [];
-      for (const token of tokens) {
+      // Apply G2P AFI mapping to words
+      const mappedTokens = tokens.map(token => {
         const isWord = /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);
-        if (!isWord) {
-          g2pSentenceTokens.push(token);
-          continue;
-        }
+        if (!isWord) return token;
 
         const ipa = ipaMap.get(token) || "";
         let mapped = applyG2PMapping(token, ipa);
-
         if (mapped === null) mapped = token;
         mapped = validateOrReturnOriginal(token, mapped);
 
-        g2pSentenceTokens.push(mapped);
-      }
+        return mapped;
+      });
 
-      // Reconstruct sentence preserving spaces
-      let reconstructed = "";
-      let idx = 0;
-      for (const token of tokens) {
-        while (cleanSentence[idx] && /\s/.test(cleanSentence[idx])) {
-          reconstructed += cleanSentence[idx++];
-        }
-        reconstructed += g2pSentenceTokens.shift();
-        idx += token.length;
-      }
+      // Join mapped tokens into sentence-level IPA string
+      const sentenceIPA = mappedTokens.join("").trim();
 
-      // Output: original sentence + parentheses containing G2P AFI mapping
-      finalOutput += `${cleanSentence} (${reconstructed})\n`;
+      // Output: original sentence + parentheses with G2P-AFI IPA
+      finalOutput += `${cleanSentence} (${sentenceIPA})\n`;
     }
 
     setOutput(finalOutput.trim());
@@ -856,6 +843,7 @@ document.getElementById("frasePerFrase").addEventListener("click", async () => {
     setOutput("Error in 'frase per frase': " + e.message);
   }
 });
+
 
   
 
