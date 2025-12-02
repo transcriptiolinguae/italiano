@@ -260,7 +260,26 @@ function normalizeCurlyApostrophes(text) {
     outputElem.innerText = text;
   }
 
+// Helper: Split text into manageable chunks (max 500 characters)
+function splitTextByLength(text, maxLength = 500) {
+  const chunks = [];
+  let start = 0;
+  while (start < text.length) {
+    let end = start + maxLength;
 
+    // Try not to cut off words in the middle
+    if (end < text.length) {
+      const lastSpace = text.lastIndexOf(' ', end);
+      if (lastSpace > start) {
+        end = lastSpace;
+      }
+    }
+
+    chunks.push(text.slice(start, end));
+    start = end;
+  }
+  return chunks;
+}
 
 
 // ===================================================================
