@@ -172,7 +172,6 @@
   <textarea id="input" rows="6" cols="60" placeholder="Inserisci testo in italiano"></textarea>
   <button id="convert">AFI</button>
   <button id="convertInline">Testo e AFI</button>
-  <button id="frasePerFrase">Frase per frase</button>
   <button id="g2pAfi">G2P AFI</button>
   <button id="g2pInline">G2P Testo e AFI</button>
   <button id="g2p">G2P</button>
@@ -755,94 +754,6 @@ async function computeIPAMap(words) {
   return map;
 }
 
-
-
-
-
-
-
-// Add new button: Frase per frase
-document.getElementById("frasePerFrase").addEventListener("click", async () => {
-  showProgressPlaceholder();
-
-  if (!wasmReady) {
-    alert("Please wait, WASM is still loading...");
-    return;
-  }
-
-  const rawInput = normalizeCurlyApostrophes(inputElem.value.trim());
-  if (!rawInput) {
-    showPlaceholder();
-    return;
-  }
-
-  try {
-    // Split input into sentences
-    const sentences = rawInput.match(/[^.!?]+[.!?]+|[^.!?]+$/g);
-    if (!sentences) {
-      setOutput(rawInput);
-      return;
-    }
-
-    let finalOutput = "";
-
-    for (const sentence of sentences) {
-      const cleanSentence = sentence.trim();
-      if (!cleanSentence) continue;
-
-      // Tokenize sentence into words and punctuation
-      const tokens = cleanSentence.match(
-        /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
-      );
-
-      if (!tokens) {
-        finalOutput += cleanSentence + "\n";
-        continue;
-      }
-
-      // Extract unique words for IPA generation
-      const wordTokens = tokens.filter(t =>
-        /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
-      );
-      const uniqueWords = [...new Set(wordTokens)];
-
-      // Run eSpeak on unique words
-      const ipaRaw = await runESpeak(uniqueWords.join("|"));
-      const ipaClean = ipaRaw.replace(/\|/g, " ").trim();
-      const ipaWords = ipaClean.split(/\s+/);
-
-      // Build word → IPA map
-      const ipaMap = new Map();
-      for (let i = 0; i < uniqueWords.length; i++) {
-        ipaMap.set(uniqueWords[i], ipaWords[i] || "");
-      }
-
-      // Apply G2P AFI mapping to words
-      const mappedTokens = tokens.map(token => {
-        const isWord = /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);
-        if (!isWord) return token;
-
-        const ipa = ipaMap.get(token) || "";
-        let mapped = applyG2PMapping(token, ipa);
-        if (mapped === null) mapped = token;
-        mapped = validateOrReturnOriginal(token, mapped);
-
-        return mapped;
-      });
-
-      // Join mapped tokens into sentence-level IPA string
-      const sentenceIPA = mappedTokens.join("").trim();
-
-      // Output: original sentence + parentheses with G2P-AFI IPA
-      finalOutput += `${cleanSentence} (${sentenceIPA})\n`;
-    }
-
-    setOutput(finalOutput.trim());
-  } catch (e) {
-    console.error("Error in frase per frase:", e);
-    setOutput("Error in 'frase per frase': " + e.message);
-  }
-});
 
 
   
