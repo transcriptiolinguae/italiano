@@ -287,7 +287,7 @@ function splitTextByLength(text, maxLength = 500) {
 }
 
 // AFI button handler (preserves punctuation, numbers, and sentence structure)
-document.getElementById('convert1').addEventListener('click', async () => {
+document.getElementById('noconvert').addEventListener('click', async () => {
   showProgressPlaceholder();
 
   if (!wasmReady) {
@@ -365,7 +365,7 @@ document.getElementById('convert1').addEventListener('click', async () => {
 });
 
 // Testo e AFI button
-document.getElementById('convertInline1').addEventListener('click', async () => {
+document.getElementById('noconvertInline').addEventListener('click', async () => {
   showProgressPlaceholder();
 
   if (!wasmReady) {
