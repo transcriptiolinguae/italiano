@@ -155,20 +155,21 @@
     }
 
 .letteripa-btn {
-  text-align: center;
-  /* optionally: display: inline-block; or block with width */
-  padding: 8px 12px; /* adjust as needed */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  /* padding, border, background, etc. */
 }
 
 .letteripa-btn .line1 {
-  display: block;
-  font-size: 1em; /* normal or whatever size */
+  font-size: 1em;
 }
 
 .letteripa-btn .line2 {
-  display: block;
-  font-size: 0.75em; /* smaller */
+  font-size: 0.75em;
 }
+
 
 
     @media (max-width: 600px) {
@@ -192,9 +193,10 @@
   <button id="testoafi">Parola (AFI)</button>
   <button id="g2p">G2P</button>
   <button class="letteripa-btn">
-  <span class="line1">lettera</span><br>
+  <span class="line1">lettera</span>
   <span class="line2">IPA</span>
   </button>
+
   <pre id="output" class="placeholder">Trascrizione</pre>
 
 
@@ -203,6 +205,7 @@
 
 </body>
 </html>
+
 
 
 
