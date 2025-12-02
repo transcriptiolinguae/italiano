@@ -762,10 +762,9 @@ async function computeIPAMap(words) {
 
 
 
-  // ===================================================================
+// ===================================================================
 // NEW BUTTON: Frase per frase
-// IPA in parentheses after each sentence
-// IPA is identical to "G2P AFI e Testo"
+// Outputs: Original sentence (IPA-from-G2P-AFI)
 // ===================================================================
 document.getElementById("frasePerFrase").addEventListener("click", async () => {
   showProgressPlaceholder();
@@ -782,7 +781,7 @@ document.getElementById("frasePerFrase").addEventListener("click", async () => {
   }
 
   try {
-    // Split into sentences (keeps punctuation)
+    // Split input into sentences (keep punctuation)
     const sentences = rawInput.match(/[^.!?]+[.!?]+|[^.!?]+$/g);
 
     if (!sentences) {
@@ -796,9 +795,9 @@ document.getElementById("frasePerFrase").addEventListener("click", async () => {
       const cleanSentence = sentence.trim();
       if (!cleanSentence) continue;
 
-      // --- TOKENIZE exactly like G2P AFI ---
+      // --- TOKENIZE same as G2P AFI ---
       const tokens = cleanSentence.match(
-        /[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
+        /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
       );
 
       if (!tokens) {
@@ -806,47 +805,58 @@ document.getElementById("frasePerFrase").addEventListener("click", async () => {
         continue;
       }
 
-      // Extract only words for eSpeak
-      const wordTokens = tokens.filter(t =>
-        /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(t)
-      );
+      // Collect unique words for batch G2P IPA
+      const uniqueWords = [...new Set(
+        tokens.filter(t => /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t))
+      )];
 
-      // Prepare marked text for eSpeak
-      const markedInput = wordTokens.join("|");
-
-      // --- GET IPA using the same engine as G2P AFI ---
+      const markedInput = uniqueWords.join("|");
       const ipaRaw = await runESpeak(markedInput);
       const ipaClean = ipaRaw.replace(/\|/g, " ").trim();
       const ipaWords = ipaClean.split(/\s+/);
 
       // Build word → IPA map
       const ipaMap = new Map();
-      for (let i = 0; i < wordTokens.length; i++) {
-        ipaMap.set(wordTokens[i], ipaWords[i] || "");
+      for (let i = 0; i < uniqueWords.length; i++) {
+        ipaMap.set(uniqueWords[i], ipaWords[i] || "");
       }
 
-      // Rebuild IPA version of the whole sentence
-      let ipaSentence = "";
-      let idx = 0;
+      // --- Apply G2P mapping logic (like G2P AFI) ---
+      const g2pTokens = [];
+      for (let t = 0; t < tokens.length; t++) {
+        const token = tokens[t];
+        const isWord = /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);
 
+        if (!isWord) {
+          g2pTokens.push(token);
+          continue;
+        }
+
+        const ipa = ipaMap.get(token) || "";
+        let mapped = applyG2PMapping(token, ipa);
+
+        // If mapping failed, keep original
+        if (mapped === null) mapped = token;
+
+        // Validate mapping
+        mapped = validateOrReturnOriginal(token, mapped);
+
+        g2pTokens.push(mapped);
+      }
+
+      // Reconstruct sentence preserving spaces
+      let reconstructed = "";
+      let index = 0;
       for (const token of tokens) {
-        while (cleanSentence[idx] && /\s/.test(cleanSentence[idx])) {
-          ipaSentence += cleanSentence[idx++];
+        while (cleanSentence[index] && /\s/.test(cleanSentence[index])) {
+          reconstructed += cleanSentence[index++];
         }
-
-        const originalToken = cleanSentence.slice(idx, idx + token.length);
-        idx += token.length;
-
-        const isWord = /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token);
-        if (isWord) {
-          ipaSentence += ipaMap.get(token) || originalToken;
-        } else {
-          ipaSentence += originalToken;
-        }
+        reconstructed += g2pTokens.shift();
+        index += token.length;
       }
 
-      // Add final line for this sentence
-      finalOutput += `${cleanSentence} (${ipaSentence.trim()})\n\n`;
+      // Add final sentence line: original sentence + (G2P-AFI IPA)
+      finalOutput += `${cleanSentence} (${reconstructed})\n`;
     }
 
     setOutput(finalOutput.trim());
@@ -855,8 +865,6 @@ document.getElementById("frasePerFrase").addEventListener("click", async () => {
     setOutput("Error in 'frase per frase': " + e.message);
   }
 });
-
-
 
 
 
