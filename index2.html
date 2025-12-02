@@ -172,7 +172,8 @@
   <textarea id="input" rows="6" cols="60" placeholder="Inserisci testo in italiano"></textarea>
   <button id="convert">AFI</button>
   <button id="convertInline">Testo e AFI</button>
-  <button id="g2pInline">G2P Inline</button>
+  <button id="g2pAfi">G2P AFI</button>
+  <button id="g2pInline">G2P Testo e AFI</button>
   <button id="g2p">G2P</button>
   <pre id="output" class="placeholder">Trascrizione</pre>
 
@@ -449,6 +450,148 @@ document.getElementById('convertInline').addEventListener('click', async () => {
 });
 
 
+
+
+// ===================================================================
+//  NEW BUTTON: G2P AFI
+//  Outputs ONLY IPA for words that have valid G2P mapping,
+//  Words without mapping remain unchanged.
+// ===================================================================
+document.getElementById('g2pAfi').addEventListener('click', async () => {
+  showProgressPlaceholder();
+
+  if (!wasmReady) {
+    alert("Please wait, WASM is still loading...");
+    return;
+  }
+
+  const rawInput = normalizeCurlyApostrophes(inputElem.value.trim());
+  if (!rawInput) {
+    showPlaceholder();
+    return;
+  }
+
+  try {
+    const chunks = splitTextByLength(rawInput, 500);
+    let finalResult = '';
+
+    for (const chunk of chunks) {
+
+      const tokens = chunk.match(
+        /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
+      );
+
+      if (!tokens) {
+        finalResult += chunk;
+        continue;
+      }
+
+      // Extract real words
+      let words = tokens.filter(t =>
+        /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
+      );
+
+      // First IPA pass
+      let ipaMap = await computeIPAMap(words);
+
+      const converted = [];
+
+      for (let t = 0; t < tokens.length; t++) {
+
+        const token = tokens[t];
+        const isWord =
+          /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);
+
+        if (!isWord) {
+          converted.push(token);
+          continue;
+        }
+
+        let ipa = ipaMap.get(token) || "";
+        let mapped = applyG2PMapping(token, ipa);
+
+        // If mapping fails → recover
+        if (mapped === null) {
+
+          // Find next real word
+          let nextWordIndex = t + 1;
+          while (
+            nextWordIndex < tokens.length &&
+            !/^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u
+              .test(tokens[nextWordIndex])
+          ) {
+            nextWordIndex++;
+          }
+
+          if (nextWordIndex >= tokens.length) {
+            // no mapping → return original word
+            converted.push(token);
+            continue;
+          }
+
+          const remainingWords = tokens
+            .slice(nextWordIndex)
+            .filter(tt =>
+              /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(tt)
+            );
+
+          ipaMap = await computeIPAMap(remainingWords);
+
+          ipa = ipaMap.get(token) || "";
+          mapped = applyG2PMapping(token, ipa);
+        }
+
+        // If still no mapping → ORIGINAL WORD
+        if (mapped === null) {
+          converted.push(token);
+          continue;
+        }
+
+        // Validate mapping
+        mapped = validateOrReturnOriginal(token, mapped);
+
+        // Extract IPA parentheses
+        const ipaPieces = [...mapped.matchAll(/\(([^()]*)\)/g)];
+        const ipaString = ipaPieces.map(x => x[1]).join("");
+
+        // If IPA is empty → original word
+        if (!ipaString.trim()) {
+          converted.push(token);
+        } else {
+          // FINAL OUTPUT: only IPA
+          converted.push(ipaString);
+        }
+      }
+
+      // Reconstruct text preserving whitespace
+      let rebuilt = '';
+      let pos = 0;
+
+      for (const token of tokens) {
+        while (chunk[pos] && /\s/.test(chunk[pos])) {
+          rebuilt += chunk[pos++];
+        }
+        rebuilt += converted.shift();
+        pos += token.length;
+      }
+
+      finalResult += rebuilt;
+    }
+
+    setOutput(finalResult.trim());
+
+  } catch (e) {
+    console.error("Error in G2P AFI:", e);
+    setOutput("Error during G2P AFI processing: " + e.message);
+  }
+});
+
+
+
+
+
+
+  
 
 // ------------------------------------------------------
 // NEW FIXED & FULLY WORKING G2P INLINE BUTTON
