@@ -172,8 +172,6 @@
   <textarea id="input" rows="6" cols="60" placeholder="Inserisci testo in italiano"></textarea>
   <button id="convert">AFI</button>
   <button id="convertInline">Testo e AFI</button>
-  <button id="g2pAfi">G2P AFI</button>
-  <button id="g2pInline">G2P Testo e AFI</button>
   <button id="g2p">G2P</button>
   <pre id="output" class="placeholder">Trascrizione</pre>
 
@@ -289,7 +287,7 @@ function splitTextByLength(text, maxLength = 500) {
 }
 
 // AFI button handler (preserves punctuation, numbers, and sentence structure)
-document.getElementById('convert').addEventListener('click', async () => {
+document.getElementById('convert1').addEventListener('click', async () => {
   showProgressPlaceholder();
 
   if (!wasmReady) {
@@ -367,7 +365,7 @@ document.getElementById('convert').addEventListener('click', async () => {
 });
 
 // Testo e AFI button
-document.getElementById('convertInline').addEventListener('click', async () => {
+document.getElementById('convertInline1').addEventListener('click', async () => {
   showProgressPlaceholder();
 
   if (!wasmReady) {
@@ -457,7 +455,7 @@ document.getElementById('convertInline').addEventListener('click', async () => {
 //  Outputs ONLY IPA for words that have valid G2P mapping,
 //  Words without mapping remain unchanged.
 // ===================================================================
-document.getElementById('g2pAfi').addEventListener('click', async () => {
+document.getElementById('convert').addEventListener('click', async () => {
   showProgressPlaceholder();
 
   if (!wasmReady) {
@@ -596,7 +594,7 @@ document.getElementById('g2pAfi').addEventListener('click', async () => {
 // ------------------------------------------------------
 // NEW FIXED & FULLY WORKING G2P INLINE BUTTON
 // ------------------------------------------------------
-document.getElementById('g2pInline').addEventListener('click', async () => {
+document.getElementById('convertInline').addEventListener('click', async () => {
   showProgressPlaceholder();
 
   if (!wasmReady) {
