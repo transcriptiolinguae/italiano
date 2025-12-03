@@ -125,7 +125,7 @@
     }
 
     pre:not(.placeholder) {
-      color: #2c3e50;
+      color: #5e5e5e;
       user-select: text;
     }
 
@@ -143,11 +143,7 @@
       margin-bottom: 2px;
     }
 
-    button:hover,
-    button:focus {
-      background: #ecf0f1;
-      outline: none;
-    }
+
 
     button:disabled {
       background: #ecf0f1;
@@ -155,6 +151,53 @@
     }
 
 
+
+
+.button-row {
+  display: flex;             /* ← puts the buttons side by side in a row */
+    justify-content: center;  /* centers buttons horizontally */
+    flex-wrap: wrap;      /* <-- allows stacking on small screens */
+}
+
+.triple-line-button {
+  display: flex;
+  width: 180px; 
+  font-size: 14px;
+  flex-direction: column;    /* stack the spans vertically */
+  align-items: center;       /* center horizontally inside button */
+  justify-content: center;   /* center vertically, if you wish */
+  /* optional: padding, width, text-align etc. */
+  text-align: center;
+  padding: 8px 12px;
+}
+
+.triple-line-button span {
+  display: block;
+  opacity: 0.6;          /* normal state: slightly transparent */
+}
+
+
+ .triple-line-button:hover span {
+  opacity: 1;            /* hover: fully visible */
+}   
+
+    
+.line-1 {
+  font-weight: 600;
+}
+
+    
+.line-3 {
+  color: darkgrey;
+}
+
+    .line-4 {
+  color: darkgrey;
+  font-size: 10px;
+      
+}
+
+    
 
     @media (max-width: 600px) {
       textarea, pre {
@@ -166,17 +209,35 @@
 <body>
 
   <header class="site-header">
-<a href="https://transcriptiolinguae.github.io/italiano/">
     <img src="/italiano/img/logo.svg" alt="Transcriptio Linguae Logo" class="site-logo" />
-</a>
+
   </header>  
 
 
   <textarea id="input" rows="6" cols="60" placeholder="Inserisci testo in italiano"></textarea>
-  <button id="afi">AFI</button>
-  <button id="testoafi">Parola (AFI)</button>
-  <button id="g2p">G2P</button>
-
+  <div class="button-row">
+  <button id="afi" class="triple-line-button">
+  <span class="line-1">I</span>
+  <span class="line-1">Only IPA</span>
+  <span class="line-3">abc</span>
+  </button>
+  <button id="testoafi" class="triple-line-button">
+  <span class="line-1">II</span>
+  <span class="line-1">Word before IPA</span>
+  <span class="line-3">Abc (abc)</span>
+  </button>
+  <button id="g2p" class="triple-line-button">
+  <span class="line-1">III</span>
+  <span class="line-1">Grapheme-to-phoneme</span>
+  <span class="line-3">A(a)b(b)c(c)</span>
+  </button>
+  <button class="triple-line-button">
+  <span class="line-1">IV</span>
+  <span class="line-1">G2P Alingment</span>
+  <span class="line-3">Abc</span>
+  <span class="line-4">a b c</span>
+  </button>
+  </div>
 
   <pre id="output" class="placeholder">Trascrizione</pre>
 
@@ -186,6 +247,7 @@
 
 </body>
 </html>
+
 
 
 
