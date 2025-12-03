@@ -157,13 +157,21 @@
 
 
 
-    .triple-line-button {
-  display: flex;
-  flex-direction: column; /* stack vertically */
-  justify-content: center;
-  align-items: center;    /* center text horizontally */
-  line-height: 1.2;
+.button-row {
+  display: flex;             /* ← puts the buttons side by side in a row */
+  gap: 10px;                 /* optional spacing between buttons */
 }
+
+.triple-line-button {
+  display: flex;
+  flex-direction: column;    /* stack the spans vertically */
+  align-items: center;       /* center horizontally inside button */
+  justify-content: center;   /* center vertically, if you wish */
+  /* optional: padding, width, text-align etc. */
+  text-align: center;
+  padding: 8px 12px;
+}
+
 .triple-line-button span {
   display: block;
 }
@@ -187,6 +195,7 @@
 
 
   <textarea id="input" rows="6" cols="60" placeholder="Inserisci testo in italiano"></textarea>
+  <div class="button-row">
   <button id="afi" class="triple-line-button">
   <span>I</span>
   <span>Only IPA</span>
@@ -208,6 +217,7 @@
   <span>Abc</span>
   <span>abc</span>
   </button>
+  </div>
   <pre id="output" class="placeholder">Trascrizione</pre>
 
 <script type="module">
