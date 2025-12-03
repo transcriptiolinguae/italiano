@@ -132,7 +132,7 @@
     button {
       font-family: Arial, sans-serif;
       background: #ffffff;
-      color: darkgray;
+      color: grey;
       border: none;
       border-radius: 5px;
       padding: 0.65em 1em;
@@ -143,11 +143,7 @@
       margin-bottom: 2px;
     }
 
-    button:hover,
-    button:focus {
-      color: grey;
-      outline: none;
-    }
+
 
     button:disabled {
       background: #ecf0f1;
@@ -175,32 +171,23 @@
 
 .triple-line-button span {
   display: block;
+  opacity: 0.6;          /* normal state: slightly transparent */
 }
+
+
+ .triple-line-button:hover span {
+  opacity: 1;            /* hover: fully visible */
+}   
 
 .line-3 {
-  color: LightGray;
+  color: darkgrey;
 }
 
-
-        .line-3:hover,
-    .line-3:focus {
-      color: darkgrey;
-      outline: none;
-    }
-
     .line-4 {
-  color: LightGray;
+  color: darkgrey;
   font-size: 10px;
       
 }
-
-
-            .line-4:hover,
-    .line-4:focus {
-      color: darkgrey;
-      outline: none;
-    }
-
 
     
 
