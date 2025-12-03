@@ -154,6 +154,23 @@
       cursor: not-allowed;
     }
 
+
+
+
+    .triple-line-button {
+  display: flex;
+  flex-direction: column; /* stack vertically */
+  justify-content: center;
+  align-items: center;    /* center text horizontally */
+  line-height: 1.2;
+}
+.triple-line-button span {
+  display: block;
+}
+
+
+    
+
     @media (max-width: 600px) {
       textarea, pre {
         font-size: 1.1rem;
@@ -170,7 +187,11 @@
 
 
   <textarea id="input" rows="6" cols="60" placeholder="Inserisci testo in italiano"></textarea>
-  <button id="afi">I ONLY IPA abc</button>
+  <button class="triple-line-button">
+  <span>I</span>
+  <span>Only IPA</span>
+  <span>abc</span>
+  </button>
   <button id="testoafi">II WORD BEFORE IPA Abc (abc)</button>
   <button id="g2p">III GRAPHEME-TO-PHONEME A(a)b(b)c(c)</button>
   <button id="g2p">IV G2P ALINGMENT Abcabc</button>
