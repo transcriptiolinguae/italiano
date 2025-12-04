@@ -661,6 +661,7 @@ async function computeIPAMap(words) {
 
 function validateOrReturnOriginal(originalWord, mappedString) {
   const allowedMappings = {
+    ha: ['a', 'ˈa'],
     a: ['a', 'ˈa'],    
     bb: ['bː'],
     b: ['b', 'ˈb'],
@@ -691,7 +692,6 @@ function validateOrReturnOriginal(originalWord, mappedString) {
     m: ['m', 'ˈm'],
     nn: ['nː'],
     n: ['n', 'ˈn'],
-    ha: ['a', 'ˈa'],
     ho: ['o', 'ˈo', 'ɔ', 'ˈɔ', 'ˈoː', 'ˈɔː', 'oː', 'ɔː'],
     o: ['o', 'ˈo', 'ɔ', 'ˈɔ'],
     pp: ['pː'],
