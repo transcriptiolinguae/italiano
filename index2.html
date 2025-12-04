@@ -161,6 +161,9 @@
 
 .triple-line-button {
   display: flex;
+  color: grey;
+  line-height: 1.2;
+  text-decoration: none;
   width: 180px; 
   font-size: 14px;
   flex-direction: column;    /* stack the spans vertically */
@@ -193,7 +196,8 @@
 
     .line-4 {
   color: darkgrey;
-  font-size: 10px;
+  margin-top: -4px;
+  font-size: 9px;
       
 }
 
@@ -209,8 +213,9 @@
 <body>
 
   <header class="site-header">
+    <a href="https://transcriptiolinguae.github.io/italiano/">
     <img src="/italiano/img/logo.svg" alt="Transcriptio Linguae Logo" class="site-logo" />
-
+    </a> 
   </header>  
 
 
@@ -231,15 +236,16 @@
   <span class="line-1">Grapheme-to-phoneme</span>
   <span class="line-3">A(a)b(b)c(c)</span>
   </button>
-  <button class="triple-line-button">
+  <a class="triple-line-button" href="https://transcriptiolinguae.gumroad.com/">
   <span class="line-1">IV</span>
   <span class="line-1">G2P Alingment</span>
   <span class="line-3">Abc</span>
   <span class="line-4">a b c</span>
-  </button>
+  </a>
   </div>
-  <pre id="output" class="placeholder">Trascrizione</pre>
 
+  <pre id="output" class="placeholder">Trascrizione</pre>
+  
 <script type="module">
   import initESpeak from './espeak-ng.js';
 
