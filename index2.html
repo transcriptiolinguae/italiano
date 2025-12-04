@@ -677,6 +677,7 @@ function validateOrReturnOriginal(originalWord, mappedString) {
     f: ['f', 'ˈf'],
     gh: ['g'],
     gn: ['ɲ'],
+    gi: ['dʒ'],
     g: ['g', 'ˈg', 'dʒ'],
     i: ['i', 'ˈi', 'j', 'ˈj'],
     ll: ['lː'],
@@ -697,7 +698,8 @@ function validateOrReturnOriginal(originalWord, mappedString) {
     ù: ['u', 'ˈu'],
     vv: ['vː'],
     v: ['v', 'ˈv'],
-    z: ['ts', 'dz', 'ˈts', 'ˈdz',] 
+    z: ['ts', 'dz', 'ˈts', 'ˈdz',],
+    zz: ['tsː', 'dzː']
   };
 
   const regex = /([\p{L}]+)\(([^()]*)\)/gu;
