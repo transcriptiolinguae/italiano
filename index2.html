@@ -691,7 +691,7 @@ function validateOrReturnOriginal(originalWord, mappedString) {
     ù: ['u', 'ˈu'],
     vv: ['vː'],
     v: ['v', 'ˈv'],
-    z: ['ts', 'ˈdz'] 
+    z: ['ts', 'dz', 'ˈts', 'ˈdz',] 
   };
 
   const regex = /([\p{L}]+)\(([^()]*)\)/gu;
@@ -1688,8 +1688,6 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
   return result.join('');
 
 }
-
-
 </script>
 
 
