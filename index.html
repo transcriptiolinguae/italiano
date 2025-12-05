@@ -110,7 +110,9 @@
     }
 
 #output {
-    white-space: pre;
+        white-space: pre-wrap;
+    resize: vertical;   /* only vertical resizing allowed */
+    overflow-wrap: break-word;  /* prevent horizontal scrolling */
 }
     
     pre {
@@ -256,6 +258,7 @@
 
 </body>
 </html>
+
 
 
 
