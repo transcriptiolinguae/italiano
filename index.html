@@ -109,12 +109,6 @@
       user-select: none;
     }
 
-#output {
-        white-space: pre-wrap;
-    resize: vertical;   /* only vertical resizing allowed */
-    overflow-wrap: break-word;  /* prevent horizontal scrolling */
-}
-    
     pre {
       background: #ecf0f1;
       padding: 1.25rem 1.5rem;
@@ -250,7 +244,7 @@
   </a>
   </div>
 
-  <textarea id="output" class="placeholder" placeholder="Trascrizione" readonly></textarea>
+  <pre id="output" class="placeholder">Trascrizione</pre>
 
 
 <script type="module" src="/italiano/main.min.js" defer></script>
@@ -258,6 +252,7 @@
 
 </body>
 </html>
+
 
 
 
