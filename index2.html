@@ -125,7 +125,7 @@
     }
 
     pre:not(.placeholder) {
-      color: #5e5e5e;
+      color: #2c3e50;
       user-select: text;
     }
 
@@ -143,65 +143,16 @@
       margin-bottom: 2px;
     }
 
-
+    button:hover,
+    button:focus {
+      background: #ecf0f1;
+      outline: none;
+    }
 
     button:disabled {
       background: #ecf0f1;
       cursor: not-allowed;
     }
-
-
-
-
-.button-row {
-  display: flex;             /* ← puts the buttons side by side in a row */
-    justify-content: center;  /* centers buttons horizontally */
-    flex-wrap: wrap;      /* <-- allows stacking on small screens */
-}
-
-.triple-line-button {
-  display: flex;
-  color: grey;
-  line-height: 1.2;
-  text-decoration: none;
-  width: 180px; 
-  font-size: 14px;
-  flex-direction: column;    /* stack the spans vertically */
-  align-items: center;       /* center horizontally inside button */
-  justify-content: center;   /* center vertically, if you wish */
-  /* optional: padding, width, text-align etc. */
-  text-align: center;
-  padding: 8px 12px;
-}
-
-.triple-line-button span {
-  display: block;
-  opacity: 0.6;          /* normal state: slightly transparent */
-}
-
-
- .triple-line-button:hover span {
-  opacity: 1;            /* hover: fully visible */
-}   
-
-    
-.line-1 {
-  font-weight: 600;
-}
-
-    
-.line-3 {
-  color: darkgrey;
-}
-
-    .line-4 {
-  color: darkgrey;
-  margin-top: -4px;
-  font-size: 9px;
-      
-}
-
-    
 
     @media (max-width: 600px) {
       textarea, pre {
@@ -213,40 +164,17 @@
 <body>
 
   <header class="site-header">
-    <a href="https://transcriptiolinguae.github.io/italiano/">
     <img src="/italiano/img/logo.svg" alt="Transcriptio Linguae Logo" class="site-logo" />
-    </a> 
+
   </header>  
 
 
-  <textarea id="input" rows="6" cols="60" placeholder="Insert text in Italian"></textarea>
-  <div class="button-row">
-  <button id="afi" class="triple-line-button">
-  <span class="line-1">I</span>
-  <span class="line-1">Only IPA</span>
-  <span class="line-3">abc</span>
-  </button>
-  <button id="testoafi" class="triple-line-button">
-  <span class="line-1">II</span>
-  <span class="line-1">Word before IPA</span>
-  <span class="line-3">Abc (abc)</span>
-  </button>
-  <button id="g2p" class="triple-line-button">
-  <span class="line-1">III</span>
-  <span class="line-1">Grapheme-to-phoneme</span>
-  <span class="line-3">A(a)b(b)c(c)</span>
-  </button>
-  <a class="triple-line-button" href="https://transcriptiolinguae.gumroad.com/">
-  <span class="line-1">IV</span>
-  <span class="line-1">G2P Alignment</span>
-  <span class="line-3">Abc</span>
-  <span class="line-4">a b c</span>
-  </a>
-  </div>
+  <textarea id="input" rows="6" cols="60" placeholder="Inserisci testo in italiano"></textarea>
+  <button id="convert">AFI</button>
+  <button id="convertInline">Testo e AFI</button>
+  <button id="g2p">G2P</button>
+  <pre id="output" class="placeholder">Trascrizione</pre>
 
-  <pre id="output" class="placeholder">Transcription</pre>
-
-  
 <script type="module">
   import initESpeak from './espeak-ng.js';
 
@@ -319,18 +247,23 @@ function normalizeCurlyApostrophes(text) {
 
   function showPlaceholder() {
     outputElem.className = 'placeholder';
-    outputElem.innerText = 'Transcription';
+    outputElem.innerText = 'Trascrizione';
   }
 
   function showProgressPlaceholder() {
     outputElem.className = 'placeholder';
-    outputElem.innerText = 'Transcription in progress...';
+    outputElem.innerText = 'Trascrizione in corso...';
   }
 
   function setOutput(text) {
     outputElem.classList.remove('placeholder');
     outputElem.innerText = text;
   }
+
+  // AFI button
+// ------------------------
+// AFI button + helper
+// ------------------------
 
 // Helper: Split text into manageable chunks (max 500 characters)
 function splitTextByLength(text, maxLength = 500) {
@@ -353,21 +286,16 @@ function splitTextByLength(text, maxLength = 500) {
   return chunks;
 }
 
-
-// ===================================================================
-//  NEW BUTTON: G2P AFI
-//  Outputs ONLY IPA for words that have valid G2P mapping,
-//  Words without mapping remain unchanged.
-// ===================================================================
-document.getElementById('afi').addEventListener('click', async () => {
+// AFI button handler (preserves punctuation, numbers, and sentence structure)
+document.getElementById('convert').addEventListener('click', async () => {
   showProgressPlaceholder();
 
   if (!wasmReady) {
-    alert("Please wait, WASM is still loading...");
+    alert('Please wait, WASM is still loading...');
     return;
   }
 
-  const rawInput = normalizeCurlyApostrophes(inputElem.value.trim());
+  const rawInput = inputElem.value.trim();
   if (!rawInput) {
     showPlaceholder();
     return;
@@ -378,367 +306,149 @@ document.getElementById('afi').addEventListener('click', async () => {
     let finalResult = '';
 
     for (const chunk of chunks) {
-
+      // Tokenize text into words, numbers, punctuation, etc.
       const tokens = chunk.match(
-        /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
+        /[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
       );
-
       if (!tokens) {
         finalResult += chunk;
         continue;
       }
 
-      // Extract real words
-      let words = tokens.filter(t =>
-        /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
+      // Get only the actual words for eSpeak
+      const wordTokens = tokens.filter(t =>
+        /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(t)
       );
 
-      // First IPA pass
-      let ipaMap = await computeIPAMap(words);
+      // Send all words to eSpeak at once, separated by "|"
+      const markedInput = wordTokens.join('|');
+      const ipaRaw = await runESpeak(markedInput);
+      const ipaClean = ipaRaw.replace(/\|/g, ' ').trim();
+      const ipaWords = ipaClean.split(/\s+/);
 
-      const converted = [];
+      // Map each word → IPA result
+      const ipaMap = new Map();
+      for (let i = 0; i < wordTokens.length; i++) {
+        ipaMap.set(wordTokens[i], ipaWords[i] || '');
+      }
 
-      for (let t = 0; t < tokens.length; t++) {
+      // Rebuild the original text, replacing words with their IPA equivalents
+      let reconstructed = '';
+      let charIndex = 0;
 
-        const token = tokens[t];
-        const isWord =
-          /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);
-
-        if (!isWord) {
-          converted.push(token);
-          continue;
+      for (const token of tokens) {
+        // Preserve all spaces exactly as they appear
+        while (chunk[charIndex] && /\s/.test(chunk[charIndex])) {
+          reconstructed += chunk[charIndex++];
         }
 
-        let ipa = ipaMap.get(token) || "";
-        let mapped = applyG2PMapping(token, ipa);
-
-        // If mapping fails → recover
-        if (mapped === null) {
-
-          // Find next real word
-          let nextWordIndex = t + 1;
-          while (
-            nextWordIndex < tokens.length &&
-            !/^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u
-              .test(tokens[nextWordIndex])
-          ) {
-            nextWordIndex++;
-          }
-
-          if (nextWordIndex >= tokens.length) {
-            // no mapping → return original word
-            converted.push(token);
-            continue;
-          }
-
-          const remainingWords = tokens
-            .slice(nextWordIndex)
-            .filter(tt =>
-              /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(tt)
-            );
-
-          ipaMap = await computeIPAMap(remainingWords);
-
-          ipa = ipaMap.get(token) || "";
-          mapped = applyG2PMapping(token, ipa);
-        }
-
-        // If still no mapping → ORIGINAL WORD
-        if (mapped === null) {
-          converted.push(token);
-          continue;
-        }
-
-        // Validate mapping
-        mapped = validateOrReturnOriginal(token, mapped);
-
-        // Extract IPA parentheses
-        const ipaPieces = [...mapped.matchAll(/\(([^()]*)\)/g)];
-        const ipaString = ipaPieces.map(x => x[1]).join("");
-
-        // If IPA is empty → original word
-        if (!ipaString.trim()) {
-          converted.push(token);
+        const isWord = /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token);
+        if (isWord) {
+          // Replace with IPA if available
+          reconstructed += ipaMap.get(token) || token;
         } else {
-          // FINAL OUTPUT: only IPA
-          converted.push(ipaString);
+          // Leave punctuation, numbers, symbols untouched
+          reconstructed += token;
         }
+
+        charIndex += token.length;
       }
 
-      // Reconstruct text preserving whitespace
-      let rebuilt = '';
-      let pos = 0;
-
-      for (const token of tokens) {
-        while (chunk[pos] && /\s/.test(chunk[pos])) {
-          rebuilt += chunk[pos++];
-        }
-        rebuilt += converted.shift();
-        pos += token.length;
-      }
-
-      finalResult += rebuilt;
+      finalResult += reconstructed;
     }
 
-    setOutput(finalResult.trim());
-
+    setOutput(finalResult.trim() || '[No output generated]');
   } catch (e) {
-    console.error("Error in G2P AFI:", e);
-    setOutput("Error during G2P AFI processing: " + e.message);
+    console.error('Error during AFI transcription:', e);
+    setOutput('Error during AFI transcription: ' + e.message);
   }
 });
 
 
 
-
-
-
-  
-
-// ------------------------------------------------------
-// NEW FIXED & FULLY WORKING G2P INLINE BUTTON
-// ------------------------------------------------------
-document.getElementById('testoafi').addEventListener('click', async () => {
+  // Testo e AFI button
+document.getElementById('convertInline').addEventListener('click', async () => {
   showProgressPlaceholder();
 
   if (!wasmReady) {
-    alert("Please wait, WASM is still loading...");
+    alert('Please wait, WASM is still loading...');
     return;
   }
 
-  const rawInput = normalizeCurlyApostrophes(inputElem.value.trim());
+  const rawInput = inputElem.value.trim();
   if (!rawInput) {
     showPlaceholder();
     return;
   }
 
   try {
-    const chunks = splitTextByLength(rawInput, 500);
+    // Normalize curly apostrophes
+    const normalized = rawInput.replace(/[’‘]/g, "'");
+
+    // Split input into 500-character chunks
+    const chunks = splitTextByLength(normalized, 500);
     let finalResult = '';
+    let charIndex = 0;
 
     for (const chunk of chunks) {
-
-      // Tokenize text
-      const tokens = chunk.match(
-        /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
-      );
-
+      // Tokenize the chunk into words, numbers, punctuation
+      const tokens = chunk.match(/[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu);
       if (!tokens) {
-        finalResult += chunk;
+        finalResult += chunk; // fallback
         continue;
       }
 
-      // Collect word-only tokens
-      let words = tokens.filter(t =>
-        /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
-      );
+      const wordTokens = tokens.filter(t => /^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(t));
+      const markedInput = wordTokens.join('|');
 
-      // Initial IPA pass
-      let ipaMap = await computeIPAMap(words);
+      const ipaRaw = await runESpeak(markedInput);
+      const ipaClean = ipaRaw.replace(/\|/g, ' ').trim();
+      const ipaWords = ipaClean.split(/\s+/);
 
-      const converted = [];
-
-      for (let t = 0; t < tokens.length; t++) {
-
-        const token = tokens[t];
-        const isWord =
-          /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);
-
-        if (!isWord) {
-          converted.push(token);
-          continue;
-        }
-
-        let ipa = ipaMap.get(token) || "";
-        let mapped = applyG2PMapping(token, ipa);
-
-        // ----------------------------------------------------------
-        // IF MAPPING FAILS → RESYNC AND RE-RUN ESPEAK FROM NEXT WORD
-        // ----------------------------------------------------------
-        if (mapped === null) {
-
-          console.warn("G2P failed on:", token);
-
-          // Find next real word AFTER the current token
-          let nextWordIndex = t + 1;
-          while (
-            nextWordIndex < tokens.length &&
-            !/^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u
-              .test(tokens[nextWordIndex])
-          ) {
-            nextWordIndex++;
-          }
-
-          // No more words → output original and continue
-          if (nextWordIndex >= tokens.length) {
-            converted.push(token);
-            continue;
-          }
-
-          // Collect remaining words starting from that next real word
-          const remainingWords = tokens
-            .slice(nextWordIndex)
-            .filter(tt =>
-              /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(tt)
-            );
-
-          console.log("Re-running eSpeak for:", remainingWords);
-
-          // Rebuild IPA map for remaining sequence
-          ipaMap = await computeIPAMap(remainingWords);
-
-          // Retry mapping the *current* token
-          ipa = ipaMap.get(token) || "";
-          mapped = applyG2PMapping(token, ipa);
-
-          // If still failing, output original
-          if (mapped === null) {
-            converted.push(token);
-            continue;
-          }
-        }
-
-        // Validate allowed IPA mapping
-        const validated = validateOrReturnOriginal(token, mapped);
-
-        // Pull all IPA inside parentheses
-        const ipaPieces = [...validated.matchAll(/\(([^()]*)\)/g)];
-        const ipaString = ipaPieces.map(x => x[1]).join("");
-
-        if (!ipaString) {
-          converted.push(token);
-          continue;
-        }
-
-        // Final inline form: WORD (IPA)
-        converted.push(`${token} (${ipaString})`);
+      // Build word → IPA map
+      const ipaMap = new Map();
+      for (let i = 0; i < wordTokens.length; i++) {
+        ipaMap.set(wordTokens[i], ipaWords[i] || '');
       }
 
-      // ------------------------------------------------------------
-      // Reconstruct output preserving EXACT original whitespace
-      // ------------------------------------------------------------
-      let rebuilt = '';
-      let pos = 0;
-
+      // Reconstruct chunk with inline IPA
+      let chunkResult = '';
+      let idx = 0;
       for (const token of tokens) {
-        while (chunk[pos] && /\s/.test(chunk[pos])) {
-          rebuilt += chunk[pos++];
+        while (chunk[idx] && /\s/.test(chunk[idx])) {
+          chunkResult += chunk[idx++];
         }
-        rebuilt += converted.shift();
-        pos += token.length;
+
+        const originalToken = chunk.slice(idx, idx + token.length);
+        idx += token.length;
+
+        if (/^[\p{L}\p{M}]+(?:'[\p{L}\p{M}]+)*$/u.test(token)) {
+          const ipa = ipaMap.get(token) || '';
+          chunkResult += `${originalToken}${ipa ? ' (' + ipa + ')' : ''}`;
+        } else {
+          chunkResult += originalToken;
+        }
       }
 
-      finalResult += rebuilt;
+      // Maintain spacing with previous chunks
+      while (rawInput[charIndex] && /\s/.test(rawInput[charIndex])) {
+        chunkResult = rawInput[charIndex++] + chunkResult;
+      }
+      charIndex += chunk.length;
+
+      finalResult += chunkResult;
     }
 
-    setOutput(finalResult.trim());
-
+    setOutput(finalResult);
   } catch (e) {
-    console.error("Error in G2P Inline:", e);
-    setOutput("Error during G2P Inline processing: " + e.message);
+    console.error('Error during IPA conversion:', e);
+    setOutput('Error during IPA conversion: ' + e.message);
   }
 });
 
 
-// ------------------------------------------------------
-// Helper: compute IPA map for a list of words (batch mode)
-// ------------------------------------------------------
-async function computeIPAMap(words) {
-  const unique = [...new Set(words)];
-  const marked = unique.join("|");
-  const ipaRaw = await runESpeak(marked);
-  const ipaClean = ipaRaw.replace(/\|/g, " ").trim();
-  const ipaWords = ipaClean.split(/\s+/);
-  const map = new Map();
-  for (let i = 0; i < unique.length; i++) {
-    map.set(unique[i], ipaWords[i] || "");
-  }
-  return map;
-}
 
 
-
-  
-
-function validateOrReturnOriginal(originalWord, mappedString) {
-  const allowedMappings = {
-    ha: ['a', 'ˈa', 'ˌa'],
-    a: ['a', 'ˈa', 'ˌa'],
-    à: ['a', 'ˈa', 'ˌa'],  
-    bb: ['bː'],
-    b: ['b', 'ˈb'],
-    cci: ['tʃː'],
-    cch: ['kː'],
-    cc: ['tʃː', 'kː'],    
-    ch: ['k', 'ˈk'],
-    ci: ['tʃ', 'ˈtʃ'],
-    cq: ['kː'], 
-    c: ['k', 'tʃ', 'ˈk', 'ˈtʃ'],
-    dd: ['dː'],
-    d: ['d', 'ˈd'],
-    e: ['e', 'ˈe', 'ɛ', 'ˈɛ'],
-    è: ['e', 'ˈe', 'ɛ', 'ˈɛ'],
-    é: ['e', 'ˈe', 'ɛ', 'ˈɛ'],
-    ff: ['fː'],
-    f: ['f', 'ˈf'],
-    gli: ['ʎ', 'ˈʎ'],
-    ggi: ['dʒː'],
-    gl: ['ʎ', 'ˈʎ'],
-    gg: ['gː', 'dʒː'],
-    gn: ['ɲː', 'ɲ', 'ˈɲ'],
-    gh: ['g'],
-    gi: ['dʒ', 'ˈdʒ'],
-    g: ['g', 'ˈg', 'dʒ', 'ˈdʒ'],
-    i: ['i', 'ˈi', 'j', 'ˈj'],
-    ì: ['i', 'ˈi', 'j', 'ˈj'],
-    ll: ['lː'],
-    l: ['l', 'ˈl'],
-    mm: ['mː'],
-    m: ['m', 'ˈm'],
-    nn: ['nː'],
-    n: ['n', 'ˈn', 'ŋ', 'ˈŋ'],
-    ho: ['o', 'ˈo', 'ɔ', 'ˈɔ', 'ˌo', 'ˌɔ'],
-    o: ['o', 'ˈo', 'ɔ', 'ˈɔ', 'oː', '.o'],
-    ò: ['o', 'ˈo', 'ɔ', 'ˈɔ'],
-    pp: ['pː'],
-    p: ['p', 'ˈp'],
-    q: ['k', 'ˈk'],
-    rr: ['rː'],
-    r: ['r', 'ˈr'],
-    sci: ['ʃ', 'ˈʃ'],
-    sc: ['ʃ', 'ˈʃ'],
-    ss: ['sː'],
-    s: ['s', 'ˈs', 'z', 'ˈz'],
-    tt: ['tː'],
-    t: ['t', 'ˈt'],
-    u: ['u', 'ˈu', 'w', 'ˈw'],
-    ù: ['u', 'ˈu'],
-    vv: ['vː'],
-    v: ['v', 'ˈv'],
-    z: ['ts', 'dz', 'ˈts', 'ˈdz'],
-    zz: ['tsː', 'dzː']
-  };
-
-  const regex = /([\p{L}]+)\(([^()]*)\)/gu;
-
-  let match;
-
-  while ((match = regex.exec(mappedString)) !== null) {
-    const letters = match[1].toLowerCase();
-    const ipa = match[2];
-    
-    // NEW: empty mapping
-    if (ipa.trim() === '') return originalWord;
-    
-    // letter sequence not in allowed list → return original
-    if (!allowedMappings[letters]) return originalWord;
-
-    // ipa value not allowed → return original
-    if (!allowedMappings[letters].includes(ipa)) return originalWord;
-  }
-
-  return mappedString;
-}
 
   // G2P button
 // G2P button
@@ -762,9 +472,8 @@ document.getElementById('g2p').addEventListener('click', async () => {
 
     for (const chunk of chunks) {
       const tokens = chunk.match(
-      /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
+        /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
       );
-
       if (!tokens) {
         finalResult += chunk;
         continue;
@@ -773,12 +482,10 @@ document.getElementById('g2p').addEventListener('click', async () => {
       // Collect unique words for batch IPA generation
       const uniqueWords = [...new Set(
         tokens.filter(t =>
-           /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
+          /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
         )
       )];
 
-
-      
       // Build marked string for eSpeak
       const markedInput = uniqueWords.join('|');
       const ipaRaw = await runESpeak(markedInput);
@@ -794,7 +501,7 @@ document.getElementById('g2p').addEventListener('click', async () => {
   const g2pTokens = [];
 for (let t = 0; t < tokens.length; t++) {
   const token = tokens[t];
- const isWord = /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);
+  const isWord = /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);
 
   if (!isWord) {
     g2pTokens.push(token);
@@ -802,11 +509,12 @@ for (let t = 0; t < tokens.length; t++) {
   }
 
   const ipa = ipaMap.get(token) || '';
- let mapped = applyG2PMapping(token, ipa);
+  const mapped = applyG2PMapping(token, ipa);
 
-// If mapping failed or incomplete — keep original
-if (mapped === null) {
-  console.warn(`G2P mapping failed for "${token}", recalculating from next word...`);
+  // If mapping failed or incomplete — stop here, recall eSpeak for next word
+  if (mapped === null) {
+    console.warn(`G2P mapping failed for "${token}", recalculating from next word...`);
+
     // Get remaining tokens after this one
     const remainingWords = tokens
       .slice(t)
@@ -830,11 +538,7 @@ if (mapped === null) {
     continue;
   }
 
-// 🔥 NEW: validate mapping
-mapped = validateOrReturnOriginal(token, mapped);
-
-g2pTokens.push(mapped);
-
+  g2pTokens.push(mapped);
 }
 
       // Reconstruct chunk preserving spaces
@@ -883,19 +587,27 @@ function applyG2PMapping(text, ipa) {
     "vv": "vː", 
   };
 
- 
+  function startsWithIpa(ipa, pattern) {
+    const variations = [`${pattern}`, `ˈ${pattern}`, `ˌ${pattern}`, `\u200D${pattern}`, `ˈ\u200D${pattern}`, `\u200Dˈ${pattern}`];
+    for (const variant of variations) {
+      if (ipa.startsWith(variant)) return { match: variant, len: variant.length };
+    }
+    return null;
+  }
+
+  // Check if 'tʃː' or 'dʒː' is followed by any of the specified vowels
+  function isFollowedByVowel(ipa, index) {
+    const following = ipa.slice(index + 3); // Skip 'ː' and check the following character
+    return following.startsWith('i') || following.startsWith('ˈi') || following.startsWith('j') || following.startsWith('ˈj') ||
+           following.startsWith('e') || following.startsWith('ˈe') || following.startsWith('ɛ') || following.startsWith('ˈɛ');
+  }
 
   // Process the word-by-word logic
   while (i < text.length && ipaIndex < ipa.length) {
     const letter = text[i];
     let ipaChar = ipa[ipaIndex];
-  
-    // ★ FIX: keep apostrophes exactly as in original text
-    if (letter === "'") {
-        result.push("'");
-        i++;
-        continue;
-    }
+
+
 
 
         if (ipaChar === 'd' && ipa[ipaIndex + 1] === 'z' && ipa[ipaIndex + 2] === 'ː') {
@@ -1463,7 +1175,7 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
         }
       }
     
-            if (lowerText[i] === 'h' && lowerText[i + 1] === 'o') {
+            if (lowerText[i] === 'h' && lowerText[i + 1] === 'ɔ') {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
       if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'ɔ') {
           result.push(`${letter}${text[i + 1]}(ˈɔ)`);
@@ -1473,32 +1185,10 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
         }
       }
 
-               if (lowerText[i] === 'h' && lowerText[i + 1] === 'o') {
-      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
-      if (ipa[ipaIndex] === 'o') {
-          result.push(`${letter}${text[i + 1]}(o)`);
-          i += 2; // Skip past "ci"
-          ipaIndex += 1; // Skip past the "tʃ" in IPA
-          continue; // Skip the rest of the processing for this "ci"
-        }
-      }
-
-                   if (lowerText[i] === 'h' && lowerText[i + 1] === 'o') {
-      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
-      if (ipa[ipaIndex] === 'ɔ') {
-          result.push(`${letter}${text[i + 1]}(ɔ)`);
-          i += 2; // Skip past "ci"
-          ipaIndex += 1; // Skip past the "tʃ" in IPA
-          continue; // Skip the rest of the processing for this "ci"
-        }
-      }
 
 
 
-    
 
-
-    
     
    // Elisione '
  
@@ -1573,6 +1263,72 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
 
 
 
+            if (lowerText[i] === "'" && lowerText[i + 1] === 'a') {
+      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
+      if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'a') {
+          result.push(`${letter}${text[i + 1]}(ˈa)`);
+          i += 2; // Skip past "ci"
+          ipaIndex += 2; // Skip past the "tʃ" in IPA
+          continue; // Skip the rest of the processing for this "ci"
+        }
+      }
+    
+
+             if (lowerText[i] === "'" && lowerText[i + 1] === 'e') {
+      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
+      if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'e') {
+          result.push(`${letter}${text[i + 1]}(ˈe)`);
+          i += 2; // Skip past "ci"
+          ipaIndex += 2; // Skip past the "tʃ" in IPA
+          continue; // Skip the rest of the processing for this "ci"
+        }
+      }
+
+
+
+          if (lowerText[i] === "'" && lowerText[i + 1] === 'e') {
+      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
+      if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'ɛ') {
+          result.push(`${letter}${text[i + 1]}(ˈɛ)`);
+          i += 2; // Skip past "ci"
+          ipaIndex += 2; // Skip past the "tʃ" in IPA
+          continue; // Skip the rest of the processing for this "ci"
+        }
+      }
+    
+
+             if (lowerText[i] === "'" && lowerText[i + 1] === 'o') {
+      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
+      if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'ɔ') {
+          result.push(`${letter}${text[i + 1]}(ˈɔ)`);
+          i += 2; // Skip past "ci"
+          ipaIndex += 2; // Skip past the "tʃ" in IPA
+          continue; // Skip the rest of the processing for this "ci"
+        }
+      }
+
+
+  
+             if (lowerText[i] === "'" && lowerText[i + 1] === 'i') {
+      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
+      if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'i') {
+          result.push(`${letter}${text[i + 1]}(ˈi)`);
+          i += 2; // Skip past "ci"
+          ipaIndex += 2; // Skip past the "tʃ" in IPA
+          continue; // Skip the rest of the processing for this "ci"
+        }
+      }
+
+
+                if (lowerText[i] === "'" && lowerText[i + 1] === 'u') {
+      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
+      if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'u') {
+          result.push(`${letter}${text[i + 1]}(ˈu)`);
+          i += 2; // Skip past "ci"
+          ipaIndex += 2; // Skip past the "tʃ" in IPA
+          continue; // Skip the rest of the processing for this "ci"
+        }
+      }
 
 
 
@@ -1702,7 +1458,7 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
     
 
     
-        // Default behavior: Process the IPA character normally
+    // Default behavior: Process the IPA character normally
     if (ipaChar === 'ˈ' || ipaChar === 'ˌ') {
       ipaIndex++;
       ipaChar = ipa[ipaIndex];
@@ -1711,12 +1467,12 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
       result.push(`${letter}(${ipaChar})`);
     }
 
+
+
           
     ipaIndex++;
     i++;
   }
-
-  
 
   // If anything left in text, append with empty IPA
   while (i < text.length) {
@@ -1735,6 +1491,8 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
   return result.join('');
 
 }
+
+
 </script>
 
 
