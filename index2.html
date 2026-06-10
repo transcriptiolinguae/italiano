@@ -259,13 +259,29 @@ function normalizeCurlyApostrophes(text) {
   const inputElem = document.getElementById('input');
 
   let wasmReady = false;
+  let phonitaliaMap = null;
 
-  window.addEventListener('load', async () => {
-    try {
-      await initESpeak({
-        print: () => {},
-        printErr: () => {}
-      });
+  
+
+window.addEventListener('load', async () => {
+  try {
+
+    const dict = await fetch('./phonitalia.json')
+      .then(r => r.json());
+
+    phonitaliaMap = dict;
+
+    console.log(
+      `Loaded ${Object.keys(phonitaliaMap).length} IPA entries`
+    );
+
+    await initESpeak({
+      print: () => {},
+      printErr: () => {}
+    });
+
+    
+    
       wasmReady = true;
       console.log('eSpeak NG WASM loaded and ready');
     } catch (e) {
@@ -640,22 +656,52 @@ document.getElementById('testoafi').addEventListener('click', async () => {
 });
 
 
-// ------------------------------------------------------
-// Helper: compute IPA map for a list of words (batch mode)
-// ------------------------------------------------------
 async function computeIPAMap(words) {
+
   const unique = [...new Set(words)];
-  const marked = unique.join("|");
-  const ipaRaw = await runESpeak(marked);
-  const ipaClean = ipaRaw.replace(/\|/g, " ").trim();
-  const ipaWords = ipaClean.split(/\s+/);
+
   const map = new Map();
-  for (let i = 0; i < unique.length; i++) {
-    map.set(unique[i], ipaWords[i] || "");
+
+  const wordsForESpeak = [];
+
+  for (const word of unique) {
+
+    const customIPA =
+      phonitaliaMap?.[word.toLowerCase()];
+
+    if (customIPA) {
+      map.set(word, customIPA);
+    } else {
+      wordsForESpeak.push(word);
+    }
   }
+
+  if (wordsForESpeak.length === 0) {
+    return map;
+  }
+
+  const marked = wordsForESpeak.join("|");
+
+  const ipaRaw = await runESpeak(marked);
+
+  const ipaClean =
+    ipaRaw.replace(/\|/g, " ").trim();
+
+  const ipaWords =
+    ipaClean.split(/\s+/);
+
+  for (let i = 0; i < wordsForESpeak.length; i++) {
+    map.set(
+      wordsForESpeak[i],
+      ipaWords[i] || ""
+    );
+  }
+
   return map;
 }
 
+
+  
 
 
   
