@@ -258,8 +258,8 @@ function normalizeCurlyApostrophes(text) {
   const outputElem = document.getElementById('output');
   const inputElem = document.getElementById('input');
 
-  let wasmReady = false;
-  let phonitaliaMap = null;
+ let wasmReady = false;
+ let phonitaliaMap = null;
 
   
 
@@ -280,16 +280,18 @@ window.addEventListener('load', async () => {
       printErr: () => {}
     });
 
-    
-    
-      wasmReady = true;
-      console.log('eSpeak NG WASM loaded and ready');
-    } catch (e) {
-      console.error('Error loading WASM:', e);
-      outputElem.classList.remove('placeholder');
-      outputElem.innerText = 'Error loading eSpeak WASM module.';
-    }
-  });
+    wasmReady = true;
+
+    console.log('eSpeak NG WASM loaded and ready');
+
+  } catch (e) {
+    console.error('Error loading WASM:', e);
+    outputElem.classList.remove('placeholder');
+    outputElem.innerText = 'Error loading eSpeak WASM module.';
+  }
+});
+
+  
 
   function printErrFiltered(err) {
     if (
@@ -655,32 +657,11 @@ document.getElementById('testoafi').addEventListener('click', async () => {
   }
 });
 
-
 async function computeIPAMap(words) {
 
   const unique = [...new Set(words)];
 
-  const map = new Map();
-
-  const wordsForESpeak = [];
-
-  for (const word of unique) {
-
-    const customIPA =
-      phonitaliaMap?.[word.toLowerCase()];
-
-    if (customIPA) {
-      map.set(word, customIPA);
-    } else {
-      wordsForESpeak.push(word);
-    }
-  }
-
-  if (wordsForESpeak.length === 0) {
-    return map;
-  }
-
-  const marked = wordsForESpeak.join("|");
+  const marked = unique.join("|");
 
   const ipaRaw = await runESpeak(marked);
 
@@ -690,18 +671,35 @@ async function computeIPAMap(words) {
   const ipaWords =
     ipaClean.split(/\s+/);
 
-  for (let i = 0; i < wordsForESpeak.length; i++) {
-    map.set(
-      wordsForESpeak[i],
-      ipaWords[i] || ""
-    );
+  const map = new Map();
+
+  for (let i = 0; i < unique.length; i++) {
+
+    const word = unique[i];
+
+    let ipa = ipaWords[i] || "";
+
+    const customIPA =
+      phonitaliaMap?.[word.toLowerCase()];
+
+    if (customIPA) {
+
+      ipa = customIPA;
+
+      console.log(
+        "PHONITALIA:",
+        word,
+        "→",
+        ipa
+      );
+    }
+
+    map.set(word, ipa);
   }
 
   return map;
 }
 
-
-  
 
 
   
