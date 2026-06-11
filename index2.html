@@ -255,25 +255,45 @@ function normalizeCurlyApostrophes(text) {
   return text.replace(/[’‘]/g, "'");
 }
   
-  const outputElem = document.getElementById('output');
-  const inputElem = document.getElementById('input');
+const outputElem = document.getElementById('output');
+const inputElem = document.getElementById('input');
 
-  let wasmReady = false;
+let wasmReady = false;
 
-  window.addEventListener('load', async () => {
-    try {
-      await initESpeak({
-        print: () => {},
-        printErr: () => {}
-      });
-      wasmReady = true;
-      console.log('eSpeak NG WASM loaded and ready');
-    } catch (e) {
-      console.error('Error loading WASM:', e);
-      outputElem.classList.remove('placeholder');
-      outputElem.innerText = 'Error loading eSpeak WASM module.';
-    }
-  });
+// IPA dictionary
+let ipaDictionary = {};
+
+window.addEventListener('load', async () => {
+  try {
+
+    // Load IPA dictionary
+    const response = await fetch('./phonitalia.json');
+    ipaDictionary = await response.json();
+
+    console.log(
+      `Loaded ${Object.keys(ipaDictionary).length} IPA entries`
+    );
+
+    // Load eSpeak
+    await initESpeak({
+      print: () => {},
+      printErr: () => {}
+    });
+
+    wasmReady = true;
+
+    console.log('eSpeak NG WASM loaded and ready');
+
+  } catch (e) {
+
+    console.error('Error loading:', e);
+
+    outputElem.classList.remove('placeholder');
+
+    outputElem.innerText =
+      'Error loading dictionary or eSpeak.';
+  }
+});
 
   function printErrFiltered(err) {
     if (
@@ -640,19 +660,70 @@ document.getElementById('testoafi').addEventListener('click', async () => {
 });
 
 
-// ------------------------------------------------------
-// Helper: compute IPA map for a list of words (batch mode)
+
+  function getDictionaryIPA(word) {
+
+  const key = word.toLowerCase();
+
+  if (ipaDictionary[key]) {
+    return ipaDictionary[key];
+  }
+
+  return null;
+}
+
 // ------------------------------------------------------
 async function computeIPAMap(words) {
-  const unique = [...new Set(words)];
-  const marked = unique.join("|");
-  const ipaRaw = await runESpeak(marked);
-  const ipaClean = ipaRaw.replace(/\|/g, " ").trim();
-  const ipaWords = ipaClean.split(/\s+/);
+
   const map = new Map();
-  for (let i = 0; i < unique.length; i++) {
-    map.set(unique[i], ipaWords[i] || "");
+
+  const espeakWords = [];
+
+  for (const word of words) {
+
+    const dictIPA = getDictionaryIPA(word);
+
+    if (dictIPA) {
+
+      map.set(word, dictIPA);
+
+      console.log(
+        `[DICT] ${word} → ${dictIPA}`
+      );
+
+    } else {
+
+      espeakWords.push(word);
+    }
   }
+
+  if (espeakWords.length > 0) {
+
+    const unique = [...new Set(espeakWords)];
+
+    const marked = unique.join("|");
+
+    const ipaRaw = await runESpeak(marked);
+
+    const ipaClean =
+      ipaRaw.replace(/\|/g, " ").trim();
+
+    const ipaWords =
+      ipaClean.split(/\s+/);
+
+    for (let i = 0; i < unique.length; i++) {
+
+      map.set(
+        unique[i],
+        ipaWords[i] || ""
+      );
+
+      console.log(
+        `[ESPEAK] ${unique[i]} → ${ipaWords[i]}`
+      );
+    }
+  }
+
   return map;
 }
 
