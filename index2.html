@@ -258,40 +258,22 @@ function normalizeCurlyApostrophes(text) {
   const outputElem = document.getElementById('output');
   const inputElem = document.getElementById('input');
 
- let wasmReady = false;
- let phonitaliaMap = null;
+  let wasmReady = false;
 
-  
-
-window.addEventListener('load', async () => {
-  try {
-
-    const dict = await fetch('./phonitalia.json')
-      .then(r => r.json());
-
-    phonitaliaMap = dict;
-
-    console.log(
-      `Loaded ${Object.keys(phonitaliaMap).length} IPA entries`
-    );
-
-    await initESpeak({
-      print: () => {},
-      printErr: () => {}
-    });
-
-    wasmReady = true;
-
-    console.log('eSpeak NG WASM loaded and ready');
-
-  } catch (e) {
-    console.error('Error loading WASM:', e);
-    outputElem.classList.remove('placeholder');
-    outputElem.innerText = 'Error loading eSpeak WASM module.';
-  }
-});
-
-  
+  window.addEventListener('load', async () => {
+    try {
+      await initESpeak({
+        print: () => {},
+        printErr: () => {}
+      });
+      wasmReady = true;
+      console.log('eSpeak NG WASM loaded and ready');
+    } catch (e) {
+      console.error('Error loading WASM:', e);
+      outputElem.classList.remove('placeholder');
+      outputElem.innerText = 'Error loading eSpeak WASM module.';
+    }
+  });
 
   function printErrFiltered(err) {
     if (
@@ -657,46 +639,20 @@ document.getElementById('testoafi').addEventListener('click', async () => {
   }
 });
 
+
+// ------------------------------------------------------
+// Helper: compute IPA map for a list of words (batch mode)
+// ------------------------------------------------------
 async function computeIPAMap(words) {
-
   const unique = [...new Set(words)];
-
   const marked = unique.join("|");
-
   const ipaRaw = await runESpeak(marked);
-
-  const ipaClean =
-    ipaRaw.replace(/\|/g, " ").trim();
-
-  const ipaWords =
-    ipaClean.split(/\s+/);
-
+  const ipaClean = ipaRaw.replace(/\|/g, " ").trim();
+  const ipaWords = ipaClean.split(/\s+/);
   const map = new Map();
-
   for (let i = 0; i < unique.length; i++) {
-
-    const word = unique[i];
-
-    let ipa = ipaWords[i] || "";
-
-    const customIPA =
-      phonitaliaMap?.[word.toLowerCase()];
-
-    if (customIPA) {
-
-      ipa = customIPA;
-
-      console.log(
-        "PHONITALIA:",
-        word,
-        "→",
-        ipa
-      );
-    }
-
-    map.set(word, ipa);
+    map.set(unique[i], ipaWords[i] || "");
   }
-
   return map;
 }
 
