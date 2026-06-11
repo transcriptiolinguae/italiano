@@ -259,15 +259,36 @@ function normalizeCurlyApostrophes(text) {
   const inputElem = document.getElementById('input');
 
   let wasmReady = false;
+  
+  let phonitalia = {};
+  const ipaCache = {};
 
-  window.addEventListener('load', async () => {
-    try {
-      await initESpeak({
-        print: () => {},
-        printErr: () => {}
-      });
-      wasmReady = true;
-      console.log('eSpeak NG WASM loaded and ready');
+async function loadPhonitalia() {
+
+  const response = await fetch('./phonitalia.json');
+
+  phonitalia = await response.json();
+
+  console.log(
+    `Loaded ${Object.keys(phonitalia).length} phonitalia entries`
+  );
+}
+
+
+  
+window.addEventListener('load', async () => {
+  try {
+
+    await loadPhonitalia();
+
+    await initESpeak({
+      print: () => {},
+      printErr: () => {}
+    });
+
+    wasmReady = true;
+
+    console.log('eSpeak NG WASM loaded and ready');
     } catch (e) {
       console.error('Error loading WASM:', e);
       outputElem.classList.remove('placeholder');
@@ -640,22 +661,66 @@ document.getElementById('testoafi').addEventListener('click', async () => {
 });
 
 
-// ------------------------------------------------------
-// Helper: compute IPA map for a list of words (batch mode)
-// ------------------------------------------------------
 async function computeIPAMap(words) {
+
   const unique = [...new Set(words)];
-  const marked = unique.join("|");
-  const ipaRaw = await runESpeak(marked);
-  const ipaClean = ipaRaw.replace(/\|/g, " ").trim();
-  const ipaWords = ipaClean.split(/\s+/);
+
   const map = new Map();
-  for (let i = 0; i < unique.length; i++) {
-    map.set(unique[i], ipaWords[i] || "");
+
+  const missingWords = [];
+
+  for (const word of unique) {
+
+    const key = word.toLowerCase();
+
+    // 1. phonitalia lookup
+
+    if (phonitalia[key]) {
+
+      map.set(word, phonitalia[key]);
+
+      continue;
+    }
+
+    // 2. cache lookup
+
+    if (ipaCache[key]) {
+
+      map.set(word, ipaCache[key]);
+
+      continue;
+    }
+
+    // 3. needs eSpeak
+
+    missingWords.push(word);
   }
+
+  if (missingWords.length > 0) {
+
+    const marked = missingWords.join('|');
+
+    const ipaRaw = await runESpeak(marked);
+
+    const ipaWords =
+      ipaRaw
+        .split('|')
+        .map(x => x.trim());
+
+    for (let i = 0; i < missingWords.length; i++) {
+
+      const word = missingWords[i];
+
+      const ipa = ipaWords[i] || '';
+
+      map.set(word, ipa);
+
+      ipaCache[word.toLowerCase()] = ipa;
+    }
+  }
+
   return map;
 }
-
 
 
   
