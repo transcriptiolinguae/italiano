@@ -431,7 +431,9 @@ document.getElementById('afi').addEventListener('click', async () => {
 
         let ipa = ipaMap.get(token) || "";
         let mapped = applyG2PMapping(token, ipa);
-
+console.log("WORD:", token);
+console.log("IPA:", ipa);
+console.log("MAPPED:", mapped);
         // If mapping fails → recover
         if (mapped === null) {
 
@@ -1426,21 +1428,7 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
     }
 
 
-        if (lowerText[i] === 'c' && lowerText[i + 1] === 'i') {
-      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
-      if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 't' && ipa[ipaIndex + 2] === 'ʃ') {
-        const nextIpa = ipa.slice(ipaIndex + 3, ipaIndex + 5); // Check the next two IPA chars
-
-        if (!/i|ˈi|j|ˈj/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
-          // map "ci" with "tʃ" to "ci(tʃ)"
-          result.push(`${letter}${text[i + 1]}('tʃ)`);
-          i += 2; // Skip past "ci"
-          ipaIndex += 2; // Skip past the "tʃ" in IPA
-          continue; // Skip the rest of the processing for this "ci"
-        }
-      }
-    }
-    
+ 
 
 
     // ch(k)
