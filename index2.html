@@ -1480,7 +1480,7 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
 
     
     
-// gi(dʒ)
+// gi(dʒ)2026
     
         if (lowerText[i] === 'g' && lowerText[i + 1] === 'i') {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
@@ -1497,6 +1497,31 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
       }
     }
 
+    
+ if (lowerText[i] === 'g' && lowerText[i + 1] === 'i') {
+
+  if (
+    ipa[ipaIndex] === 'ˈ' &&
+    ipa[ipaIndex + 1] === 'd' &&
+    ipa[ipaIndex + 2] === 'ʒ'
+  ) {
+
+    const nextIpa = ipa.slice(ipaIndex + 3, ipaIndex + 5);
+
+    if (!/i|ˈi|j|ˈj/.test(nextIpa)) {
+
+      result.push(`${letter}${text[i + 1]}(ˈdʒ)`);
+
+      i += 2;
+      ipaIndex += 3;
+
+      continue;
+    }
+  }
+}
+
+
+    
 
 // gi(dʒ)
     
