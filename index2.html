@@ -431,10 +431,14 @@ document.getElementById('afi').addEventListener('click', async () => {
 
         let ipa = ipaMap.get(token) || "";
         let mapped = applyG2PMapping(token, ipa);
+        
+        // If mapping fails → recover2026
 console.log("WORD:", token);
 console.log("IPA:", ipa);
 console.log("MAPPED:", mapped);
-        // If mapping fails → recover
+        
+        // If mapping fails → recover2026
+        
         if (mapped === null) {
 
           // Find next real word
