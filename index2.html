@@ -426,7 +426,9 @@ ipaMap = applyPhonitaliaOverrides(words, ipaMap);
           converted.push(token);
           continue;
         }
-
+        
+console.log("AFTER OVERRIDE", token, ipaMap.get(token));
+        
         let ipa = ipaMap.get(token) || "";
         let mapped = applyG2PMapping(token, ipa);
 
