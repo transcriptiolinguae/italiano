@@ -1408,7 +1408,7 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
 
 
 
-// ci(tʃ)
+// ci(tʃ)2026
     
         if (lowerText[i] === 'c' && lowerText[i + 1] === 'i') {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
@@ -1428,7 +1428,7 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
 
         if (lowerText[i] === 'c' && lowerText[i + 1] === 'i') {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
-      if (ipa[ipaIndex] === ''ˈ && ipa[ipaIndex + 1] === 't' && ipa[ipaIndex + 2] === 'ʃ') {
+      if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 't' && ipa[ipaIndex + 2] === 'ʃ') {
         const nextIpa = ipa.slice(ipaIndex + 2, ipaIndex + 4); // Check the next two IPA chars
 
         if (!/i|ˈi|j|ˈj/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
