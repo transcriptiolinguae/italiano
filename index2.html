@@ -842,26 +842,25 @@ document.getElementById('g2p').addEventListener('click', async () => {
         continue;
       }
 
-      // Collect unique words for batch IPA generation
-      const uniqueWords = [...new Set(
-        tokens.filter(t =>
-           /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
-        )
-      )];
+
+
 
 
       
-      // Build marked string for eSpeak
-      const markedInput = uniqueWords.join('|');
-      const ipaRaw = await runESpeak(markedInput);
-      const ipaClean = ipaRaw.replace(/\|/g, ' ').trim();
-      const ipaWords = ipaClean.split(/\s+/);
+      
+   const uniqueWords = [...new Set(
+  tokens.filter(t =>
+    /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
+  )
+)];
 
-      // Create map word → IPA
-      const ipaMap = new Map();
-      for (let i = 0; i < uniqueWords.length; i++) {
-        ipaMap.set(uniqueWords[i], ipaWords[i] || '');
-      }
+const ipaMap = await computeIPAMap(uniqueWords);
+
+
+
+
+
+      
 
   const g2pTokens = [];
 for (let t = 0; t < tokens.length; t++) {
@@ -886,15 +885,11 @@ if (mapped === null) {
 
     if (remainingWords.length > 0) {
       // Re-run eSpeak on the remaining portion only
-      const newMarked = remainingWords.join('|');
-      const newIpaRaw = await runESpeak(newMarked);
-      const newIpaClean = newIpaRaw.replace(/\|/g, ' ').trim();
-      const newIpaWords = newIpaClean.split(/\s+/);
+const newMap = await computeIPAMap(remainingWords);
 
-      // Rebuild ipaMap for remaining words
-      for (let i = 0; i < remainingWords.length; i++) {
-        ipaMap.set(remainingWords[i], newIpaWords[i] || '');
-      }
+for (const [word, ipa] of newMap) {
+  ipaMap.set(word, ipa);
+}
     }
 
     // Skip this token (unmapped)
