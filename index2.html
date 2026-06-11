@@ -1432,7 +1432,33 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
     }
 
 
- 
+ if (lowerText[i] === 'c' && lowerText[i + 1] === 'i') {
+
+  if (
+    ipa[ipaIndex] === 'ˈ' &&
+    ipa[ipaIndex + 1] === 't' &&
+    ipa[ipaIndex + 2] === 'ʃ'
+  ) {
+
+    const nextIpa = ipa.slice(ipaIndex + 3, ipaIndex + 5);
+
+    if (!/i|ˈi|j|ˈj/.test(nextIpa)) {
+
+      result.push(`${letter}${text[i + 1]}(ˈtʃ)`);
+
+      i += 2;
+      ipaIndex += 3;
+
+      continue;
+    }
+  }
+}
+
+
+
+
+
+    
 
 
     // ch(k)
