@@ -259,19 +259,9 @@ function normalizeCurlyApostrophes(text) {
   const inputElem = document.getElementById('input');
 
   let wasmReady = false;
-  let phonitaliaDict = {};
 
   window.addEventListener('load', async () => {
     try {
-      
-const response = await fetch('./phonitalia.json');
-phonitaliaDict = await response.json();
-
-console.log(
-  "Loaded Phonitalia entries:",
-  Object.keys(phonitaliaDict).length
-);
-      
       await initESpeak({
         print: () => {},
         printErr: () => {}
@@ -326,28 +316,6 @@ console.log(
       .replace(/ɡ/g, 'g')
       .trim();
   }
-
-
-
-
-  function applyPhonitaliaOverrides(ipaMap) {
-
-  for (const [word, ipa] of ipaMap.entries()) {
-
-    const lookup = word.toLowerCase();
-
-    if (phonitaliaDict[lookup]) {
-
-      console.log(
-        `PHONITALIA OVERRIDE: ${word} -> ${phonitaliaDict[lookup]}`
-      );
-
-      ipaMap.set(word, phonitaliaDict[lookup]);
-    }
-  }
-
-  return ipaMap;
-}
 
   function showPlaceholder() {
     outputElem.className = 'placeholder';
@@ -682,14 +650,10 @@ async function computeIPAMap(words) {
   const ipaClean = ipaRaw.replace(/\|/g, " ").trim();
   const ipaWords = ipaClean.split(/\s+/);
   const map = new Map();
-for (let i = 0; i < unique.length; i++) {
-  map.set(unique[i], ipaWords[i] || "");
-}
-
-// PHONITALIA REPLACEMENT
-applyPhonitaliaOverrides(map);
-
-return map;
+  for (let i = 0; i < unique.length; i++) {
+    map.set(unique[i], ipaWords[i] || "");
+  }
+  return map;
 }
 
 
