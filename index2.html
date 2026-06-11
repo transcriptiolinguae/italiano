@@ -259,15 +259,31 @@ function normalizeCurlyApostrophes(text) {
   const inputElem = document.getElementById('input');
 
   let wasmReady = false;
+  let phonitaliaMap = new Map();
 
-  window.addEventListener('load', async () => {
-    try {
-      await initESpeak({
-        print: () => {},
-        printErr: () => {}
-      });
-      wasmReady = true;
-      console.log('eSpeak NG WASM loaded and ready');
+  
+window.addEventListener('load', async () => {
+  try {
+
+    await initESpeak({
+      print: () => {},
+      printErr: () => {}
+    });
+
+    const response = await fetch('./phonitalia.json');
+    const phonitalia = await response.json();
+
+    phonitaliaMap = new Map(
+      Object.entries(phonitalia).map(([word, ipa]) => [
+        word.normalize("NFC").toLowerCase(),
+        ipa
+      ])
+    );
+
+    wasmReady = true;
+
+    console.log('eSpeak NG WASM loaded and ready');
+    console.log(`Loaded ${phonitaliaMap.size} PhonItalia entries`);
     } catch (e) {
       console.error('Error loading WASM:', e);
       outputElem.classList.remove('placeholder');
@@ -394,8 +410,10 @@ document.getElementById('afi').addEventListener('click', async () => {
       );
 
       // First IPA pass
-      let ipaMap = await computeIPAMap(words);
+let ipaMap = await computeIPAMap(words);
 
+ipaMap = applyPhonitaliaOverrides(words, ipaMap);
+      
       const converted = [];
 
       for (let t = 0; t < tokens.length; t++) {
@@ -656,7 +674,24 @@ async function computeIPAMap(words) {
   return map;
 }
 
+function applyPhonitaliaOverrides(words, ipaMap) {
 
+  const uniqueWords = [...new Set(words)];
+
+  for (const word of uniqueWords) {
+
+    const override =
+      phonitaliaMap.get(
+        word.normalize("NFC").toLowerCase()
+      );
+
+    if (override) {
+      ipaMap.set(word, override);
+    }
+  }
+
+  return ipaMap;
+}
 
   
 
