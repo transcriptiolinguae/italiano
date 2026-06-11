@@ -259,13 +259,37 @@ function normalizeCurlyApostrophes(text) {
   const inputElem = document.getElementById('input');
 
   let wasmReady = false;
+  let phonitaliaDict = {};
 
-  window.addEventListener('load', async () => {
-    try {
-      await initESpeak({
-        print: () => {},
-        printErr: () => {}
-      });
+window.addEventListener('load', async () => {
+  try {
+
+    // Load PhonItalia dictionary
+    const response = await fetch('./phonitalia.json');
+    phonitaliaDict = await response.json();
+
+    console.log(
+      `Loaded ${Object.keys(phonitaliaDict).length} PhonItalia entries`
+    );
+
+    await initESpeak({
+      print: () => {},
+      printErr: () => {}
+    });
+
+    wasmReady = true;
+
+    console.log('eSpeak NG WASM loaded and ready');
+
+  } catch (e) {
+
+    console.error('Error loading resources:', e);
+
+    outputElem.classList.remove('placeholder');
+    outputElem.innerText =
+      'Error loading eSpeak or phonitalia.json';
+  }
+});
       wasmReady = true;
       console.log('eSpeak NG WASM loaded and ready');
     } catch (e) {
@@ -638,24 +662,60 @@ document.getElementById('testoafi').addEventListener('click', async () => {
     setOutput("Error during G2P Inline processing: " + e.message);
   }
 });
-
-
-// ------------------------------------------------------
-// Helper: compute IPA map for a list of words (batch mode)
-// ------------------------------------------------------
-async function computeIPAMap(words) {
-  const unique = [...new Set(words)];
-  const marked = unique.join("|");
-  const ipaRaw = await runESpeak(marked);
-  const ipaClean = ipaRaw.replace(/\|/g, " ").trim();
-  const ipaWords = ipaClean.split(/\s+/);
-  const map = new Map();
-  for (let i = 0; i < unique.length; i++) {
-    map.set(unique[i], ipaWords[i] || "");
-  }
-  return map;
+function normalizeLookup(word) {
+  return word.toLowerCase();
 }
 
+async function computeIPAMap(words) {
+
+  const unique = [...new Set(words)];
+  const map = new Map();
+
+  const wordsForESpeak = [];
+
+  // FIRST: PhonItalia lookup
+  for (const word of unique) {
+
+    const key = normalizeLookup(word);
+
+    if (phonitaliaDict[key]) {
+
+      map.set(word, phonitaliaDict[key]);
+
+    } else {
+
+      wordsForESpeak.push(word);
+
+    }
+  }
+
+  // SECOND: eSpeak only for unknown words
+  if (wordsForESpeak.length > 0) {
+
+    const marked = wordsForESpeak.join("|");
+
+    const ipaRaw = await runESpeak(marked);
+
+    const ipaClean =
+      ipaRaw
+        .replace(/\|/g, " ")
+        .trim();
+
+    const ipaWords =
+      ipaClean.split(/\s+/);
+
+    for (let i = 0; i < wordsForESpeak.length; i++) {
+
+      map.set(
+        wordsForESpeak[i],
+        ipaWords[i] || ""
+      );
+
+    }
+  }
+
+  return map;
+}
 
 
   
