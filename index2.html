@@ -259,38 +259,13 @@ function normalizeCurlyApostrophes(text) {
   const inputElem = document.getElementById('input');
 
   let wasmReady = false;
-  let phonitaliaMap = new Map();
 
-  async function loadPhonitalia() {
-
-  const response = await fetch('./phonitalia.json');
-
-  const data = await response.json();
-
-  for (const entry of data) {
-
-    phonitaliaMap.set(
-      entry.word.toLowerCase(),
-      entry.ipa
-    );
-
-  }
-
-  console.log(
-    `Loaded ${phonitaliaMap.size} PhonItalia entries`
-  );
-}
-  
-window.addEventListener('load', async () => {
-  try {
-
-    await loadPhonitalia();
-
-    await initESpeak({
-      print: () => {},
-      printErr: () => {}
-    });
-    
+  window.addEventListener('load', async () => {
+    try {
+      await initESpeak({
+        print: () => {},
+        printErr: () => {}
+      });
       wasmReady = true;
       console.log('eSpeak NG WASM loaded and ready');
     } catch (e) {
@@ -681,54 +656,7 @@ async function computeIPAMap(words) {
   return map;
 }
 
-async function computeHybridIPAMap(words) {
 
-  const map = new Map();
-
-  const missingWords = [];
-
-  for (const word of words) {
-
-    const phonitaliaIPA =
-      phonitaliaMap.get(word.toLowerCase());
-
-    if (phonitaliaIPA) {
-
-      map.set(word, phonitaliaIPA);
-
-    } else {
-
-      missingWords.push(word);
-
-    }
-  }
-
-  if (missingWords.length > 0) {
-
-    const unique = [...new Set(missingWords)];
-
-    const marked = unique.join("|");
-
-    const ipaRaw = await runESpeak(marked);
-
-    const ipaClean =
-      ipaRaw.replace(/\|/g, " ").trim();
-
-    const ipaWords =
-      ipaClean.split(/\s+/);
-
-    for (let i = 0; i < unique.length; i++) {
-
-      map.set(
-        unique[i],
-        ipaWords[i] || ""
-      );
-
-    }
-  }
-
-  return map;
-}
 
   
 
@@ -843,14 +771,26 @@ document.getElementById('g2p').addEventListener('click', async () => {
         continue;
       }
 
-const uniqueWords = [...new Set(
-  tokens.filter(t =>
-    /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
-  )
-)];
+      // Collect unique words for batch IPA generation
+      const uniqueWords = [...new Set(
+        tokens.filter(t =>
+           /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
+        )
+      )];
 
-const ipaMap =
-  await computeHybridIPAMap(uniqueWords);
+
+      
+      // Build marked string for eSpeak
+      const markedInput = uniqueWords.join('|');
+      const ipaRaw = await runESpeak(markedInput);
+      const ipaClean = ipaRaw.replace(/\|/g, ' ').trim();
+      const ipaWords = ipaClean.split(/\s+/);
+
+      // Create map word → IPA
+      const ipaMap = new Map();
+      for (let i = 0; i < uniqueWords.length; i++) {
+        ipaMap.set(uniqueWords[i], ipaWords[i] || '');
+      }
 
   const g2pTokens = [];
 for (let t = 0; t < tokens.length; t++) {
@@ -875,12 +815,15 @@ if (mapped === null) {
 
     if (remainingWords.length > 0) {
       // Re-run eSpeak on the remaining portion only
-     const rebuiltMap =
-  await computeHybridIPAMap(remainingWords);
+      const newMarked = remainingWords.join('|');
+      const newIpaRaw = await runESpeak(newMarked);
+      const newIpaClean = newIpaRaw.replace(/\|/g, ' ').trim();
+      const newIpaWords = newIpaClean.split(/\s+/);
 
-for (const [word, ipa] of rebuiltMap) {
-  ipaMap.set(word, ipa);
-}
+      // Rebuild ipaMap for remaining words
+      for (let i = 0; i < remainingWords.length; i++) {
+        ipaMap.set(remainingWords[i], newIpaWords[i] || '');
+      }
     }
 
     // Skip this token (unmapped)
