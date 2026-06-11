@@ -430,8 +430,8 @@ ipaMap = applyPhonitaliaOverrides(words, ipaMap);
 
         
         let ipa = ipaMap.get(token) || "";
-        let mapped = applyG2PMapping(token, ipa);
-
+converted.push(ipa);
+continue;
         // If mapping fails → recover
         if (mapped === null) {
 
