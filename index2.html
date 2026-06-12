@@ -432,12 +432,12 @@ document.getElementById('afi').addEventListener('click', async () => {
         let ipa = ipaMap.get(token) || "";
         let mapped = applyG2PMapping(token, ipa);
         
-        // If mapping fails → recover2026
+        // show in console how words map 2026
 console.log("WORD:", token);
 console.log("IPA:", ipa);
 console.log("MAPPED:", mapped);
         
-        // If mapping fails → recover2026
+        // If mapping fails → recover
         
         if (mapped === null) {
 
@@ -1414,7 +1414,7 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
 
 
 
-// ci(tʃ)2026
+// ci(tʃ)
     
         if (lowerText[i] === 'c' && lowerText[i + 1] === 'i') {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
@@ -1431,7 +1431,7 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
       }
     }
 
-
+// ci('tʃ) 2026
  if (lowerText[i] === 'c' && lowerText[i + 1] === 'i') {
 
   if (
@@ -1480,7 +1480,7 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
 
     
     
-// gi(dʒ)2026
+// gi(dʒ)
     
         if (lowerText[i] === 'g' && lowerText[i + 1] === 'i') {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
@@ -1497,7 +1497,7 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
       }
     }
 
-    
+    // gi(dʒ) 2026
  if (lowerText[i] === 'g' && lowerText[i + 1] === 'i') {
 
   if (
@@ -1751,7 +1751,7 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
 
 
     
-        // g(dʒ) 2026
+        // g(dʒ)
     if (lowerText[i] === 'g') { 
     if (ipa[ipaIndex] === 'd' && ipa[ipaIndex + 1] === 'ʒ') {
       const nextIpa = ipa.slice(ipaIndex + 2, ipaIndex + 4); // Check the next IPA chars
@@ -1766,7 +1766,7 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
  }
 
 
-            // g('dʒ)
+            // g('dʒ) 2026
     if (lowerText[i] === 'g') { 
     if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'd' && ipa[ipaIndex + 2] === 'ʒ') {
       const nextIpa = ipa.slice(ipaIndex + 3, ipaIndex + 5); // Check the next IPA chars
