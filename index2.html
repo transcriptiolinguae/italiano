@@ -1197,7 +1197,7 @@ function applyG2PMapping(text, ipa) {
       if (ipa[ipaIndex] === ''' && ipa[ipaIndex + 1] === 'r' && ipa[ipaIndex + 2] === 'ː') {
           result.push(`${text[i]}${text[i + 1]}('${ipaChar}ː)`);
           i += 2; // Skip past "ci"
-          ipaIndex += 2; // Skip past the "tʃ" in IPA
+          ipaIndex += 3; // Skip past the "tʃ" in IPA
           continue; // Skip the rest of the processing for this "ci"
         }
       }
