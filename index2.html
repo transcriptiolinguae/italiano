@@ -787,7 +787,7 @@ function validateOrReturnOriginal(originalWord, mappedString) {
     sc: ['ʃ', 'ˈʃ'],
     ss: ['sː'],
     s: ['s', 'ˈs', 'z', 'ˈz', '.z', 'ˌz'],
-    tt: ['tː', 'ˈtː'],
+    tt: ['tː', 'ˈtː'], //2026
     t: ['t', 'ˈt'],
     u: ['u', 'ˈu', 'w', 'ˈw'],
     ù: ['u', 'ˈu'],
@@ -1532,6 +1532,28 @@ if (
         }
       }
     }
+    
+    // ch(k) 2026
+ if (lowerText[i] === 'c' && lowerText[i + 1] === 'h') {
+
+  if (
+    ipa[ipaIndex] === 'ˈ' &&
+    ipa[ipaIndex + 1] === 'k' &&
+  ) {
+
+    const nextIpa = ipa.slice(ipaIndex + 2, ipaIndex + 4);
+
+    if (!/i|ˈi|j|ˈj/.test(nextIpa)) {
+
+      result.push(`${letter}${text[i + 1]}(ˈk)`);
+
+      i += 2;
+      ipaIndex += 2;
+
+      continue;
+    }
+  }
+}
 
     
     
