@@ -781,7 +781,7 @@ function validateOrReturnOriginal(originalWord, mappedString) {
     pp: ['pː'],
     p: ['p', 'ˈp'],
     q: ['k', 'ˈk'],
-  //  rr: ['rː'],
+    rr: ['rː'],
     r: ['r', 'ˈr'],
     sci: ['ʃ', 'ˈʃ'],
     sc: ['ʃ', 'ˈʃ'],
@@ -1194,8 +1194,8 @@ function applyG2PMapping(text, ipa) {
 
        if (lowerText[i] === 'r' && lowerText[i + 1] === 'r') {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
-      if (ipa[ipaIndex] === 'r' && ipa[ipaIndex + 1] === 'ː') {
-          result.push(`${text[i]}${text[i + 1]}(${ipaChar}ː)`);
+      if (ipa[ipaIndex] === ''' && ipa[ipaIndex + 1] === 'r' && ipa[ipaIndex + 2] === 'ː') {
+          result.push(`${text[i]}${text[i + 1]}('${ipaChar}ː)`);
           i += 2; // Skip past "ci"
           ipaIndex += 2; // Skip past the "tʃ" in IPA
           continue; // Skip the rest of the processing for this "ci"
