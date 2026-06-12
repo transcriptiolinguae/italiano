@@ -1772,7 +1772,7 @@ else if (!/i|ˈi/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
       const nextIpa = ipa.slice(ipaIndex + 3, ipaIndex + 5); // Check the next IPA chars
 
       if (/i|ˈi|j|ˈj|e|ˈe|ɛ|ˈɛ/.test(nextIpa)) { // If "tʃ" is followed by "i", "ˈi", "j", or "ˈj"
-        result.push(`${letter}(dʒ)`); // map c(tʃ)
+        result.push(`${letter}(ˈdʒ)`); // map c(tʃ)
         i += 1; // Skip past "ci"
         ipaIndex += 3; // Skip past the "tʃ" in IPA
         continue; // Skip the rest of the processing for this "ci"
