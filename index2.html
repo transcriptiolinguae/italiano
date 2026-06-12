@@ -1193,7 +1193,7 @@ function applyG2PMapping(text, ipa) {
     // gemiantes 2026
 
        if (lowerText[i] === 'r' && lowerText[i + 1] === 'r' ||
-           lowerText[i] === 't' && lowerText[i + 1] === 't') ||{
+           lowerText[i] === 't' && lowerText[i + 1] === 't') {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
       if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'r' && ipa[ipaIndex + 2] === 'ː' ||
           ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 't' && ipa[ipaIndex + 2] === 'ː') {
