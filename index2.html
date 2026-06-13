@@ -1737,9 +1737,7 @@ if (
     ipa[ipaIndex + 1] === 'k'
   ) {
 
-    const nextIpa = ipa.slice(ipaIndex + 2, ipaIndex + 4);
-
-    if (!/i|ˈi|j|ˈj/.test(nextIpa)) {
+    
 
       result.push(`${letter}${text[i + 1]}(ˈk)`);
 
@@ -1747,7 +1745,7 @@ if (
       ipaIndex += 2;
 
       continue;
-    }
+    
   }
 }
 
