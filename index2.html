@@ -1288,6 +1288,12 @@ if (
           ipaIndex += 4; // Skip past the "tʃ" in IPA
           continue; // Skip the rest of the processing for this "ci"
         }
+
+         else if (/i|ˈi/.test(nextIpa)) {
+          result.push(`${letter}${text[i + 1]}(ˈtʃː)`);
+         i += 2; 
+         ipaIndex += 4; 
+          continue;   
       }
     }
 
