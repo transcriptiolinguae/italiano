@@ -1367,7 +1367,27 @@ if (
 
 
     
+// stressed gli → ʎː / ʎʎ 2026
+if (
+  lowerText[i] === 'g' &&
+  lowerText[i + 1] === 'l' &&
+  lowerText[i + 2] === 'i'
+) {
 
+  if (
+    (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'ʎ' && ipa[ipaIndex + 1] === 'ː') 
+  ) {
+
+    result.push(
+      `${text[i]}${text[i + 1]}${text[i + 2]}(ˈʎː)`
+    );
+
+    i += 3;
+    ipaIndex += 3;
+
+    continue;
+  }
+}
     
 
 
