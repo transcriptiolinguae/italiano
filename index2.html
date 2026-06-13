@@ -746,7 +746,7 @@ function validateOrReturnOriginal(originalWord, mappedString) {
     b: ['b', 'ˈb'],
     cci: ['tʃː'],
     cch: ['kː', 'ˈkː'],
-    cc: ['tʃː', 'kː'],    
+    cc: ['tʃː', 'kː', 'ˈkː'],    
     ch: ['k', 'ˈk'],
     ci: ['tʃ', 'ˈtʃ'],
     cq: ['kː'], 
@@ -1246,6 +1246,36 @@ if (
 
 
 
+
+    // cch(kː) 2026
+        if (lowerText[i] === 'c' && lowerText[i + 1] === 'c' && lowerText[i + 2] === 'h') {
+      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
+      if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'k' && ipa[ipaIndex + 2] === 'ː') {
+      
+          result.push(`${letter}${text[i + 1]}${text[i + 2]}(ˈkː)`);
+          i += 3; // Skip past "ci"
+          ipaIndex += 3; // Skip past the "tʃ" in IPA
+          continue; // Skip the rest of the processing for this "ci"
+        }
+
+    }
+
+
+    // cc(ˈkː) 2026
+        if (lowerText[i] === 'c' && lowerText[i + 1] === 'c') {
+      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
+      if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'k' && ipa[ipaIndex + 2] === 'ː') {
+      
+          result.push(`${letter}${text[i + 1]}(ˈkː)`);
+          i += 2; // Skip past "ci"
+          ipaIndex += 3; // Skip past the "tʃ" in IPA
+          continue; // Skip the rest of the processing for this "ci"
+        }
+
+    }
+
+
+
     
            if (lowerText[i] === 'z') {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
@@ -1449,18 +1479,6 @@ if (
     }
 
 
-// cch(kː) 2026
-        if (lowerText[i] === 'c' && lowerText[i + 1] === 'c' && lowerText[i + 2] === 'h') {
-      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
-      if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'k' && ipa[ipaIndex + 2] === 'ː') {
-      
-          result.push(`${letter}${text[i + 1]}${text[i + 2]}(ˈkː)`);
-          i += 3; // Skip past "ci"
-          ipaIndex += 3; // Skip past the "tʃ" in IPA
-          continue; // Skip the rest of the processing for this "ci"
-        }
-
-    }
 
 
 
