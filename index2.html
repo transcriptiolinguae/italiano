@@ -1315,8 +1315,8 @@ if (
           continue; // Skip the rest of the processing for this "ci"
         }
 
-         else if (/i|ˈi/.test(nextIpa)) {
-          result.push(`${letter}${text[i + 1]}(ˈtʃː)`);
+         else if (/i|ˈi|j|ˈj/.test(nextIpa)) {
+          result.push(`${letter}${text[i + 1]}(ˈʃː)`);
          i += 2; 
          ipaIndex += 3; 
           continue;   
