@@ -1324,9 +1324,34 @@ if (
     }
  }
 
+    // sci(ˈʃː) 2026    
+
+    if (
+  lowerText[i] === 's' &&
+  lowerText[i + 1] === 'c' &&
+  lowerText[i + 2] === 'i'
+) {
+
+  // Match either ʎː or ʎʎ
+  if (
+    (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'ʃ')
+  ) {
+
+    result.push(
+      `${text[i]}${text[i + 1]}${text[i + 2]}(ˈʃ)`
+    );
+
+    i += 3;
+    ipaIndex += 2;
+
+    continue;
+  }
+}
 
 
-    // ggi(ˈdʒːː) 2026    
+
+
+    // ggi(ˈdʒː) 2026    
         if (lowerText[i] === 'g' && lowerText[i + 1] === 'g' && lowerText[i + 2] === 'i') {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
       if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'd' && ipa[ipaIndex + 2] === 'ʒ' && ipa[ipaIndex + 3] === 'ː') {
