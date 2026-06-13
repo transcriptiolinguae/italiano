@@ -1233,7 +1233,7 @@ if (
     // ts 2026
 
 
-               if (lowerText[i] === 'z' && ipa[ipaIndex + 1] === 'z') {
+               if (lowerText[i] === 'z' && lowerText[i + 1] === 'z') {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
       if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 't' && ipa[ipaIndex + 2] === 's' && ipa[ipaIndex + 3] === 'ː') {
           result.push(`${text[i]}${text[i + 1]}(ˈtsː)`);
