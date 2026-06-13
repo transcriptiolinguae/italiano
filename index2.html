@@ -1349,12 +1349,11 @@ if (
 }
 
 
-        // sci(ˈʃ) 2026    
+        // sci(ʃː) 2026    
 
     if (
   lowerText[i] === 's' &&
   lowerText[i + 1] === 'c' &&
-  lowerText[i + 2] === 'i'
 ) {
 
   // Match either ʎː or ʎʎ
@@ -1363,10 +1362,10 @@ if (
   ) {
 
     result.push(
-      `${text[i]}${text[i + 1]}${text[i + 2]}(ʃː)`
+      `${text[i]}${text[i + 1]}(ʃː)`
     );
 
-    i += 3;
+    i += 2;
     ipaIndex += 2;
 
     continue;
