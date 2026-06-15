@@ -764,7 +764,7 @@ function validateOrReturnOriginal(originalWord, mappedString) {
     gl: ['ʎ', 'ˈʎ'],
     gg: ['gː', 'dʒː', 'ˈgː', 'ˈdʒː'],
     gn: ['ɲː', 'ɲ', 'ˈɲ'],
-    gh: ['g'],
+    gh: ['g', 'ˈg'],
     gi: ['dʒ', 'ˈdʒ'],
     g: ['g', 'ˈg', 'dʒ', 'ˈdʒ'],
     i: ['i', 'ˈi', 'j', 'ˈj'],
@@ -1947,6 +1947,19 @@ if (
       }
     }
 
+// gh(ˈg)2026
+    
+        if (lowerText[i] === 'g' && lowerText[i + 1] === 'h') {
+      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
+      if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'g') {
+        
+          result.push(`${letter}${text[i + 1]}(g)`);
+          i += 2; // Skip past "ci"
+          ipaIndex += 1; // Skip past the "tʃ" in IPA
+          continue; // Skip the rest of the processing for this "ci"
+        }
+      }
+    
 
 
 
