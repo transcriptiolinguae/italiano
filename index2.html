@@ -1276,7 +1276,7 @@ if (
                if (lowerText[i] === 'z') {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
       if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'd' && ipa[ipaIndex + 2] === 'z') {
-          result.push(`${text[i]}${text[i + 1]}(ˈdz)`);
+          result.push(`${text[i]}(ˈdz)`);
           i += 1; // Skip past "ci"
           ipaIndex += 3; // Skip past the "tʃ" in IPA
           continue; // Skip the rest of the processing for this "ci"
