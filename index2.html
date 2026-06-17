@@ -978,13 +978,13 @@ function applyG2PMapping(text, ipa) {
         continue;
     
     } else if (ipaChar === 't' && ipa[ipaIndex + 1] === 's' && ipa[ipaIndex + 2] === 'ː') {
-        result.push(`zz(${ipaChar}${ipa[ipaIndex + 1]}ː)`); 
-        i += 2; 
+        result.push(`z(${ipaChar}${ipa[ipaIndex + 1]}ː)`); 
+        i += 1; 
         ipaIndex += 3; 
         continue;
       }
 
-   // i(ˈiː)
+   // i(ˈiː) 45
     
        if (lowerText[i] === 'i') {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
