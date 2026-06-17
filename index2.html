@@ -1596,6 +1596,31 @@ if (
 }
 
 
+//  gli → ʎ  2026
+if (
+  lowerText[i] === 'g' &&
+  lowerText[i + 1] === 'l' &&
+  lowerText[i + 2] === 'i'
+) {
+  
+  if (
+    (ipa[ipaIndex] === 'ʎ') 
+  ) {
+
+    result.push(
+      `${text[i]}${text[i + 1]}${text[i + 2]}(ʎ)`
+    );
+
+    i += 3;
+    ipaIndex += 1;
+
+    continue;
+  }
+}
+
+
+    
+
 
     // gl(ˈʎ) 2026
         if (lowerText[i] === 'g' && lowerText[i + 1] === 'l' && lowerText[i + 2] === 'i') {
