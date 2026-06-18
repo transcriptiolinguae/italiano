@@ -387,7 +387,10 @@ document.getElementById('afi').addEventListener('click', async () => {
     return;
   }
 
-  const rawInput = normalizeCurlyApostrophes(inputElem.value.trim());
+const rawInput = normalizeCurlyApostrophes(
+    inputElem.value.trim()
+).normalize('NFC');
+  
   if (!rawInput) {
     showPlaceholder();
     return;
@@ -532,7 +535,10 @@ document.getElementById('testoafi').addEventListener('click', async () => {
     return;
   }
 
-  const rawInput = normalizeCurlyApostrophes(inputElem.value.trim());
+const rawInput = normalizeCurlyApostrophes(
+    inputElem.value.trim()
+).normalize('NFC');
+  
   if (!rawInput) {
     showPlaceholder();
     return;
@@ -828,7 +834,10 @@ document.getElementById('g2p').addEventListener('click', async () => {
     return;
   }
 
-  const rawInput = normalizeCurlyApostrophes(inputElem.value.trim());
+const rawInput = normalizeCurlyApostrophes(
+    inputElem.value.trim()
+).normalize('NFC');
+  
   if (!rawInput) {
     showPlaceholder();
     return;
