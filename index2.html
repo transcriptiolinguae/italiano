@@ -1010,9 +1010,9 @@ function applyG2PMapping(text, ipa) {
         }
       }
 
-     //   è(e)
+     //   é(e)
     
-       if (lowerText[i] === "è") {
+       if (lowerText[i] === "é") {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
       if (ipa[ipaIndex] === 'e') {
           result.push(`${text[i]}(e)`);
