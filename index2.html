@@ -1023,17 +1023,17 @@ function applyG2PMapping(text, ipa) {
         }
       }
 
-             // è(ˈɛː)
+            è(ˈɛː)
     
-   //    if (lowerText[i] === "'" && lowerText[i + 1] === 'è') {
-      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
-   //   if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'ɛ' && ipa[ipaIndex + 2] === 'ː') {
-   //       result.push(`${text[i+1]}(ˈɛ)`);
-     //     i += 2; // Skip past "ci"
-   //       ipaIndex += 3; // Skip past the "tʃ" in IPA
-      //    continue; // Skip the rest of the processing for this "ci"
-    //    }
-    //  }
+       if (lowerText[i] === "è") {
+       Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
+      if (ipa[ipaIndex] === 'e') {
+          result.push(`${text[i]}(e)`);
+          i += 1; // Skip past "ci"
+          ipaIndex += 1; // Skip past the "tʃ" in IPA
+          continue; // Skip the rest of the processing for this "ci"
+        }
+      }
 
 
 
