@@ -267,8 +267,16 @@ window.addEventListener('load', async () => {
   try {
 
     // Load IPA dictionary
-    const response = await fetch('./phonitalia.json');
-    ipaDictionary = await response.json();
+const response = await fetch('./phonitalia.json');
+const rawDictionary = await response.json();
+
+ipaDictionary = {};
+
+for (const [key, value] of Object.entries(rawDictionary)) {
+  ipaDictionary[
+    key.normalize('NFC').toLowerCase()
+  ] = value;
+}
 
     console.log(
       `Loaded ${Object.keys(ipaDictionary).length} IPA entries`
@@ -673,15 +681,13 @@ const rawInput = normalizeCurlyApostrophes(
 
 
 
-  function getDictionaryIPA(word) {
+function getDictionaryIPA(word) {
 
-  const key = word.toLowerCase();
+  const key = word
+    .normalize('NFC')
+    .toLowerCase();
 
-  if (ipaDictionary[key]) {
-    return ipaDictionary[key];
-  }
-
-  return null;
+  return ipaDictionary[key] || null;
 }
 
 // ------------------------------------------------------
