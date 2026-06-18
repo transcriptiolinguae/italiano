@@ -1010,6 +1010,17 @@ function applyG2PMapping(text, ipa) {
         }
       }
 
+     //   è(e)
+    
+       if (lowerText[i] === "è") {
+      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
+      if (ipa[ipaIndex] === 'e') {
+          result.push(`${text[i]}(e)`);
+          i += 1; // Skip past "ci"
+          ipaIndex += 1; // Skip past the "tʃ" in IPA
+          continue; // Skip the rest of the processing for this "ci"
+        }
+      }
 
          // e(ˈɛː)
     
@@ -1023,18 +1034,7 @@ function applyG2PMapping(text, ipa) {
         }
       }
 
-         //   è(ˈɛː)
     
-       if (lowerText[i] === "è") {
-      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
-      if (ipa[ipaIndex] === 'e') {
-          result.push(`${text[i]}(e)`);
-          i += 1; // Skip past "ci"
-          ipaIndex += 1; // Skip past the "tʃ" in IPA
-          continue; // Skip the rest of the processing for this "ci"
-        }
-      }
-
 
 
 
