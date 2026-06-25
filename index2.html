@@ -278,9 +278,9 @@ for (const [key, value] of Object.entries(rawDictionary)) {
   ] = value;
 }
 
-    console.log(
-      `Loaded ${Object.keys(ipaDictionary).length} IPA entries`
-    );
+  //  console.log(
+  //    `Loaded ${Object.keys(ipaDictionary).length} IPA entries`
+  //   );
 
     // Load eSpeak
     await initESpeak({
@@ -290,7 +290,7 @@ for (const [key, value] of Object.entries(rawDictionary)) {
 
     wasmReady = true;
 
-    console.log('eSpeak NG WASM loaded and ready');
+  //  console.log('eSpeak NG WASM loaded and ready');
 
   } catch (e) {
 
@@ -444,9 +444,9 @@ const rawInput = normalizeCurlyApostrophes(
         let mapped = applyG2PMapping(token, ipa);
         
         // show in console how words map 2026 delete
-console.log("WORD:", token);
-console.log("IPA:", ipa);
-console.log("MAPPED:", mapped);
+// console.log("WORD:", token);
+// console.log("IPA:", ipa);
+// console.log("MAPPED:", mapped);
         
         // If mapping fails → recover
         
