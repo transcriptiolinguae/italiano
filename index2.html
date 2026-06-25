@@ -299,8 +299,8 @@ for (const [key, value] of Object.entries(rawDictionary)) {
   //  console.log('eSpeak NG WASM loaded and ready');
 
   } catch (e) {
-
-    console.error('Error loading:', e);
+  // delete console
+  //  console.error('Error loading:', e);
 
     outputElem.classList.remove('placeholder');
 
@@ -610,8 +610,8 @@ document.getElementById('testoafi').addEventListener('click', async () => {
         // IF MAPPING FAILS → RESYNC AND RE-RUN ESPEAK FROM NEXT WORD
         // ----------------------------------------------------------
         if (mapped === null) {
-
-          console.warn("G2P failed on:", token);
+        // delete
+        //  console.warn("G2P failed on:", token);
 
           // Find next real word AFTER the current token
           let nextWordIndex = t + 1;
@@ -635,8 +635,8 @@ document.getElementById('testoafi').addEventListener('click', async () => {
             .filter(tt =>
               /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(tt)
             );
-
-          console.log("Re-running eSpeak for:", remainingWords);
+           // delete console
+          // console.log("Re-running eSpeak for:", remainingWords);
 
           // Rebuild IPA map for remaining sequence
           ipaMap = await computeIPAMap(remainingWords);
@@ -918,7 +918,8 @@ for (let t = 0; t < tokens.length; t++) {
 
 // If mapping failed or incomplete — keep original
 if (mapped === null) {
-  console.warn(`G2P mapping failed for "${token}", recalculating from next word...`);
+  // delete
+ //  console.warn(`G2P mapping failed for "${token}", recalculating from next word...`);
     // Get remaining tokens after this one
     const remainingWords = tokens
       .slice(t)
@@ -2420,7 +2421,8 @@ if (
 
   // If mapping finished but IPA wasn't fully consumed, or vice versa → stop
   if (ipaIndex < ipa.length - 1 || i < text.length - 1) {
-    console.warn(`Partial mapping detected for "${text}" (IPA: "${ipa}")`);
+    // delete
+    // console.warn(`Partial mapping detected for "${text}" (IPA: "${ipa}")`);
     return null; // indicate failure to map
   }
 
