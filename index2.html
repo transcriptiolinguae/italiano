@@ -1382,7 +1382,7 @@ if (
     // cc(ˈtʃː) 2026
         if (lowerText[i] === 'c' && lowerText[i + 1] === 'c') {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
-      if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 't' && ipa[ipaIndex + 2] === 'ʃ && ipa[ipaIndex + 3] === 'ː'') {
+      if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 't' && ipa[ipaIndex + 2] === 'ʃ' && ipa[ipaIndex + 3] === 'ː') {
       
           result.push(`${letter}${text[i + 1]}(ˈtʃː)`);
           i += 2; // Skip past "ci"
