@@ -260,6 +260,12 @@ const inputElem = document.getElementById('input');
 
 let wasmReady = false;
 
+  async function waitForWasm() {
+  while (!wasmReady) {
+    await new Promise(r => setTimeout(r, 100));
+  }
+}
+
 // IPA dictionary
 let ipaDictionary = {};
 
@@ -390,15 +396,18 @@ function splitTextByLength(text, maxLength = 500) {
 document.getElementById('afi').addEventListener('click', async () => {
   showProgressPlaceholder();
 
-  if (!wasmReady) {
-   // alert("Please wait, WASM is still loading...");
-    return;
-  }
+    await waitForWasm();
 
-const rawInput = normalizeCurlyApostrophes(
+  const rawInput = normalizeCurlyApostrophes(
     inputElem.value.trim()
-).normalize('NFC');
-  
+  ).normalize('NFC');
+
+  // if (!wasmReady) {
+   // alert("Please wait, WASM is still loading...");
+  //  return;
+  //  }
+
+
   if (!rawInput) {
     showPlaceholder();
     return;
@@ -538,14 +547,19 @@ const rawInput = normalizeCurlyApostrophes(
 document.getElementById('testoafi').addEventListener('click', async () => {
   showProgressPlaceholder();
 
-  if (!wasmReady) {
-  //  alert("Please wait, WASM is still loading...");
-    return;
-  }
+  await waitForWasm();
 
-const rawInput = normalizeCurlyApostrophes(
+  const rawInput = normalizeCurlyApostrophes(
     inputElem.value.trim()
-).normalize('NFC');
+  ).normalize('NFC');
+
+
+  //  if (!wasmReady) {
+  //  alert("Please wait, WASM is still loading...");
+  //  return;
+ //   }
+
+
   
   if (!rawInput) {
     showPlaceholder();
@@ -835,14 +849,20 @@ function validateOrReturnOriginal(originalWord, mappedString) {
 document.getElementById('g2p').addEventListener('click', async () => {
   showProgressPlaceholder();
 
-  if (!wasmReady) {
-  //  alert('Please wait, WASM is still loading...');
-    return;
-  }
+  await waitForWasm();
 
-const rawInput = normalizeCurlyApostrophes(
+  const rawInput = normalizeCurlyApostrophes(
     inputElem.value.trim()
-).normalize('NFC');
+  ).normalize('NFC');
+  
+
+
+  //  if (!wasmReady) {
+  //  alert('Please wait, WASM is still loading...');
+  //  return;
+ //   }
+
+
   
   if (!rawInput) {
     showPlaceholder();
