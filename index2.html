@@ -415,25 +415,33 @@ for (const [key, value] of Object.entries(rawDictionary)) {  //  Suppose "rawDic
 
   
   
-  function showPlaceholder() {
-    outputElem.className = 'placeholder';
-    outputElem.innerText = 'Transcription';
+  function showPlaceholder() {  //  Defines a normal (non-async) function named showPlaceholder. Its job is to reset the output area to its default empty state.
+    outputElem.className = 'placeholder';  //  Replaces the CSS class of the <pre> output element with "placeholder". This causes the CSS rule pre.placeholder { color: grey; user-select: none; } to become active, making the text appear as a grey placeholder instead of actual transcription output.
+    outputElem.innerText = 'Transcription';  //  Changes the visible text inside the output box to Transcription This is what the user sees before any transcription has been generated.
   }
 
 
 
   
 
-  function showProgressPlaceholder() {
-    outputElem.className = 'placeholder';
-    outputElem.innerText = 'Transcription in progress...';
+  function showProgressPlaceholder() {  //  Defines another helper function. Unlike the previous one, this one is used while the program is still working.
+    outputElem.className = 'placeholder';  //  Again switches the output element into placeholder mode. The text becomes grey and unselectable.
+    outputElem.innerText = 'Transcription in progress...';  //  Displays Transcription in progress... so the user knows that eSpeak is still processing. This is important because WebAssembly can take a few seconds on long texts.
   }
 
-  function setOutput(text) {
-    outputElem.classList.remove('placeholder');
-    outputElem.innerText = text;
+
+
+  
+
+  function setOutput(text) {  //  Defines a function that displays the finished transcription. Unlike the previous two functions, this one removes placeholder styling.
+    outputElem.classList.remove('placeholder');  //  Removes the "placeholder" CSS class. This means the output will now use the normal CSS rule: pre:not(.placeholder) instead of pre.placeholder The text becomes selectable and uses the normal transcription color.
+    outputElem.innerText = text;  //  Displays whatever string was passed into the function. Example: setOutput("ˈka.ne"); The user will see ˈka.ne
   }
 
+
+
+
+  
 // Helper: Split text into manageable chunks (max 500 characters)
 function splitTextByLength(text, maxLength = 500) {
   const chunks = [];
