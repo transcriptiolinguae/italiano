@@ -443,27 +443,35 @@ for (const [key, value] of Object.entries(rawDictionary)) {  //  Suppose "rawDic
 
   
 // Helper: Split text into manageable chunks (max 500 characters)
-function splitTextByLength(text, maxLength = 500) {
-  const chunks = [];
-  let start = 0;
-  while (start < text.length) {
-    let end = start + maxLength;
+function splitTextByLength(text, maxLength = 500) {  //  Creates a helper function that splits very long input into smaller pieces. The second parameter has a default value: maxLength = 500 meaning that if you simply call splitTextByLength(text) JavaScript automatically uses 500
+  const chunks = [];  //  Creates an empty array. Each piece of the text will later be stored here. Example: [ "First 500 characters...", "Next 500 characters...", "Last part..." ]
+  let start = 0;  //  Keeps track of where the next chunk begins. Initially, we start at the first character.
+  while (start < text.length) {  //  Loops until we've reached the end of the input. Example: If the text has 1500 characters the loop runs approximately three times.
+    let end = start + maxLength;  //  Assumes that the current chunk ends 500 characters later. Suppose start = 0 then end = 500 Next iteration: start = 500 end = 1000 and so on.
 
     // Try not to cut off words in the middle
-    if (end < text.length) {
-      const lastSpace = text.lastIndexOf(' ', end);
-      if (lastSpace > start) {
-        end = lastSpace;
+    if (end < text.length) {  //  Checks whether this is not the final chunk. If we're already near the end of the text, there's no need to adjust anything.
+      const lastSpace = text.lastIndexOf(' ', end);  //  Looks backwards from position end until it finds the nearest space. Suppose: The quick brown fox jumps over the lazy dog If character 500 happens to be in the middle of jumps this finds the previous space instead. So the split occurs between words rather than inside them.
+      if (lastSpace > start) {  //  Makes sure a suitable space was actually found. Without this check, the code might accidentally move backwards too far.
+        end = lastSpace;  //  Moves the split point to the previous space. Instead of extraordi nary you get extraordinary which is much cleaner.
       }
     }
 
-    chunks.push(text.slice(start, end));
-    start = end;
-  }
-  return chunks;
-}
+    chunks.push(text.slice(start, end));  //  Extracts the substring between start and end and stores it. Example: text = "The cat sat on the mat." might produce "The cat sat"
+    start = end;  //  Moves the starting position to the end of the previous chunk. Now the next loop continues from there.
+  }  //  Ends the while loop.
+  return chunks;  //  Returns the completed array. Example result: [ "First chunk...", "Second chunk...", "Third chunk..." ]
+}  //  End of the function.
 
 
+
+
+
+
+
+
+
+  
 // ===================================================================
 //  NEW BUTTON: G2P AFI
 //  Outputs ONLY IPA for words that have valid G2P mapping,
