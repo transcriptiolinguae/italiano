@@ -260,7 +260,7 @@ const inputElem = document.getElementById('input');
 
 let wasmReady = false; // This creates a variable. Unlike const, let allows changing the value later.
 
-  async function waitForWasm() {
+  async function waitForWasm() {  // Async tells JavaScript that a function may need to wait for something that takes time. Normally, JavaScript executes code line by line without stopping. Without async, JavaScript would either freeze the webpage while waiting or continue running before eSpeak is ready. So async allows the function to pause itself while letting the rest of the webpage continue running. So it's job is to wait until the WebAssembly engine has finished loading.
   while (!wasmReady) {
     await new Promise(r => setTimeout(r, 100));
   }
