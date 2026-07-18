@@ -281,8 +281,8 @@ ipaDictionary = {};  //  You already created an empty dictionary earlier. Why em
 for (const [key, value] of Object.entries(rawDictionary)) {  //  Suppose "rawDictionary = { ciao:"ˈtʃa.o", pizza:"ˈpit.tsa" }". "Object.entries()" converts it into "[ ["ciao","ˈtʃa.o"], ["pizza","ˈpit.tsa"] ]", an array of pairs. Object.entries() converts it into [ ["ciao","ˈtʃa.o"], ["pizza","ˈpit.tsa"] ] An array of pairs. "for" and "of" means loop over every pair. Iteration 1: key = "ciao" value = "ˈtʃa.o". Iteration 2: key = "pizza" value = "ˈpit.tsa" and so on. Why [key, value]? Each entry looks like ["ciao","ˈtʃa.o"]. The square brackets automatically unpack it. Without destructuring, you'd write: const pair = ... const key = pair[0]; const value = pair[1]. Destructuring saves several lines.
   ipaDictionary[  //  "ipaDictionary[" is simply starting an assignment. It continues on the next lines for readability.
     key.normalize('NFC').toLowerCase()  //  normalize("NFC") Unicode characters can sometimes be represented in different ways. For example è might internally be è or e + accent They look identical. But computers consider them different. normalize("NFC") converts both into the same representation. That prevents mysterious lookup failures. .toLowerCase() converts "CIAO ↓ ciao" and "Pizza ↓ pizza". Now dictionary lookups become case-insensitive.
-  ] = value;  //  This finally stores the pronunciation. Example: key↓"CIAO"↓normalize↓"CIAO"↓lowercase↓"ciao"↓Store↓ipaDictionary["ciao"]="ˈtʃa.o".
-}  //  After the loop finishes, your dictionary now contains thousands of Italian words that can be looked up instantly without calling eSpeak.
+  ] = value;  //  This finally stores the pronunciation. Example: key↓"CIAO"↓normalize↓"CIAO"↓lowercase↓"ciao"↓Store↓ipaDictionary["ciao"]="ˈtʃa.o". After the loop finishes, your dictionary now contains thousands of Italian words that can be looked up instantly without calling eSpeak.
+}  //  In plain English: Download phonitalia.json. Convert it from JSON text into a JavaScript object. Empty any old dictionary. Loop through every word/pronunciation pair. Normalize the spelling (Unicode + lowercase). Store it in ipaDictionary. By the end of this block, your program has a fast in-memory pronunciation dictionary ready to use. The next section is where it initializes eSpeak WebAssembly with await initESpeak(...), explains the print and printErr callbacks, and finally sets wasmReady = true, which is the signal that allows the transcription buttons to work.
 
     
   //  console.log(
@@ -290,9 +290,9 @@ for (const [key, value] of Object.entries(rawDictionary)) {  //  Suppose "rawDic
   //   );
 
     // Load eSpeak
-    await initESpeak({
-      print: () => {},
-      printErr: () => {}
+    await initESpeak({  //  Calls the function that loads and initializes eSpeak NG. "await" means: "Pause this function until eSpeak has completely finished loading." Without await, JavaScript would continue immediately, and the rest of your program might try to use eSpeak before it exists.
+      print: () => {},  //  eSpeak normally prints text to its standard output (stdout). The option print tells eSpeak: "Whenever you would normally print something, call this function instead." The function here is () => {} which is an empty arrow function. It accepts whatever eSpeak sends...and deliberately does nothing. So every normal console message is ignored.
+      printErr: () => {}  //  Exactly the same idea, except for stderr (error output). Normally eSpeak prints loading messages such as still waiting on run dependencies or dependency: wasm-instantiate Those messages are harmless. Since the function is empty, they are discarded instead of appearing in the console.
     });
 
     wasmReady = true;
