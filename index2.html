@@ -274,13 +274,13 @@ window.addEventListener('load', async () => {  //  window is the browser itself.
 
     // Load IPA dictionary
 const response = await fetch('./phonitalia.json');  //  fetch() downloads a file from your server. The ./ means "Look in the same folder as this HTML file." Why await? It might take 5 ms 100 ms 500 ms depending on the network. Without await JavaScript would continue immediately before the file had finished downloading. Instead: Download ↓ Wait ↓ Finished ↓ Continue. What is response? The downloaded file isn't returned immediately. Instead you first receive a Response object. Think of it like a package. "Package ↓ Open package ↓ Contents". The Response object contains status code headers body The actual JSON isn't extracted yet.
-const rawDictionary = await response.json();  //  Now you open the package. "response.json()" means the downloaded file is plain text (Example { "ciao":"ˈtʃa.o" }) which JavaScript converts into an object. Instead of "text" you now have "{ ciao:"ˈtʃa.o" }" which can be accessed like "rawDictionary.ciao". 
+const rawDictionary = await response.json();  //  Now you open the package. "response.json()" means the downloaded file is plain text (Example { "ciao":"ˈtʃa.o" }) which JavaScript converts into an object. Instead of "text" you now have "{ ciao:"ˈtʃa.o" }" which can be accessed like "rawDictionary.ciao" or "rawDictionary["ciao"]". Again notice await because parsing also takes time.
 
-ipaDictionary = {};
+ipaDictionary = {};  //  You already created an empty dictionary earlier. Why empty it again? Imagine someone later reloads the dictionary. Without this line old entries could remain. This guarantees "Old dictionary ↓ Delete everything ↓ Start fresh".
 
-for (const [key, value] of Object.entries(rawDictionary)) {
-  ipaDictionary[
-    key.normalize('NFC').toLowerCase()
+for (const [key, value] of Object.entries(rawDictionary)) {  //  Suppose "rawDictionary = { ciao:"ˈtʃa.o", pizza:"ˈpit.tsa" }". "Object.entries()" converts it into "[ ["ciao","ˈtʃa.o"], ["pizza","ˈpit.tsa"] ]", an array of pairs. Object.entries() converts it into [ ["ciao","ˈtʃa.o"], ["pizza","ˈpit.tsa"] ] An array of pairs. "for" and "of" means loop over every pair. Iteration 1: key = "ciao" value = "ˈtʃa.o". Iteration 2: key = "pizza" value = "ˈpit.tsa" and so on. Why [key, value]? Each entry looks like ["ciao","ˈtʃa.o"]. The square brackets automatically unpack it. Without destructuring, you'd write: const pair = ... const key = pair[0]; const value = pair[1]. Destructuring saves several lines.
+  ipaDictionary[  //  "ipaDictionary[" is simply starting an assignment. It continues on the next lines for readability.
+    key.normalize('NFC').toLowerCase()  //  normalize("NFC") Unicode characters can sometimes be represented in different ways. For example è might internally be è or e + accent They look identical. But computers consider them different. normalize("NFC") converts both into the same representation. That prevents mysterious lookup failures. .toLowerCase() converts "CIAO ↓ ciao" and "Pizza ↓ pizza". Now dictionary lookups become case-insensitive.
   ] = value;
 }
 
