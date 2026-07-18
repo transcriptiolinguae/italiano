@@ -310,16 +310,16 @@ for (const [key, value] of Object.entries(rawDictionary)) {  //  Suppose "rawDic
   }  //  Ends the catch block.
 });  //  Ends the window.addEventListener('load', ...) callback. The entire initialization process is now complete.
 
-  function printErrFiltered(err) {
-    if (
-      err.includes('still waiting on run dependencies') ||
-      err.includes('dependency: wasm-instantiate') ||
-      err.includes('(end of list)')
-    ) {
-      return;
-    }
-    console.error('eSpeak stderr:', err);
-  }
+  function printErrFiltered(err) {  //  This helper function is used later whenever eSpeak is run. Instead of hiding all error messages, it filters out only the harmless initialization messages while allowing genuine errors to be displayed. Defines a function that accepts one argument: err which is a string sent by eSpeak to stderr. Example values: still waiting on run dependencies or dependency: wasm-instantiate or an actual error such as cannot open voice file
+    if (  //  Begins an if statement. The following conditions decide whether this message should be ignored.
+      err.includes('still waiting on run dependencies') ||  //  Checks whether the message contains still waiting on run dependencies. includes() returns either true or false. || Logical OR. 
+      err.includes('dependency: wasm-instantiate') ||  //  Looks for another harmless WebAssembly loading message.
+      err.includes('(end of list)')  // Checks for another message that eSpeak sometimes prints while starting. Again, it is harmless.
+    ) {  //  Ends the condition. 
+      return;  //  If any of those three messages was detected...return; Immediately exits the function. Nothing is printed. The harmless message is silently ignored.
+    }  //  Ends the if statement. If execution reaches here, it means the message was not one of the ignored ones.
+    console.error('eSpeak stderr:', err);  //  Prints the remaining message to the browser console. For example, eSpeak stderr: cannot load voice or eSpeak stderr: unknown option This way, only real problems are shown while startup noise is hidden.
+  }  //  Ends the printErrFiltered() function. Its entire purpose is simply: Ignore harmless initialization messages. Display genuine eSpeak errors.
 
   async function runESpeak(text) {
     let ipaOutput = '';
