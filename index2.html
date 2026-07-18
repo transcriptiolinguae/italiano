@@ -461,7 +461,7 @@ function splitTextByLength(text, maxLength = 500) {  //  Creates a helper functi
     start = end;  //  Moves the starting position to the end of the previous chunk. Now the next loop continues from there.
   }  //  Ends the while loop.
   return chunks;  //  Returns the completed array. Example result: [ "First chunk...", "Second chunk...", "Third chunk..." ]
-}  //  End of the function.
+}  //  End of the function. Why split into chunks? Your program sends text to eSpeak through WebAssembly. Very large strings can: consume lots of memory, become slower, occasionally exceed internal limits. Instead of sending 5000 characters at once, your code sends 500 500 500 ... and later joins the results back together. The user never notices the splitting, but the program becomes much more reliable.
 
 
 
