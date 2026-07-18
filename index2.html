@@ -251,14 +251,14 @@
   import initESpeak from './espeak-ng.js';
 
   // Normalize curly apostrophes to straight apostrophes
-function normalizeCurlyApostrophes(text) {
-  return text.replace(/[’‘]/g, "'");
+function normalizeCurlyApostrophes(text) { // The parameter text will contain whatever string you pass into the function.
+  return text.replace(/[’‘]/g, "'"); // Match one character from the list in square brackets globally (every word) and replace it with character in quotes.
 }
   
-const outputElem = document.getElementById('output');
+const outputElem = document.getElementById('output'); // This looks inside your HTML for "<pre id="output">" and stores it. Why const? Because this variable never changes. It always points to the same HTML element.
 const inputElem = document.getElementById('input');
 
-let wasmReady = false;
+let wasmReady = false; // This creates a variable. Unlike const, let allows changing the value later.
 
   async function waitForWasm() {
   while (!wasmReady) {
