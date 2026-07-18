@@ -251,18 +251,18 @@
   import initESpeak from './espeak-ng.js';
 
   // Normalize curly apostrophes to straight apostrophes
-function normalizeCurlyApostrophes(text) { // The parameter text will contain whatever string you pass into the function.
-  return text.replace(/[’‘]/g, "'"); // Match one character from the list in square brackets globally (every word) and replace it with character in quotes.
+function normalizeCurlyApostrophes(text) {  // The parameter text will contain whatever string you pass into the function.
+  return text.replace(/[’‘]/g, "'");  // Match one character from the list in square brackets globally (every word) and replace it with character in quotes.
 }
   
-const outputElem = document.getElementById('output'); // This looks inside your HTML for "<pre id="output">" and stores it. Why const? Because this variable never changes. It always points to the same HTML element.
+const outputElem = document.getElementById('output');  // This looks inside your HTML for "<pre id="output">" and stores it. Why const? Because this variable never changes. It always points to the same HTML element.
 const inputElem = document.getElementById('input');
 
-let wasmReady = false; // This creates a variable. Unlike const, let allows changing the value later.
+let wasmReady = false;  // This creates a variable. Unlike const, let allows changing the value later.
 
   async function waitForWasm() {  // Async tells JavaScript that a function may need to wait for something that takes time. Normally, JavaScript executes code line by line without stopping. Without async, JavaScript would either freeze the webpage while waiting or continue running before eSpeak is ready. So async allows the function to pause itself while letting the rest of the webpage continue running. So it's job is to wait until the WebAssembly engine has finished loading.
-  while (!wasmReady) {
-    await new Promise(r => setTimeout(r, 100));
+  while (!wasmReady) {  //  A while loop keeps repeating as long as the condition is true. The exclamation mark means NOT. So when eSpeak is not loaded, then "wasmReady = false" and so "!wasmReady = true". When eSpeak is loaded, the condition "wasmReady = false" is not anymore true when negated, so the loop stops.
+    await new Promise(r => setTimeout(r, 100));  //  Await pauses only this function for 100 ms until something finishes. A promise represents something that will finish later, what in this case is 100ms delay. r => is an arrow function and shorthand for "function(r){setTimeout(r,100);}". So the fthis means: create promise ↓ wait 100 ms ↓ resolve promise ↓ await continues or "pause this function for 100 milliseconds". So the loop repeats: while (!wasmReady) ↓ wait 100 ms ↓ check again ↓ wait 100 ms ↓ check again ↓ wait 100 ms until wasmReady = true.
   }
 }
 
