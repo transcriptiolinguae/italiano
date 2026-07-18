@@ -267,9 +267,9 @@ let wasmReady = false;  // This creates a variable. Unlike const, let allows cha
 }
 
 // IPA dictionary
-let ipaDictionary = {};
+let ipaDictionary = {};  //  let creates a variable whose value can change later. {} creates an empty JavaScript object. Think of it as a dictionary or lookup table. Initially it contains nothing. Later it will become something like { "ciao": "ˈtʃa.o" }. Then your code can instantly look up pronunciations.
 
-window.addEventListener('load', async () => {
+window.addEventListener('load', async () => {  //  window is the browser itself. Everything on your webpage belongs to the window. addEventListener means when something like click, keypress, mousemove, load, resize happens run this function. load means the entire webpage has finished loading (images, CSS, scripts, favicon, everything). Only then does this function begin. Your JavaScript might execute before <textarea id="input"> exists, and then document.getElementById("input") would return null. 
   try {
 
     // Load IPA dictionary
