@@ -293,22 +293,22 @@ for (const [key, value] of Object.entries(rawDictionary)) {  //  Suppose "rawDic
     await initESpeak({  //  Calls the function that loads and initializes eSpeak NG. "await" means: "Pause this function until eSpeak has completely finished loading." Without await, JavaScript would continue immediately, and the rest of your program might try to use eSpeak before it exists.
       print: () => {},  //  eSpeak normally prints text to its standard output (stdout). The option print tells eSpeak: "Whenever you would normally print something, call this function instead." The function here is () => {} which is an empty arrow function. It accepts whatever eSpeak sends...and deliberately does nothing. So every normal console message is ignored.
       printErr: () => {}  //  Exactly the same idea, except for stderr (error output). Normally eSpeak prints loading messages such as still waiting on run dependencies or dependency: wasm-instantiate Those messages are harmless. Since the function is empty, they are discarded instead of appearing in the console.
-    });
+    });  // Finishes the initialization call. At this point: the JavaScript wrapper is loaded, the WebAssembly module has been compiled, eSpeak is ready to receive text.
 
-    wasmReady = true;
+    wasmReady = true;  //  Sets your global flag to indicate that eSpeak is now usable. Earlier you created let wasmReady = false; Now it becomes wasmReady = true; This is what allows waitForWasm() to stop waiting. What happens behind the scenes? When the page first opens: wasmReady = false ↓ The browser downloads espeak-ng.js ↓ The browser downloads espeak-ng.wasm ↓ The WebAssembly binary is compiled. ↓ The eSpeak engine starts. ↓ wasmReady = true; ↓ Now every transcription function can safely call eSpeak.
 
   //  console.log('eSpeak NG WASM loaded and ready');
 
-  } catch (e) {
+  } catch (e) {  //  If anything inside the try block fails, JavaScript jumps here. Possible reasons include: phonitalia.json cannot be found. phonitalia.json contains invalid JSON. espeak-ng.wasm failed to download. espeak-ng.js has an error. WebAssembly failed to initialize. The variable e contains the error object describing what went wrong.
   // delete console
   //  console.error('Error loading:', e);
 
-    outputElem.classList.remove('placeholder');
+    outputElem.classList.remove('placeholder');  //  Earlier, the <pre> element had the CSS class placeholder which displays gray placeholder text. This line removes that class. Now the output will be displayed using the normal style.
 
-    outputElem.innerText =
-      'Error loading dictionary or eSpeak.';
-  }
-});
+    outputElem.innerText =  //  Changes the text shown inside <pre id="output">
+      'Error loading dictionary or eSpeak.';  //  Displays Error loading dictionary or eSpeak. instead of crashing silently. So if initialization fails, the user immediately knows something went wrong.
+  }  //  Ends the catch block.
+});  //  Ends the window.addEventListener('load', ...) callback. The entire initialization process is now complete.
 
   function printErrFiltered(err) {
     if (
