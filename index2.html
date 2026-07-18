@@ -321,6 +321,11 @@ for (const [key, value] of Object.entries(rawDictionary)) {  //  Suppose "rawDic
     console.error('eSpeak stderr:', err);  //  Prints the remaining message to the browser console. For example, eSpeak stderr: cannot load voice or eSpeak stderr: unknown option This way, only real problems are shown while startup noise is hidden.
   }  //  Ends the printErrFiltered() function. Its entire purpose is simply: Ignore harmless initialization messages. Display genuine eSpeak errors.
 
+
+
+
+
+  
   async function runESpeak(text) {  //  Defines an asynchronous function named runESpeak. It accepts one parameter, text, which is the Italian text to be transcribed into IPA. Why async? Because running the WebAssembly version of eSpeak takes time. async lets the function pause while waiting for eSpeak to finish without freezing the webpage.
     let ipaOutput = '';  //  Creates an empty string that will collect everything eSpeak prints. Example: Initially: ipaOutput = "" Later eSpeak might output: ˈkaːne After collecting: ipaOutput = "ˈkaːne"
     await initESpeak({  //  Starts eSpeak. Because await is used, JavaScript pauses here until eSpeak has completely finished processing. Without await, the function would immediately continue and return an empty result before eSpeak had time to generate the transcription.
@@ -331,9 +336,9 @@ for (const [key, value] of Object.entries(rawDictionary)) {  //  Suppose "rawDic
       printErr: printErrFiltered  //  Whenever eSpeak prints an error or warning, it sends it to the printErrFiltered() function instead of directly to the console. That function ignores harmless startup messages but still shows real errors.
     });  //  Finishes the initialization and waits until eSpeak has completed. At this point, ipaOutput contains the complete IPA transcription.
 
-    return ipaOutput
-      .replace(/[\u0300-\u036F\u200B-\u200D\uFEFF]/g, '') // <--- strip hidden chars
-      .replace(/rɾ/g, 'rː')
+    return ipaOutput  //  Now the code improves eSpeak's output before returning it. Start returning the transcription. Everything after this is a chain of text replacements.
+      .replace(/[\u0300-\u036F\u200B-\u200D\uFEFF]/g, '')  //  Removes invisible Unicode characters. These include: combining accents zero-width spaces byte-order marks They can interfere with later processing.
+      .replace(/rɾ/g, 'rː')  //  Whenever eSpeak outputs rɾ replace it with rː Why? Italian double rr is a long trill. eSpeak sometimes represents it as rɾ Your application prefers rː
       .replace(/mm/g, 'mː')
       .replace(/ff/g, 'fː')
       .replace(/vv/g, 'vː')
@@ -349,9 +354,11 @@ for (const [key, value] of Object.entries(rawDictionary)) {  //  Suppose "rawDic
       .replace(/ɪ/g, 'i')
       .replace(/ʊ/g, 'u')
       .replace(/ɡ/g, 'g')
-      .trim();
-  }
+      .trim();  //  Removes whitespace at the beginning and end. Example: "   ˈkaːne   " becomes "ˈkaːne"
+  }  //  This function does three major jobs: Sends text to eSpeak. Waits until eSpeak produces IPA. Cleans and normalizes the IPA so the rest of your G2P code receives a consistent transcription. This normalization is important because applyG2PMapping() expects IPA in a very specific format. Without these replacements, many mappings would fail because eSpeak's output would not exactly match the symbols your mapping code is designed to recognize.
 
+
+  
   function showPlaceholder() {
     outputElem.className = 'placeholder';
     outputElem.innerText = 'Transcription';
