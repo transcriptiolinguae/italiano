@@ -482,9 +482,9 @@ document.getElementById('afi').addEventListener('click', async () => {  //  What
 
     await waitForWasm();  //  Now the program waits until eSpeak has completely finished loading. Remember that earlier you created let wasmReady = false; When the page loads: wasmReady = false Later: await initESpeak(...) loads the WebAssembly module. Finally, wasmReady = true; is executed. Only then does waitForWasm() return. Without this line, someone could click the button before eSpeak was ready and the transcription would fail.
 
-  const rawInput = normalizeCurlyApostrophes(
-    inputElem.value.trim()
-  ).normalize('NFC');
+  const rawInput = normalizeCurlyApostrophes(  //  This line prepares the user's text before any transcription happens. Let's break it apart. Earlier you defined function normalizeCurlyApostrophes(text) It converts ’ ‘ into ' This prevents problems caused by copying text from Word or websites. Example Input: l’acqua becomes l'acqua
+    inputElem.value.trim()  //  inputElem refers to the <textarea>. .value retrieves everything the user typed. Example: L'acqua è fredda. Removes whitespace from both ends. Internal spaces stay exactly the same.
+  ).normalize('NFC');  //  .normalize('NFC') Unicode allows some accented letters to be stored in multiple ways. For example, è may actually be stored as e + accent instead of one character. NFC converts everything into the standard composed form. That makes comparisons against your dictionary reliable. The final result is stored in const rawInput which now contains a clean version of the user's text.
 
   // if (!wasmReady) {
    // alert("Please wait, WASM is still loading...");
@@ -492,8 +492,8 @@ document.getElementById('afi').addEventListener('click', async () => {  //  What
   //  }
 
 
-  if (!rawInput) {
-    showPlaceholder();
+  if (!rawInput) {  //  Checks whether the input is empty. The ! means "not". If rawInput == "" then !rawInput is true. Examples that count as empty: "" "      " because .trim() already removed the spaces.
+    showPlaceholder();  //  Since there is no text to transcribe, restore the default placeholder: Transcription
     return;
   }
 
