@@ -513,7 +513,7 @@ document.getElementById('afi').addEventListener('click', async () => {  //  What
       }
 
       // Extract real words
-      let words = tokens.filter(t =>
+      let words = tokens.filter(t =>  //  This line extracts only the words from the array of tokens. Earlier, tokens contained everything: [ "L'acqua", "costa", "3,50", "euro", "." ] However, only actual words need to be sent to eSpeak. Numbers and punctuation do not. After this line, words becomes [ "L'acqua", "costa", "euro" ] Notice that 3,50 and . have disappeared.
         /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
       );
 
