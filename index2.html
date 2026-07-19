@@ -494,14 +494,14 @@ document.getElementById('afi').addEventListener('click', async () => {  //  What
 
   if (!rawInput) {  //  Checks whether the input is empty. The ! means "not". If rawInput == "" then !rawInput is true. Examples that count as empty: "" "      " because .trim() already removed the spaces.
     showPlaceholder();  //  Since there is no text to transcribe, restore the default placeholder: Transcription
-    return;
-  }
+    return;  //  Stops the function immediately. Nothing else below will execute. This prevents unnecessary processing.
+  }  //  Ends the if statement.
 
-  try {
-    const chunks = splitTextByLength(rawInput, 500);
-    let finalResult = '';
+  try {  //  Starts a try block. Everything inside is considered "normal execution." If anything throws an error, execution immediately jumps to the later catch (e) block. This prevents the entire webpage from crashing. Instead of Page crashed the user gets a readable error message.
+    const chunks = splitTextByLength(rawInput, 500);  //  function returns something like [ "...first 500...", "...second 500...", "...third 500...", "...fourth 500..." ] Each chunk will later be processed separately.
+    let finalResult = '';  //  Creates an empty string. Every processed chunk will be appended here. Example: Initially "" After first chunk "prima frase..." After second chunk "prima frase... seconda frase..." Eventually it contains the entire transcription.
 
-    for (const chunk of chunks) {
+    for (const chunk of chunks) {  //  Begins a for...of loop. This loop processes one chunk at a time. If chunks = [ "Prima frase.", "Seconda frase.", "Terza frase." ] then the loop runs three times. Iteration 1 chunk = "Prima frase." Iteration 2 chunk = "Seconda frase." Iteration 3 chunk = "Terza frase." Each chunk goes through exactly the same transcription pipeline. Everything after this point operates on one chunk only, and the process repeats until every chunk has been transcribed and appended to finalResult.
 
       const tokens = chunk.match(
         /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
