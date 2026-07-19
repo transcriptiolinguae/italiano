@@ -477,10 +477,10 @@ function splitTextByLength(text, maxLength = 500) {  //  Creates a helper functi
 //  Outputs ONLY IPA for words that have valid G2P mapping,
 //  Words without mapping remain unchanged.
 // ===================================================================
-document.getElementById('afi').addEventListener('click', async () => {
-  showProgressPlaceholder();
+document.getElementById('afi').addEventListener('click', async () => {  //  What does this line do? document.getElementById('afi') Searches the HTML page for the element whose ID is "afi". That element is your first button: <button id="afi"> The browser returns a reference to that button. addEventListener('click', ...) Attaches an event listener. An event listener tells JavaScript: "Whenever someone clicks this button, execute the following function." Nothing happens yet. The code simply waits until the user presses the button. async () => { Creates an asynchronous arrow function. Because it is async, the function is allowed to use await. Execution will look like this: User clicks button │ ▼ JavaScript starts this function │ ▼ Waits for eSpeak if necessary │ ▼ Processes the text │ ▼ Displays IPA
+  showProgressPlaceholder();  //  Calls the helper function explained earlier. This immediately changes the output area to Transcription in progress... This gives instant feedback so the user knows the program is working. Without this line, the page would appear frozen during long transcriptions.
 
-    await waitForWasm();
+    await waitForWasm();  //  Now the program waits until eSpeak has completely finished loading. Remember that earlier you created let wasmReady = false; When the page loads: wasmReady = false Later: await initESpeak(...) loads the WebAssembly module. Finally, wasmReady = true; is executed. Only then does waitForWasm() return. Without this line, someone could click the button before eSpeak was ready and the transcription would fail.
 
   const rawInput = normalizeCurlyApostrophes(
     inputElem.value.trim()
