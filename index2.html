@@ -257,7 +257,7 @@
   
   // Normalize curly apostrophes to straight apostrophes
 function normalizeCurlyApostrophes(text) {  // The parameter text will contain whatever string you pass into the function.
-  return text.replace(/[’‘]/g, "'");  // Match one character from the list in square brackets globally (every word) and replace it with character in quotes.
+  return text.replace(/[’‘]/g, "'");  // Match one character from the list in [] square brackets, where "g" means replace globally every word with character in quotes "'".
 }
   
 
