@@ -522,18 +522,18 @@ document.getElementById('afi').addEventListener('click', async () => {  //  What
 
       const converted = [];  //  Creates another empty array. This array will eventually contain the processed version of every token. Initially [] Later it might become [ "ˈkaːza", ",", "ˈbɛlla", "." ] or, in another mode, [ "casa (ˈkaːza)", ",", "bella (ˈbɛlla)", "." ] depending on which button was clicked.
 
-      for (let t = 0; t < tokens.length; t++) {  //  This loop processes every token—words, numbers, and punctuation—one by one, deciding exactly how each should appear in the final output.
+      for (let t = 0; t < tokens.length; t++) {  //  This loop processes every token—words, numbers, and punctuation—one by one, deciding exactly how each should appear in the final output. Starts a loop that goes through every token in the array. Suppose the tokenizer produced: tokens = [ "Ciao", ",", "come", "stai", "?" ] The loop runs five times. Iteration	t	token 1	0	"Ciao" 2	1	"," 3	2	"come" 4	3	"stai" 5	4	"?" Starts a for loop that iterates over every token in the tokens array. let t = 0 → start with the first token. t < tokens.length → continue until the last token. t++ → move to the next token after each iteration. If the sentence were: Ciao, come stai? the loop would visit: 0 → "Ciao" 1 → "," 2 → "come" 3 → "stai" 4 → "?"
 
-        const token = tokens[t];
-        const isWord =
-          /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);
+        const token = tokens[t];  //  Gets the current token. Example: First iteration: token = "Ciao" Second: token = "," Third: token = "come". Stores the current token in a variable named token. Instead of repeatedly writing tokens[t] the code simply uses token making everything easier to read. Example: t = 2 token = "come"
+        const isWord =  //  This tests whether the token is an actual word. It returns either true or false Examples: "Ciao"      → true "l'amico"   → true "123"       → false "."         → false ","         → false
+          /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);  //  Breaking down the regular expression ^ Beginning of the string. [A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+ One or more alphabetic letters. This includes: English letters accented Italian letters many Unicode Latin letters Examples: ciao perché più università '? An apostrophe is optional. So both l'amico and amico match. [A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]* Zero or more letters after the apostrophe. Examples: l' l'amico d'accordo $ End of the string. This prevents partial matches. /u The Unicode flag. Without it, many accented letters would not be recognized correctly. .test(token) Tests whether the token matches the pattern. Returns true or false Examples: token	result "ciao"	true "l'amico"	true "123"	false "."	false "?"	false ","	false
 
-        if (!isWord) {
-          converted.push(token);
-          continue;
+        if (!isWord) {  //  If the token is not a word if (!isWord) { The ! means NOT. So this becomes If the token is not a word...
+          converted.push(token);  //  Simply copies the token into the output unchanged. Examples: , . ? ! 42 are left exactly as they are.
+          continue;  //  Skips the rest of the loop and immediately processes the next token. So punctuation never goes through IPA conversion. Suppose the tokens are [ "Ciao", ",", "come", "?", ] Iteration by iteration: First iteration token = "Ciao" isWord = true The program continues with IPA conversion. Second iteration token = "," isWord = false It executes converted.push(","); continue; and skips all IPA processing. Third iteration token = "come" Again isWord = true The program converts it into IPA. Fourth iteration token = "?" Again isWord = false It is copied directly into the output.
         }
 
-        let ipa = ipaMap.get(token) || "";
+        let ipa = ipaMap.get(token) || "";  //  Now we reach the first important IPA lookup. This looks up the IPA transcription for the current word in ipaMap. For example, if token = "ciao" and ipaMap contains "ciao" → "tʃao" then ipa becomes "tʃao" The expression || "" means "if nothing is found, use an empty string instead." So: ipaMap.get("ciao") returns "tʃao" while ipaMap.get("xyz") returns undefined which becomes "" (an empty string).
         let mapped = applyG2PMapping(token, ipa);
         
         // show in console how words map 2026 delete
