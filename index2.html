@@ -580,18 +580,18 @@ document.getElementById('afi').addEventListener('click', async () => {  //  What
         }
 
         // Validate mapping
-        mapped = validateOrReturnOriginal(token, mapped);
+        mapped = validateOrReturnOriginal(token, mapped);  //  The next step is to verify that every letter-to-sound mapping is valid. This calls the function validateOrReturnOriginal(). It receives two pieces of information: token — the original word. mapped — the grapheme-to-phoneme alignment. For example: token  = "ciao" mapped = "ci(tʃ)a(a)o(o)" The function now examines every mapping. Why validate? Although applyG2PMapping() tries to align the spelling and pronunciation correctly, it doesn't know whether every mapping is linguistically acceptable. For example: c(z) would be suspicious because an Italian c is never pronounced z. Instead of accepting impossible mappings, your validator checks them against a list of allowed pronunciations. If every mapping is valid, the function simply returns the original string. Example: ci(tʃ)a(a)o(o) ↓ ci(tʃ)a(a)o(o) Nothing changes. If an illegal mapping is found, the function instead returns the original word. Example: token = "ciao" mapped = "c(z)i(i)a(a)o(o)" ↓ returns ciao This prevents displaying incorrect IPA.
 
         // Extract IPA parentheses
-        const ipaPieces = [...mapped.matchAll(/\(([^()]*)\)/g)];
-        const ipaString = ipaPieces.map(x => x[1]).join("");
+        const ipaPieces = [...mapped.matchAll(/\(([^()]*)\)/g)];  //  This line is one of the cleverest parts of the program. Instead of looking at the letters, it extracts everything inside parentheses. Suppose mapped = ci(tʃ)a(a)o(o) The regular expression searches for (...) everywhere. It finds (tʃ) (a) (o) Understanding the regular expression /\(([^()]*)\)/g Let's examine it piece by piece. \( Match a literal opening parenthesis. Example: ( ([^()]*) This is the important part. It means: Capture everything that is not another parenthesis. For (tʃ) it captures tʃ For (a) it captures a \) Match the closing parenthesis. g The global flag. Without it, JavaScript would stop after the first match. With it, it continues through the entire string. What does matchAll() return? Suppose mapped = ci(tʃ)a(a)o(o) Then mapped.matchAll(...) returns something conceptually like [ "(tʃ)", "(a)", "(o)" ] along with additional information about each match. Why use [...]? [...mapped.matchAll(...)] matchAll() returns an iterator. An iterator isn't a normal array. The spread operator ... converts it into a regular JavaScript array. Now you can use methods like map() on it. Store the IPA matches const ipaPieces = ... Now ipaPieces contains every IPA symbol that was inside parentheses. Conceptually, ipaPieces looks like [ "(tʃ)", "(a)", "(o)" ]
+        const ipaString = ipaPieces.map(x => x[1]).join("");  //  This line transforms the matches into plain IPA. Let's go from the inside outward. Step 1 ipaPieces.map(...) map() loops over every element of the array. If there are three matches, it runs three times. Step 2 x => x[1] Each match contains several pieces of information. For (tʃ) the regular expression stores x[0] = "(tʃ)" x[1] = "tʃ" Notice that x[1] contains only the captured text, without the parentheses. Suppose ipaPieces contains [ "(tʃ)", "(a)", "(o)" ] Then map(x => x[1]) produces [ "tʃ", "a", "o" ] Step 3 .join("") Now combine everything together. [ "tʃ", "a", "o" ] becomes tʃao Notice that the separator is "" (an empty string), so nothing is inserted between the sounds. At the end of these three lines, ipaString contains tʃao instead of ci(tʃ)a(a)o(o) This is exactly what the Only IPA button needs: it discards the written letters and keeps only the phonetic transcription.
 
         // If IPA is empty → original word
-        if (!ipaString.trim()) {
-          converted.push(token);
-        } else {
+        if (!ipaString.trim()) {  //  This checks whether ipaString is empty. trim() removes any whitespace before testing. Examples: ipaString = "" ↓ empty ipaString = "   " ↓ also considered empty ipaString = "tʃao" ↓ not empty If the result is empty, something went wrong during extraction. Perhaps validation returned the original word instead of a grapheme-to-phoneme alignment. In that case, there are no parentheses to extract IPA from.
+          converted.push(token);  //  Rather than outputting nothing, the program keeps the original word. For example, ciao remains ciao instead of disappearing.
+        } else {  //  Otherwise, IPA extraction succeeded.
           // FINAL OUTPUT: only IPA
-          converted.push(ipaString);
+          converted.push(ipaString);  //  Store only the IPA transcription in the output array. For example, instead of storing ci(tʃ)a(a)o(o) the array receives tʃao When the entire sentence has been processed, converted contains every word replaced by its IPA transcription while punctuation and spacing have been preserved.
         }
       }
 
