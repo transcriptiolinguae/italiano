@@ -561,22 +561,22 @@ document.getElementById('afi').addEventListener('click', async () => {  //  What
             continue;  //  Skip the rest of this iteration and continue with the next token.
           }
 
-          const remainingWords = tokens
-            .slice(nextWordIndex)
-            .filter(tt =>
-              /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(tt)
+          const remainingWords = tokens  //  Build a list of remaining words. Create a new array beginning with the remaining tokens.
+            .slice(nextWordIndex)  //  Take everything from the next word onward. Example: Original tokens [ "Ciao", ",", "come", "stai", "." ] If nextWordIndex = 2 then slice(2) returns [ "come", "stai", "." ]
+            .filter(tt =>  //  Now remove anything that isn't a word.
+              /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(tt)  //  Only actual words remain. So [ "come", "stai", "." ] becomes [ "come", "stai" ]
             );
 
-          ipaMap = await computeIPAMap(remainingWords);
+          ipaMap = await computeIPAMap(remainingWords);  //  Recompute IPA. This is a clever recovery step. Instead of trying to reuse the previous IPA map, the program recomputes the IPA for only the remaining words. Why? Because eSpeak occasionally produces slightly different output depending on surrounding words. By recalculating from the point of failure onward, the alignment may succeed. The await keyword pauses execution until computeIPAMap() finishes.
 
-          ipa = ipaMap.get(token) || "";
-          mapped = applyG2PMapping(token, ipa);
+          ipa = ipaMap.get(token) || "";  //  Retrieve the IPA again. Try to retrieve the IPA transcription again from the newly created map. Hopefully the second attempt succeeds.
+          mapped = applyG2PMapping(token, ipa);  //  Try the mapping again. Run the alignment function a second time using the new IPA transcription. Sometimes this succeeds after recomputing the remaining words.
         }
 
         // If still no mapping → ORIGINAL WORD
-        if (mapped === null) {
-          converted.push(token);
-          continue;
+        if (mapped === null) {  //  Still failed? Even after recalculating the IPA, the mapping might still fail. For example, the word may contain an unusual pronunciation or a spelling pattern your alignment algorithm doesn't yet support.
+          converted.push(token);  //  Instead of generating an incorrect transcription, simply output the original word. This ensures the program never invents a wrong IPA alignment.
+          continue;  //  Skip the rest of the processing for this word and continue with the next token. This makes the program robust: a single problematic word doesn't stop the transcription of the rest of the sentence. At this point, mapped is guaranteed to contain a valid grapheme-to-phoneme alignment. The next lines validate that alignment and extract only the IPA symbols for the Only IPA output.
         }
 
         // Validate mapping
