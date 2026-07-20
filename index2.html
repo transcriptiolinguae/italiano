@@ -592,31 +592,31 @@ document.getElementById('afi').addEventListener('click', async () => {  //  What
         } else {  //  Otherwise, IPA extraction succeeded.
           // FINAL OUTPUT: only IPA
           converted.push(ipaString);  //  Store only the IPA transcription in the output array. For example, instead of storing ci(tʃ)a(a)o(o) the array receives tʃao When the entire sentence has been processed, converted contains every word replaced by its IPA transcription while punctuation and spacing have been preserved.
-        }
+        }  //  At this point, the array converted contains the processed version of every token. For example, suppose the user typed: Ciao, come stai? The original tokens array is [ "Ciao", ",", "come", "stai", "?" ] After processing, converted might contain [ "tʃao", ",", "ˈkome", "stai", "?" ] Notice that punctuation was never changed—only words were replaced.
       }
 
       // Reconstruct text preserving whitespace
-      let rebuilt = '';
-      let pos = 0;
+      let rebuilt = '';  //  Rebuild the original text let rebuilt = ''; Creates an empty string. This string will gradually become the final transcription of the current chunk. Initially, rebuilt = "";
+      let pos = 0;  //  Creates a variable that remembers where we currently are in the original text. This is extremely important because the program wants to preserve every space exactly as the user typed it. Imagine the original input was Ciao,   come! Notice there are three spaces after the comma. Those spaces are not stored inside tokens. Instead, they still exist inside the original string (chunk). pos keeps track of where we are while reading that original string.
 
-      for (const token of tokens) {
-        while (chunk[pos] && /\s/.test(chunk[pos])) {
-          rebuilt += chunk[pos++];
+      for (const token of tokens) {  //  Process every original token again. Now the program loops through every original token a second time. Notice something important: Earlier, the loop performed IPA conversion. This loop doesn't convert anything. Instead, it simply rebuilds the sentence using the already-converted tokens. Suppose tokens = [ "Ciao", ",", "come", "!" ] The loop visits "Ciao" "," "come" "!" one by one.
+        while (chunk[pos] && /\s/.test(chunk[pos])) {  //  Preserve whitespace. This loop copies all whitespace characters from the original text. \s means space tab newline carriage return Anything considered whitespace. Suppose the original text is Ciao,     come There are five spaces. The tokenizer ignored them. Now this loop copies them back exactly as written. Is there still a character? chunk[pos] Looks at the current character. For example, C i a o , _ _ _ _ _ ↑ pos If chunk[pos] exists, the loop continues. If we've reached the end of the string, the loop stops. Is it whitespace? /\s/.test(chunk[pos]) Checks whether the current character is whitespace. Examples: " " ✓ true "\n" ✓ true "\t" ✓ true "C" ✗ false
+          rebuilt += chunk[pos++];  //  Copy the whitespace. This line does two things simultaneously. First, rebuilt += chunk[pos]; copies the character into the output. Then pos++; moves to the next character. Because of the post-increment (pos++), both happen in one statement. Example Suppose chunk C i a o , _ _ c ↑ pos The current character is " " After executing rebuilt += chunk[pos++]; the output receives " " and pos moves one position forward. If there are four spaces, the loop repeats four times, preserving them perfectly.
         }
-        rebuilt += converted.shift();
-        pos += token.length;
-      }
+        rebuilt += converted.shift();  //  Insert the converted token. Now comes the important step. converted contains the processed tokens. For example, converted = [ "tʃao", ",", "ˈkome", "?" ] shift() removes and returns the first element. So converted.shift() returns tʃao and the array becomes [ ",", "ˈkome", "?" ] That returned value is immediately appended to the rebuilt sentence. Why use shift()? Because the order of converted already matches the order of tokens. Each iteration consumes exactly one converted token. It's an elegant way to keep both arrays synchronized.
+        pos += token.length;  //  Advance past the original token. Remember, we copied the replacement word, not the original one. However, we're still reading from the original string (chunk). We therefore need to skip over the characters belonging to the original token. Example Original text Ciao, come After copying tʃao we still need to move past Ciao inside the original string. Since token.length is 4 pos advances by four characters. Now it's pointing at the comma. After the loop finishes Eventually, every original token has been replaced. Suppose Original Ciao, come stai? After reconstruction, rebuilt becomes tʃao, ˈkome stai? Notice that commas stayed exactly where they were, spaces stayed exactly where they were, punctuation stayed exactly where it was, only the words changed.
+      } 
 
-      finalResult += rebuilt;
-    }
+      finalResult += rebuilt;  //  Add this chunk to the final result. Remember that long texts are divided into chunks by splitTextByLength() Each chunk is processed separately. Now the finished chunk is appended to the complete transcription. If there is only one chunk, this simply copies it into finalResult. If there are several, they are appended one after another.
+    }  //  Finish the chunk loop. This closes for (const chunk of chunks) Every chunk has now been processed.
 
-    setOutput(finalResult.trim());
+    setOutput(finalResult.trim());  //  Display the transcription. Finally, the complete IPA transcription is displayed in the <pre> element. trim() removes accidental whitespace from the beginning and end. For example, "  tʃao ˈkome  " becomes "tʃao ˈkome"
 
-  } catch (e) {
-    console.error("Error in G2P AFI:", e);
-    setOutput("Error during G2P AFI processing: " + e.message);
+  } catch (e) {  //  Error handling. If anything inside the try block throws an error, execution immediately jumps here. Examples include eSpeak failing, invalid JSON, programming errors, unexpected values.
+    console.error("Error in G2P AFI:", e);  //  Prints the complete error into the browser's Developer Console. This helps you debug problems without showing technical details to the user. For example, Error in G2P AFI: TypeError: Cannot read properties of undefined
+    setOutput("Error during G2P AFI processing: " + e.message);  //  Instead of leaving the output blank, the user sees a readable error message. For example, Error during G2P AFI processing: Cannot read properties of undefined This is much friendlier than a completely broken page.
   }
-});
+});  //  This closes the entire click event listener for the Only IPA button. From the user's perspective, clicking the button now performs this complete sequence: Wait until eSpeak has finished loading. Read the text from the textarea. Normalize apostrophes and Unicode. Split long text into manageable chunks. Tokenize each chunk into words, numbers, and punctuation. Retrieve IPA from the dictionary or eSpeak. Align spelling with pronunciation (G2P). Validate each grapheme-to-phoneme mapping. Extract only the IPA symbols. Rebuild the original sentence while preserving all spaces and punctuation. Display the final IPA transcription. Show an error message if any step fails.
 
 
 
