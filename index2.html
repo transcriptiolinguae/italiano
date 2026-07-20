@@ -534,7 +534,7 @@ document.getElementById('afi').addEventListener('click', async () => {  //  What
         }
 
         let ipa = ipaMap.get(token) || "";  //  Now we reach the first important IPA lookup. This looks up the IPA transcription for the current word in ipaMap. For example, if token = "ciao" and ipaMap contains "ciao" → "tʃao" then ipa becomes "tʃao" The expression || "" means "if nothing is found, use an empty string instead." So: ipaMap.get("ciao") returns "tʃao" while ipaMap.get("xyz") returns undefined which becomes "" (an empty string).
-        let mapped = applyG2PMapping(token, ipa);
+        let mapped = applyG2PMapping(token, ipa);  // This is one of the most important function calls in the whole program. It takes the original spelling token and its IPA pronunciation ipa and aligns them letter by letter. For example token = "ciao" ipa   = "tʃao" becomes something like ci(tʃ)a(a)o(o) or whatever alignment your mapping function produces. Notice that this function does not merely return IPA—it creates a correspondence between each written grapheme and its phonetic value. This aligned representation is then used differently by the three buttons: Only IPA extracts only the IPA symbols. Word before IPA shows word (IPA). G2P displays the full grapheme-to-phoneme alignment.
         
         // show in console how words map 2026 delete
  // console.log("WORD:", token);
@@ -543,22 +543,22 @@ document.getElementById('afi').addEventListener('click', async () => {  //  What
         
         // If mapping fails → recover
         
-        if (mapped === null) {
+        if (mapped === null) {  //  This checks whether applyG2PMapping() failed. Earlier, you called: let mapped = applyG2PMapping(token, ipa); Normally, mapped contains something like ci(tʃ)a(a)o(o) However, if the function cannot correctly align the spelling with the IPA transcription, it returns null rather than an incorrect mapping. This if statement catches that failure.
 
           // Find next real word
-          let nextWordIndex = t + 1;
+          let nextWordIndex = t + 1;  //  Suppose we're processing token number 5. Then t = 5 The next possible word begins at nextWordIndex = 6; Notice that this doesn't mean token 6 is necessarily a word. It might be , or ? or 123 So the code has to search forward.
           while (
-            nextWordIndex < tokens.length &&
-            !/^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u
-              .test(tokens[nextWordIndex])
+            nextWordIndex < tokens.length &&  //  Continue searching while we haven't reached the end of the token list, and the next token isn't a word. The first condition prevents reading beyond the end of the array.
+            !/^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u  //  This is exactly the same regular expression used earlier. It asks "Is this token a word?" The ! reverses the answer. So this becomes "Keep moving forward while this token is not a word."
+              .test(tokens[nextWordIndex])  //  Example Suppose your tokens are [ "Ciao", ",", "come", "stai", "?" ] Imagine we're processing "Ciao" The search begins at "," Is it a word? No. Move forward. Now "come" Is it a word? Yes. The loop stops. Now nextWordIndex points to "come".
           ) {
-            nextWordIndex++;
+            nextWordIndex++;  //  Move to the next token nextWordIndex++; If the current token isn't a word, increase the index by one and check again. This continues until a word is found, or the end of the array is reached.
           }
 
-          if (nextWordIndex >= tokens.length) {
+          if (nextWordIndex >= tokens.length) {  //  Did we reach the end? If this is true, there are no more words remaining. Example: [ "ciao", "." ] Suppose mapping failed for ciao The search checks "." Not a word. Moves forward. Now nextWordIndex == tokens.length We've run out of tokens.
             // no mapping → return original word
-            converted.push(token);
-            continue;
+            converted.push(token);  //  Since there is no later word to help recover the alignment, simply keep the original word unchanged. Instead of risking a bad IPA transcription, the output remains ciao
+            continue;  //  Skip the rest of this iteration and continue with the next token.
           }
 
           const remainingWords = tokens
