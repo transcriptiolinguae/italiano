@@ -562,7 +562,7 @@ document.getElementById('afi').addEventListener('click', async () => {  //  What
           }
 
           const remainingWords = tokens  //  Build a list of remaining words. Create a new array beginning with the remaining tokens.
-            .slice(nextWordIndex)  //  Take everything from the next word onward. Example: Original tokens [ "Ciao", ",", "come", "stai", "." ] If nextWordIndex = 2 then slice(2) returns [ "come", "stai", "." ]
+            .slice(t)  //  Take everything from the next word onward. Example: Original tokens [ "Ciao", ",", "come", "stai", "." ] If nextWordIndex = 2 then slice(2) returns [ "come", "stai", "." ]
             .filter(tt =>  //  Now remove anything that isn't a word.
               /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(tt)  //  Only actual words remain. So [ "come", "stai", "." ] becomes [ "come", "stai" ]
             );
@@ -715,7 +715,7 @@ document.getElementById('testoafi').addEventListener('click', async () => {
 
           // Collect remaining words starting from that next real word
           const remainingWords = tokens
-            .slice(nextWordIndex)
+            .slice(t)
             .filter(tt =>
               /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(tt)
             );
@@ -998,27 +998,48 @@ for (let t = 0; t < tokens.length; t++) {
  let mapped = applyG2PMapping(token, ipa);
 
 // If mapping failed or incomplete — keep original
-if (mapped === null) {
-  // delete
- //  console.warn(`G2P mapping failed for "${token}", recalculating from next word...`);
-    // Get remaining tokens after this one
-    const remainingWords = tokens
-      .slice(t)
-      .filter(tt => /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(tt));
+        if (mapped === null) {
+        // delete
+        //  console.warn("G2P failed on:", token);
 
-    if (remainingWords.length > 0) {
-      // Re-run eSpeak on the remaining portion only
-const newMap = await computeIPAMap(remainingWords);
+          // Find next real word AFTER the current token
+          let nextWordIndex = t + 1;
+          while (
+            nextWordIndex < tokens.length &&
+            !/^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u
+              .test(tokens[nextWordIndex])
+          ) {
+            nextWordIndex++;
+          }
 
-for (const [word, ipa] of newMap) {
-  ipaMap.set(word, ipa);
-}
-    }
+          // No more words → output original and continue
+          if (nextWordIndex >= tokens.length) {
+            converted.push(token);
+            continue;
+          }
 
-    // Skip this token (unmapped)
-    converted.push(token);
-    continue;
-  }
+          // Collect remaining words starting from that next real word
+          const remainingWords = tokens
+            .slice(t)
+            .filter(tt =>
+              /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(tt)
+            );
+           // delete console
+          // console.log("Re-running eSpeak for:", remainingWords);
+
+          // Rebuild IPA map for remaining sequence
+          ipaMap = await computeIPAMap(remainingWords);
+
+          // Retry mapping the *current* token
+          ipa = ipaMap.get(token) || "";
+          mapped = applyG2PMapping(token, ipa);
+        }
+          
+          // If still failing, output original
+          if (mapped === null) {
+            converted.push(token);
+            continue;
+          }
 
 // 🔥 NEW: validate mapping
 mapped = validateOrReturnOriginal(token, mapped);
