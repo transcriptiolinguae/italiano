@@ -738,10 +738,10 @@ document.getElementById('testoafi').addEventListener('click', async () => {
         
 
         // Validate allowed IPA mapping
-        const validated = validateOrReturnOriginal(token, mapped);
+        mapped = validateOrReturnOriginal(token, mapped);
 
         // Pull all IPA inside parentheses
-        const ipaPieces = [...validated.matchAll(/\(([^()]*)\)/g)];
+        const ipaPieces = [...mapped.matchAll(/\(([^()]*)\)/g)];
         const ipaString = ipaPieces.map(x => x[1]).join("");
 
         if (!ipaString) {
