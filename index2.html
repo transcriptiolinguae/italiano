@@ -997,7 +997,7 @@ for (let t = 0; t < tokens.length; t++) {
   let ipa = ipaMap.get(token) || "";
  let mapped = applyG2PMapping(token, ipa);
 
-// If mapping failed or incomplete — keep original
+// If mapping failed, retry with a fresh IPA calculation
         if (mapped === null) {
         // delete
         //  console.warn("G2P failed on:", token);
