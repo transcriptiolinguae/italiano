@@ -974,12 +974,12 @@ document.getElementById('g2p').addEventListener('click', async () => {
 
       
       
-// Collect word-only tokens
+// Extract real words, Collect word-only tokens
 let words = tokens.filter(t =>
   /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
 );
 
-// Initial IPA pass
+// First IPA pass, Initial IPA pass
 let ipaMap = await computeIPAMap(words);
 
 
