@@ -744,13 +744,13 @@ document.getElementById('testoafi').addEventListener('click', async () => {
         const ipaPieces = [...mapped.matchAll(/\(([^()]*)\)/g)];
         const ipaString = ipaPieces.map(x => x[1]).join("");
 
-        if (!ipaString) {
+        if (!ipaString.trim()) {
           converted.push(token);
-          continue;
-        }
+          } else {
 
         // Final inline form: WORD (IPA)
         converted.push(`${token} (${ipaString})`);
+      }
       }
 
       // ------------------------------------------------------------
