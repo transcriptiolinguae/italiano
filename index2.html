@@ -728,13 +728,14 @@ document.getElementById('testoafi').addEventListener('click', async () => {
           // Retry mapping the *current* token
           ipa = ipaMap.get(token) || "";
           mapped = applyG2PMapping(token, ipa);
-
+        }
+          
           // If still failing, output original
           if (mapped === null) {
             converted.push(token);
             continue;
           }
-        }
+        
 
         // Validate allowed IPA mapping
         const validated = validateOrReturnOriginal(token, mapped);
