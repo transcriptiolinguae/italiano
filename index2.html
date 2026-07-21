@@ -982,19 +982,15 @@ let words = tokens.filter(t =>
 // First IPA pass, Initial IPA pass
 let ipaMap = await computeIPAMap(words);
 
-
-
-
-
+  const converted = [];
       
-
-  const g2pTokens = [];
 for (let t = 0; t < tokens.length; t++) {
+  
   const token = tokens[t];
- const isWord = /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);
+  const isWord = /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);
 
   if (!isWord) {
-    g2pTokens.push(token);
+    converted.push(token);
     continue;
   }
 
@@ -1020,14 +1016,14 @@ for (const [word, ipa] of newMap) {
     }
 
     // Skip this token (unmapped)
-    g2pTokens.push(token);
+    converted.push(token);
     continue;
   }
 
 // 🔥 NEW: validate mapping
 mapped = validateOrReturnOriginal(token, mapped);
 
-g2pTokens.push(mapped);
+converted.push(mapped);
 
 }
 
@@ -1038,7 +1034,7 @@ g2pTokens.push(mapped);
         while (chunk[index] && /\s/.test(chunk[index])) {
           reconstructed += chunk[index++];
         }
-        reconstructed += g2pTokens.shift();
+        reconstructed += converted.shift();
         index += token.length;
       }
 
