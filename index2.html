@@ -974,13 +974,13 @@ document.getElementById('g2p').addEventListener('click', async () => {
 
       
       
-   const uniqueWords = [...new Set(
-  tokens.filter(t =>
-    /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
-  )
-)];
+// Collect word-only tokens
+let words = tokens.filter(t =>
+  /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
+);
 
-const ipaMap = await computeIPAMap(uniqueWords);
+// Initial IPA pass
+let ipaMap = await computeIPAMap(words);
 
 
 
