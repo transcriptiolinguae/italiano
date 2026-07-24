@@ -787,53 +787,51 @@ function getDictionaryIPA(word) {  //  Defines a new function named getDictionar
     .normalize('NFC')  //  Normalizes Unicode characters into NFC (Normalization Form C). This is extremely important because some accented characters can be stored in two different ways. For example, these two strings look identical: é and e + ◌́ One is a single Unicode character. The other is the letter plus a combining accent. Visually they are identical, but JavaScript considers them different strings. Calling .normalize('NFC') converts both into exactly the same representation. Example: "Caffè" becomes "Caffè" Now dictionary lookup becomes reliable.
     .toLowerCase();  //  Converts the normalized word to lowercase. Examples: "CIAO" ↓ "ciao" "Perché" ↓ "perché" This means your dictionary only needs one entry: "ciao" instead of "Ciao" "CIAO" "CiAo" "cIaO" ... Everything becomes lowercase before searching. After these two operations together: word = "Perché" becomes key = "perché"
 
-  return ipaDictionary[key] || null;  //  This is the actual dictionary lookup. ipaDictionary is the object you loaded earlier from phonitalia.json. Suppose it contains: ipaDictionary = { "ciao": "ˈtʃao", "cane": "ˈkane", "gli": "ʎi" } JavaScript checks: ipaDictionary[key] If key = "ciao" then ipaDictionary["ciao"] returns ˈtʃao The function immediately returns that IPA.
-}
-
+  return ipaDictionary[key] || null;  //  This is the actual dictionary lookup. ipaDictionary is the object you loaded earlier from phonitalia.json. Suppose it contains: ipaDictionary = { "ciao": "ˈtʃao", "cane": "ˈkane", "gli": "ʎi" } JavaScript checks: ipaDictionary[key] If key = "ciao" then ipaDictionary["ciao"] returns ˈtʃao The function immediately returns that IPA. If the word is not found: ipaDictionary["computer"] returns undefined The operator || means: "If the value on the left is missing or false, use the value on the right." So undefined || null becomes null The function therefore returns null to indicate: "This word is not in the custom dictionary." This is the actual dictionary lookup. Remember that earlier your code loaded ipaDictionary = { "ciao": "tʃao", "gli": "ʎi", "occhi": "ɔkːi" } Now JavaScript checks ipaDictionary[key] Suppose key = "ciao" Then it evaluates ipaDictionary["ciao"] which returns "tʃao" So the function returns return "tʃao"; If the word is not in the dictionary: key = "javascript" then ipaDictionary["javascript"] is undefined The operator || means "if the thing on the left is missing or false, use the thing on the right." So undefined || null becomes null Therefore the function returns null instead of undefined. Returning null is intentional because later your code checks if (dictIPA) { ... } else { ... } or if (dictIPA === null) to decide whether to call eSpeak.
 // ------------------------------------------------------
-async function computeIPAMap(words) {
+async function computeIPAMap(words) {  //  This is one of the most important functions in your program because it combines your dictionary with eSpeak into one IPA lookup table.
 
-  const map = new Map();
+  const map = new Map();  //  Defines an asynchronous function named computeIPAMap. async means this function is allowed to wait for asynchronous operations using await. In this function, it needs to wait for eSpeak to finish generating IPA. The function accepts one parameter: words which is expected to be an array. Example: [ "ciao", "gli", "occhi", "ciao" ] const map = new Map(); Creates a new JavaScript Map object. A Map stores pairs of key → value Unlike an array, you look up values by key instead of position. Initially it is empty: Map {} Later it will become something like "ciao"  → "tʃao" "gli"   → "ʎi" "occhi" → "ɔkːi" This Map is eventually returned.
 
-  const espeakWords = [];
+  const espeakWords = [];  //  Creates an empty array. Its job is to collect words that are not found in your custom dictionary. Initially []
 
-  for (const word of words) {
+  for (const word of words) {  //  Starts a loop. Suppose words = [ "ciao", "gli", "occhi", "ciao" ] The loop runs four times. First iteration word = "ciao" Second word = "gli" Third word = "occhi" Fourth word = "ciao" Notice that duplicates are still present. Nothing has been removed yet.
 
-    const dictIPA = getDictionaryIPA(word);
+    const dictIPA = getDictionaryIPA(word);  //  Looks inside your custom JSON dictionary. For example word = "ciao" calls getDictionaryIPA("ciao") Suppose the dictionary contains "ciao": "tʃao" Then dictIPA = "tʃao" If the dictionary does not contain the word word = "computer" then dictIPA = null
 
-    if (dictIPA) {
+    if (dictIPA) {  //  Checks whether the lookup succeeded. Remember: dictIPA = "tʃao" is considered true. dictIPA = null is considered false.
 
-      map.set(word, dictIPA);
+      map.set(word, dictIPA);  //  Now the Map becomes Map { "ciao" → "tʃao" }
 
     //    console.log(
      //   `[DICT] ${word} → ${dictIPA}`
     //    );
 
-    } else {
+    } else {  //  This executes only if the word was not found in the dictionary.
 
-      espeakWords.push(word);
+      espeakWords.push(word);  //  Adds the unknown word to the list for eSpeak. Suppose word = "computer" Then espeakWords becomes [ "computer" ] Later "javascript" might also be added. After the loop finishes, imagine Dictionary contains ciao gli Input is [ "ciao", "gli", "occhi", "computer", "ciao" ] The results are map ciao → tʃao gli  → ʎi and espeakWords [ "occhi", "computer" ]
     }
   }
 
-  if (espeakWords.length > 0) {
+  if (espeakWords.length > 0) {  //  Checks whether there is anything left for eSpeak. If [] there is nothing to do. If [ "occhi", "computer" ] then eSpeak must be called.
 
-    const unique = [...new Set(espeakWords)];
+    const unique = [...new Set(espeakWords)];  //  Removes duplicate words. Suppose espeakWords [ "occhi", "computer", "occhi", "computer" ] Set automatically removes duplicates. Set { "occhi", "computer" } The spread operator ... turns it back into an array. Result unique [ "occhi", "computer" ] Why? Because there's no point asking eSpeak to pronounce the same word four times.
 
-    const marked = unique.join("|");
+    const marked = unique.join("|");  //  Joins every word into one string. Suppose [ "occhi", "computer" ] becomes "occhi|computer" Why use "|"? Because later your code separates words again using this marker. Instead of calling eSpeak twice runESpeak("occhi") runESpeak("computer") it calls it once runESpeak("occhi|computer") which is much faster.
 
-    const ipaRaw = await runESpeak(marked);
+    const ipaRaw = await runESpeak(marked);  //  Calls eSpeak. Because eSpeak is asynchronous, the function waits here until eSpeak finishes. Suppose marked "occhi|computer" eSpeak might return ɔkːi | komˈputer or ɔkːi|komˈputer depending on formatting. This entire string is stored in ipaRaw
 
     const ipaClean =
-      ipaRaw.replace(/\|/g, " ").trim();
+      ipaRaw.replace(/\|/g, " ").trim();  //  Cleans the output. First replace(/\|/g, " ") changes every | into a space. Example ɔkːi|komˈputer becomes ɔkːi komˈputer Then trim() removes spaces from the beginning and end. Example " ɔkːi komˈputer " becomes "ɔkːi komˈputer"
 
     const ipaWords =
-      ipaClean.split(/\s+/);
+      ipaClean.split(/\s+/);  //  Splits the IPA string into an array. Suppose ipaClean "ɔkːi komˈputer" becomes [ "ɔkːi", "komˈputer" ] Now every IPA pronunciation matches one word.
 
-    for (let i = 0; i < unique.length; i++) {
+    for (let i = 0; i < unique.length; i++) {  //  Loops over every unknown word. If unique [ "occhi", "computer" ] then First iteration i = 0 Second i = 1
 
       map.set(
         unique[i],
-        ipaWords[i] || ""
+        ipaWords[i] || ""  //  Adds the new IPA into the Map. Iteration 1 unique[0] "occhi" ipaWords[0] "ɔkːi" stores occhi → ɔkːi Iteration 2 computer → komˈputer Now the Map contains both dictionary words and eSpeak words. Map ciao      → tʃao gli       → ʎi occhi     → ɔkːi computer  → komˈputer Why ipaWords[i] || "" instead of simply ipaWords[i] ? Suppose eSpeak unexpectedly returns fewer pronunciations than expected. Then ipaWords[3] would be undefined Instead, the code stores "" (an empty string) which prevents crashes later.
       );
     // delete
     //  console.log(
@@ -842,7 +840,7 @@ async function computeIPAMap(words) {
     }
   }
 
-  return map;
+  return map;  //  Finally returns the completed Map. Example returned object: Map { "ciao"     → "tʃao", "gli"      → "ʎi", "occhi"    → "ɔkːi", "computer" → "komˈputer" } From this point onward, the rest of your program doesn't care where the IPA came from. It simply does: const ipa = ipaMap.get(token); and receives either the pronunciation from your JSON dictionary or the one generated by eSpeak. That separation is the main purpose of computeIPAMap(): it hides the source of the pronunciation and provides a single, unified lookup table.
 }
 
 
