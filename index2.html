@@ -781,13 +781,13 @@ document.getElementById('testoafi').addEventListener('click', async () => {
 
 
 
-function getDictionaryIPA(word) {
+function getDictionaryIPA(word) {  //  Defines a new function named getDictionaryIPA. It accepts one parameter: word. word is expected to be a single word such as: "ciao" or "Perché" The function's job is simple: Look inside your custom IPA dictionary (phonitalia.json) and return the IPA transcription if the word exists.
 
-  const key = word
-    .normalize('NFC')
-    .toLowerCase();
+  const key = word  //  Creates a new constant named key. This variable will contain a normalized version of the word before searching the dictionary. It does not modify the original word. Example: word = "Caffè" After this line: word = "Caffè" key  = (still being built)
+    .normalize('NFC')  //  Normalizes Unicode characters into NFC (Normalization Form C). This is extremely important because some accented characters can be stored in two different ways. For example, these two strings look identical: é and e + ◌́ One is a single Unicode character. The other is the letter plus a combining accent. Visually they are identical, but JavaScript considers them different strings. Calling .normalize('NFC') converts both into exactly the same representation. Example: "Caffè" becomes "Caffè" Now dictionary lookup becomes reliable.
+    .toLowerCase();  //  Converts the normalized word to lowercase. Examples: "CIAO" ↓ "ciao" "Perché" ↓ "perché" This means your dictionary only needs one entry: "ciao" instead of "Ciao" "CIAO" "CiAo" "cIaO" ... Everything becomes lowercase before searching. After these two operations together: word = "Perché" becomes key = "perché"
 
-  return ipaDictionary[key] || null;
+  return ipaDictionary[key] || null;  //  This is the actual dictionary lookup. ipaDictionary is the object you loaded earlier from phonitalia.json. Suppose it contains: ipaDictionary = { "ciao": "ˈtʃao", "cane": "ˈkane", "gli": "ʎi" } JavaScript checks: ipaDictionary[key] If key = "ciao" then ipaDictionary["ciao"] returns ˈtʃao The function immediately returns that IPA.
 }
 
 // ------------------------------------------------------
