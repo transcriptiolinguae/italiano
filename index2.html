@@ -878,7 +878,7 @@ function validateOrReturnOriginal(originalWord, mappedString) {
     gi: ['dʒ', 'ˈdʒ'],
     g: ['g', 'ˈg', 'dʒ', 'ˈdʒ'],
     i: ['i', 'ˈi', 'j', 'ˈj'],
-    ì: ['i', 'ˈi', 'j', 'ˈj'],
+    ì: ['i', 'ˈi', 'j', ''],
     ll: ['lː', 'ˈlː'],
     l: ['l', 'ˈl'],
     mm: ['mː', 'ˈmː'],
@@ -1110,14 +1110,26 @@ function applyG2PMapping(text, ipa) {
 
     
 
-   // i(ˈiː) 
+
     
        if (lowerText[i] === 'i') {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
-      if (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'i' && ipa[ipaIndex + 2] === 'ː') {
+      if (i   // i(ˈiː) pa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'i' && ipa[ipaIndex + 2] === 'ː') {
           result.push(`${text[i]}(ˈi)`);
           i += 1; // Skip past "ci"
           ipaIndex += 3; // Skip past the "tʃ" in IPA
+          continue; // Skip the rest of the processing for this "ci"
+        }
+      }
+
+   // i(j) 
+  
+           if (lowerText[i] === 'i') {
+      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
+      if (ipa[ipaIndex] === 'j') {
+          result.push(`${text[i]}(j)`);
+          i += 1; // Skip past "ci"
+          ipaIndex += 1; // Skip past the "tʃ" in IPA
           continue; // Skip the rest of the processing for this "ci"
         }
       }
