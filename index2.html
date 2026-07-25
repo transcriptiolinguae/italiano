@@ -595,9 +595,9 @@ if (!getDictionaryIPA(token)) {
         } else {  //  Otherwise, IPA extraction succeeded.
           // FINAL OUTPUT: only IPA
           converted.push(ipaString);  //  Store only the IPA transcription in the output array. For example, instead of storing ci(tʃ)a(a)o(o) the array receives tʃao When the entire sentence has been processed, converted contains every word replaced by its IPA transcription while punctuation and spacing have been preserved.
-        }  //     At this point, the array converted contains the processed version of every token. For example, suppose the user typed: Ciao, come stai? The original tokens array is [ "Ciao", ",", "come", "stai", "?" ] After processing, converted might contain [ "tʃao", ",", "ˈkome", "stai", "?" ] Notice that punctuation was never changed—only words were replaced.
+        }  //  At this point, the array converted contains the processed version of every token. For example, suppose the user typed: Ciao, come stai? The original tokens array is [ "Ciao", ",", "come", "stai", "?" ] After processing, converted might contain [ "tʃao", ",", "ˈkome", "stai", "?" ] Notice that punctuation was never changed—only words were replaced.
 
-        
+        }
 
       // Reconstruct text preserving whitespace
       let rebuilt = '';  //  Rebuild the original text let rebuilt = ''; Creates an empty string. This string will gradually become the final transcription of the current chunk. Initially, rebuilt = "";
