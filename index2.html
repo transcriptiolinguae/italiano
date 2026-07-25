@@ -1126,17 +1126,7 @@ function applyG2PMapping(text, ipa) {
       }
       
 
-   // i(j) 
-  
-           if (lowerText[i] === 'i') {
-      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
-      if (ipa[ipaIndex] === 'j') {
-          result.push(`${text[i]}(j)`);
-          i += 1; // Skip past "ci"
-          ipaIndex += 1; // Skip past the "tʃ" in IPA
-          continue; // Skip the rest of the processing for this "ci"
-        }
-      }
+
   
 
      // a(ˈaː)
