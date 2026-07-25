@@ -580,8 +580,10 @@ document.getElementById('afi').addEventListener('click', async () => {  //  What
           continue;  //  Skip the rest of the processing for this word and continue with the next token. This makes the program robust: a single problematic word doesn't stop the transcription of the rest of the sentence. At this point, mapped is guaranteed to contain a valid grapheme-to-phoneme alignment. The next lines validate that alignment and extract only the IPA symbols for the Only IPA output.
         }
 
-        // Validate mapping
-        mapped = validateOrReturnOriginal(token, mapped);  //  The variable mapped overwrites the allready existing mapped variable with validated mapping. The next step is to verify that every letter-to-sound mapping is valid. This calls the function validateOrReturnOriginal(). It receives two pieces of information: token — the original word. mapped — the grapheme-to-phoneme alignment. For example: token  = "ciao" mapped = "ci(tʃ)a(a)o(o)" The function now examines every mapping. Why validate? Although applyG2PMapping() tries to align the spelling and pronunciation correctly, it doesn't know whether every mapping is linguistically acceptable. For example: c(z) would be suspicious because an Italian c is never pronounced z. Instead of accepting impossible mappings, your validator checks them against a list of allowed pronunciations. If every mapping is valid, the function simply returns the original string. Example: ci(tʃ)a(a)o(o) ↓ ci(tʃ)a(a)o(o) Nothing changes. If an illegal mapping is found, the function instead returns the original word. Example: token = "ciao" mapped = "c(z)i(i)a(a)o(o)" ↓ returns ciao This prevents displaying incorrect IPA.
+// Only validate words that came from eSpeak
+if (!getDictionaryIPA(token)) {
+  mapped = validateOrReturnOriginal(token, mapped);
+}  //  The variable mapped overwrites the allready existing mapped variable with validated mapping. The next step is to verify that every letter-to-sound mapping is valid. This calls the function validateOrReturnOriginal(). It receives two pieces of information: token — the original word. mapped — the grapheme-to-phoneme alignment. For example: token  = "ciao" mapped = "ci(tʃ)a(a)o(o)" The function now examines every mapping. Why validate? Although applyG2PMapping() tries to align the spelling and pronunciation correctly, it doesn't know whether every mapping is linguistically acceptable. For example: c(z) would be suspicious because an Italian c is never pronounced z. Instead of accepting impossible mappings, your validator checks them against a list of allowed pronunciations. If every mapping is valid, the function simply returns the original string. Example: ci(tʃ)a(a)o(o) ↓ ci(tʃ)a(a)o(o) Nothing changes. If an illegal mapping is found, the function instead returns the original word. Example: token = "ciao" mapped = "c(z)i(i)a(a)o(o)" ↓ returns ciao This prevents displaying incorrect IPA.
 
         // Extract IPA parentheses
         const ipaPieces = [...mapped.matchAll(/\(([^()]*)\)/g)];  //  This line is one of the cleverest parts of the program. Instead of looking at the letters, it extracts everything inside parentheses. Suppose mapped = ci(tʃ)a(a)o(o) The regular expression searches for (...) everywhere. It finds (tʃ) (a) (o) Understanding the regular expression /\(([^()]*)\)/g Let's examine it piece by piece. \( Match a literal opening parenthesis. Example: ( ([^()]*) This is the important part. It means: Capture everything that is not another parenthesis. For (tʃ) it captures tʃ For (a) it captures a \) Match the closing parenthesis. g The global flag. Without it, JavaScript would stop after the first match. With it, it continues through the entire string. What does matchAll() return? Suppose mapped = ci(tʃ)a(a)o(o) Then mapped.matchAll(...) returns something conceptually like [ "(tʃ)", "(a)", "(o)" ] along with additional information about each match. Why use [...]? [...mapped.matchAll(...)] matchAll() returns an iterator. An iterator isn't a normal array. The spread operator ... converts it into a regular JavaScript array. Now you can use methods like map() on it. Store the IPA matches const ipaPieces = ... Now ipaPieces contains every IPA symbol that was inside parentheses. Conceptually, ipaPieces looks like [ "(tʃ)", "(a)", "(o)" ]
@@ -593,8 +595,9 @@ document.getElementById('afi').addEventListener('click', async () => {  //  What
         } else {  //  Otherwise, IPA extraction succeeded.
           // FINAL OUTPUT: only IPA
           converted.push(ipaString);  //  Store only the IPA transcription in the output array. For example, instead of storing ci(tʃ)a(a)o(o) the array receives tʃao When the entire sentence has been processed, converted contains every word replaced by its IPA transcription while punctuation and spacing have been preserved.
-        }  //  At this point, the array converted contains the processed version of every token. For example, suppose the user typed: Ciao, come stai? The original tokens array is [ "Ciao", ",", "come", "stai", "?" ] After processing, converted might contain [ "tʃao", ",", "ˈkome", "stai", "?" ] Notice that punctuation was never changed—only words were replaced.
-      }
+        }  //     At this point, the array converted contains the processed version of every token. For example, suppose the user typed: Ciao, come stai? The original tokens array is [ "Ciao", ",", "come", "stai", "?" ] After processing, converted might contain [ "tʃao", ",", "ˈkome", "stai", "?" ] Notice that punctuation was never changed—only words were replaced.
+
+        
 
       // Reconstruct text preserving whitespace
       let rebuilt = '';  //  Rebuild the original text let rebuilt = ''; Creates an empty string. This string will gradually become the final transcription of the current chunk. Initially, rebuilt = "";
@@ -738,8 +741,10 @@ document.getElementById('testoafi').addEventListener('click', async () => {
           }
         
 
-        // Validate allowed IPA mapping
-        mapped = validateOrReturnOriginal(token, mapped);
+// Only validate words that came from eSpeak
+if (!getDictionaryIPA(token)) {
+  mapped = validateOrReturnOriginal(token, mapped);
+}
 
         // Pull all IPA inside parentheses
         const ipaPieces = [...mapped.matchAll(/\(([^()]*)\)/g)];
@@ -1042,7 +1047,10 @@ for (let t = 0; t < tokens.length; t++) {
           }
 
 // 🔥 NEW: validate mapping
-mapped = validateOrReturnOriginal(token, mapped);
+// Only validate words that came from eSpeak
+if (!getDictionaryIPA(token)) {
+  mapped = validateOrReturnOriginal(token, mapped);
+}
 
 converted.push(mapped);
 
