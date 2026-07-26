@@ -1607,7 +1607,7 @@ if (
 }
 
 
-        // sci(ʃː) 2026    
+        // sc(ʃː) 2026    
 
     if (
   lowerText[i] === 's' &&
@@ -1625,6 +1625,35 @@ if (
 
     i += 2;
     ipaIndex += 2;
+
+    continue;
+  }
+}
+
+
+
+    
+
+
+    
+        // sc(ʃː) 2026    
+
+    if (
+  lowerText[i] === 's' &&
+  lowerText[i + 1] === 'c'
+) {
+
+  // Match either ʎː or ʎʎ
+  if (
+    (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'ʃ' && ipa[ipaIndex + 2] === 'ː')
+  ) {
+
+    result.push(
+      `${text[i]}${text[i + 1]}(ˈʃː)`
+    );
+
+    i += 2;
+    ipaIndex += 3;
 
     continue;
   }
