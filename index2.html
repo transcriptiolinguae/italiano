@@ -1632,11 +1632,32 @@ if (
 
 
 
-    
+           // sc(ˈʃ) 2026    
+
+    if (
+  lowerText[i] === 's' &&
+  lowerText[i + 1] === 'c'
+) {
+
+  // Match either ʎː or ʎʎ
+  if (
+    (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'ʃ')
+  ) {
+
+    result.push(
+      `${text[i]}${text[i + 1]}(ˈʃ)`
+    );
+
+    i += 2;
+    ipaIndex += 2;
+
+    continue;
+  }
+} 
 
 
     
-        // sc(ʃː) 2026    
+        // sc(ˈʃː) 2026    
 
     if (
   lowerText[i] === 's' &&
