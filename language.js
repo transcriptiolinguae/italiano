@@ -3,10 +3,10 @@ export let currentLanguage = "it";
 
 // Dictionary files
 const dictionaries = {
-    it: "./dictionary/phonitalia.json",
-    en: "./dictionary/phonenglish.json",
-    de: "./dictionary/phongerman.json",
-    fr: "./dictionary/phonfrench.json"
+    it: "./phonitalia.json",  //  it: "./dictionary/phonitalia.json",
+    en: "./phonenglish.json",
+    de: "./phongerman.json",
+    fr: "./phonfrench.json"
 };
 
 // eSpeak voices
