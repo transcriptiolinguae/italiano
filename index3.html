@@ -219,7 +219,13 @@
     </a> 
   </header>  
 
-
+  <select id="language">
+      <option value="it">Italian</option>
+      <option value="en">English</option>
+      <option value="de">German</option>
+      <option value="fr">French</option>
+  </select>
+  
   <textarea id="input" rows="6" cols="60" placeholder="Insert text in Italian"></textarea>
   <div class="button-row">
   <button id="afi" class="triple-line-button">
@@ -249,7 +255,14 @@
 
   
 <script type="module">
-  import initESpeak from './espeak-ng.js';
+  import initESpeak from "./espeak-ng.js";
+
+import {
+    currentLanguage,
+    setLanguage,
+    getDictionaryFile,
+    getVoice
+} from "./language.js";
 
 
 
@@ -302,50 +315,61 @@ let ipaDictionary = {};  //  let creates a variable whose value can change later
 
 
 
+async function loadDictionary() {
 
+    const response = await fetch(getDictionaryFile());
+
+    const rawDictionary = await response.json();
+
+    ipaDictionary = {};
+
+    for (const [key, value] of Object.entries(rawDictionary)) {
+
+        ipaDictionary[
+            key.normalize("NFC").toLowerCase()
+        ] = value;
+
+    }
+
+    // console.log(
+    //     `Loaded ${Object.keys(ipaDictionary).length} IPA entries`
+    // );
+
+}
 
 
   
   
-window.addEventListener('load', async () => {  //  window is the browser itself. Everything on your webpage belongs to the window. addEventListener means when something like click, keypress, mousemove, load, resize happens run this function. load means the entire webpage has finished loading (images, CSS, scripts, favicon, everything). Only then does this function begin. Your JavaScript might execute before "<textarea id="input">" exists, and then "document.getElementById("input")" would return null, which would cause errors later. "async () =>" is another arrow function equivalent to "async function() { }". It has no parameters because the load event doesn't need any information here. The async keyword is necessary because you'll use await inside this function. So the entire line means: "When the webpage has completely loaded, execute this asynchronous function."
-  try {  //  "Try" begins a try-catch block. Think of it like: "Try to do something. ↓ Did it succeed? ↓ YES Continue. ↓ NO Jump to catch". Instead of crashing your webpage, JavaScript can recover gracefully. Everything between "try {" and "catch (...) {" is protected.
+window.addEventListener('load', async () => {
 
-    // Load IPA dictionary
-const response = await fetch('./phonitalia.json');  //  fetch() downloads a file from your server. The ./ means "Look in the same folder as this HTML file." Why await? It might take 5 ms 100 ms 500 ms depending on the network. Without await JavaScript would continue immediately before the file had finished downloading. Instead: Download ↓ Wait ↓ Finished ↓ Continue. What is response? The downloaded file isn't returned immediately. Instead you first receive a Response object. Think of it like a package. "Package ↓ Open package ↓ Contents". The Response object contains status code headers body The actual JSON isn't extracted yet.
-const rawDictionary = await response.json();  //  Now you open the package. "response.json()" means the downloaded file is plain text (Example { "ciao":"ˈtʃa.o" }) which JavaScript converts into an object. Instead of "text" you now have "{ ciao:"ˈtʃa.o" }" which can be accessed like "rawDictionary.ciao" or "rawDictionary["ciao"]". Again notice await because parsing also takes time.
+    try {
 
-ipaDictionary = {};  //  You already created an empty dictionary earlier. Why empty it again? Imagine someone later reloads the dictionary. Without this line old entries could remain. This guarantees "Old dictionary ↓ Delete everything ↓ Start fresh".
+        // Load pronunciation dictionary
+        await loadDictionary();
 
-for (const [key, value] of Object.entries(rawDictionary)) {  //  Suppose "rawDictionary = { ciao:"ˈtʃa.o", pizza:"ˈpit.tsa" }". "Object.entries()" converts it into "[ ["ciao","ˈtʃa.o"], ["pizza","ˈpit.tsa"] ]", an array of pairs. Object.entries() converts it into [ ["ciao","ˈtʃa.o"], ["pizza","ˈpit.tsa"] ] An array of pairs. "for" and "of" means loop over every pair. Iteration 1: key = "ciao" value = "ˈtʃa.o". Iteration 2: key = "pizza" value = "ˈpit.tsa" and so on. Why [key, value]? Each entry looks like ["ciao","ˈtʃa.o"]. The square brackets automatically unpack it. Without destructuring, you'd write: const pair = ... const key = pair[0]; const value = pair[1]. Destructuring saves several lines.
-  ipaDictionary[  //  "ipaDictionary[" is simply starting an assignment. It continues on the next lines for readability.
-    key.normalize('NFC').toLowerCase()  //  normalize("NFC") Unicode characters can sometimes be represented in different ways. For example è might internally be è or e + accent They look identical. But computers consider them different. normalize("NFC") converts both into the same representation. That prevents mysterious lookup failures. .toLowerCase() converts "CIAO ↓ ciao" and "Pizza ↓ pizza". Now dictionary lookups become case-insensitive.
-  ] = value;  //  This finally stores the pronunciation. Example: key↓"CIAO"↓normalize↓"CIAO"↓lowercase↓"ciao"↓Store↓ipaDictionary["ciao"]="ˈtʃa.o". After the loop finishes, your dictionary now contains thousands of Italian words that can be looked up instantly without calling eSpeak.
-}  //  In plain English: Download phonitalia.json. Convert it from JSON text into a JavaScript object. Empty any old dictionary. Loop through every word/pronunciation pair. Normalize the spelling (Unicode + lowercase). Store it in ipaDictionary. By the end of this block, your program has a fast in-memory pronunciation dictionary ready to use. The next section is where it initializes eSpeak WebAssembly with await initESpeak(...), explains the print and printErr callbacks, and finally sets wasmReady = true, which is the signal that allows the transcription buttons to work.
+        // Load eSpeak
+        await initESpeak({
 
-  //  console.log(
-  //    `Loaded ${Object.keys(ipaDictionary).length} IPA entries`
-  //   );
+            print: () => {},
 
-    // Load eSpeak
-    await initESpeak({  //  Calls the function that loads and initializes eSpeak NG. "await" means: "Pause this function until eSpeak has completely finished loading." Without await, JavaScript would continue immediately, and the rest of your program might try to use eSpeak before it exists.
-      print: () => {},  //  eSpeak normally prints text to its standard output (stdout). The option print tells eSpeak: "Whenever you would normally print something, call this function instead." The function here is () => {} which is an empty arrow function. It accepts whatever eSpeak sends...and deliberately does nothing. So every normal console message is ignored.
-      printErr: () => {}  //  Exactly the same idea, except for stderr (error output). Normally eSpeak prints loading messages such as still waiting on run dependencies or dependency: wasm-instantiate Those messages are harmless. Since the function is empty, they are discarded instead of appearing in the console.
-    });  // Finishes the initialization call. At this point: the JavaScript wrapper is loaded, the WebAssembly module has been compiled, eSpeak is ready to receive text.
+            printErr: () => {}
 
-    wasmReady = true;  //  Sets your global flag to indicate that eSpeak is now usable. Earlier you created let wasmReady = false; Now it becomes wasmReady = true; This is what allows waitForWasm() to stop waiting. What happens behind the scenes? When the page first opens: wasmReady = false ↓ The browser downloads espeak-ng.js ↓ The browser downloads espeak-ng.wasm ↓ The WebAssembly binary is compiled. ↓ The eSpeak engine starts. ↓ wasmReady = true; ↓ Now every transcription function can safely call eSpeak.
+        });
 
-  //  console.log('eSpeak NG WASM loaded and ready');
+        wasmReady = true;
 
-  } catch (e) {  //  If anything inside the try block fails, JavaScript jumps here. Possible reasons include: phonitalia.json cannot be found. phonitalia.json contains invalid JSON. espeak-ng.wasm failed to download. espeak-ng.js has an error. WebAssembly failed to initialize. The variable e contains the error object describing what went wrong.
-  // delete console
-  //  console.error('Error loading:', e);
+        // console.log('eSpeak NG WASM loaded and ready');
 
-    outputElem.classList.remove('placeholder');  //  Earlier, the <pre> element had the CSS class placeholder which displays gray placeholder text. This line removes that class. Now the output will be displayed using the normal style.
+    } catch (e) {
 
-    outputElem.innerText =  //  Changes the text shown inside <pre id="output">
-      'Error loading dictionary or eSpeak.';  //  Displays Error loading dictionary or eSpeak. instead of crashing silently. So if initialization fails, the user immediately knows something went wrong.
-  }  //  Ends the catch block.
-});  //  Ends the window.addEventListener('load', ...) callback. The entire initialization process is now complete.
+        outputElem.classList.remove('placeholder');
+
+        outputElem.innerText =
+            'Error loading dictionary or eSpeak.';
+
+    }
+
+});
 
 
 
@@ -379,7 +403,7 @@ for (const [key, value] of Object.entries(rawDictionary)) {  //  Suppose "rawDic
   async function runESpeak(text) {  //  Defines an asynchronous function named runESpeak. It accepts one parameter, text, which is the Italian text to be transcribed into IPA. Why async? Because running the WebAssembly version of eSpeak takes time. async lets the function pause while waiting for eSpeak to finish without freezing the webpage.
     let ipaOutput = '';  //  Creates an empty string that will collect everything eSpeak prints. Example: Initially: ipaOutput = "" Later eSpeak might output: ˈkaːne After collecting: ipaOutput = "ˈkaːne"
     await initESpeak({  //  Starts eSpeak. Because await is used, JavaScript pauses here until eSpeak has completely finished processing. Without await, the function would immediately continue and return an empty result before eSpeak had time to generate the transcription.
-      arguments: ['-v', 'it', '--ipa=3', text],  //  These are exactly the command-line arguments passed to eSpeak. Equivalent terminal command: espeak-ng -v it --ipa=3 "ciao" Each argument means: -v Select a voice. 'it' Choose the Italian voice. So together: -v it means Use the Italian pronunciation rules. '--ipa=3' Tell eSpeak to output IPA instead of speech. The =3 format gives a cleaner IPA transcription. Without this option eSpeak would try to synthesize speech instead. text The text you supplied. If text = "ciao mondo" then eSpeak receives -v it --ipa=3 "ciao mondo"
+      arguments: ['-v', getVoice(), '--ipa=3', text],  //  These are exactly the command-line arguments passed to eSpeak. Equivalent terminal command: espeak-ng -v it --ipa=3 "ciao" Each argument means: -v Select a voice. 'it' Choose the Italian voice. So together: -v it means Use the Italian pronunciation rules. '--ipa=3' Tell eSpeak to output IPA instead of speech. The =3 format gives a cleaner IPA transcription. Without this option eSpeak would try to synthesize speech instead. text The text you supplied. If text = "ciao mondo" then eSpeak receives -v it --ipa=3 "ciao mondo"
       print: (text) => {  //  Defines a function that is called every time eSpeak prints normal output. Think of it like: Whenever eSpeak says something, execute this code.
         ipaOutput += text;  //  Append whatever eSpeak printed to the growing string. Example: First callback: text = "ˈtʃa" ipaOutput becomes "ˈtʃa" Second callback: text = "o" Now ipaOutput = "ˈtʃao" Using += means "add to the end."
       },  //  Ends the print callback.
@@ -2645,6 +2669,19 @@ if (
   return result.join('');
 
 }
+
+
+  document
+    .getElementById("language")
+    .addEventListener("change", async e => {
+
+        setLanguage(e.target.value);
+
+        await loadDictionary();
+
+    });
+
+  
 </script>
 
 
