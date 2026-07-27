@@ -538,9 +538,9 @@ document.getElementById('afi').addEventListener('click', async () => {  //  What
         let mapped = applyG2PMapping(token, ipa);  // This is one of the most important function calls in the whole program. It takes the original spelling token and its IPA pronunciation ipa and aligns them letter by letter. For example token = "ciao" ipa   = "tʃao" becomes something like ci(tʃ)a(a)o(o) or whatever alignment your mapping function produces. Notice that this function does not merely return IPA—it creates a correspondence between each written grapheme and its phonetic value. This aligned representation is then used differently by the three buttons: Only IPA extracts only the IPA symbols. Word before IPA shows word (IPA). G2P displays the full grapheme-to-phoneme alignment.
         
         // show in console how words map 2026 delete
-    console.log("WORD:", token);
-    console.log("IPA:", ipa);
-    console.log("MAPPED:", mapped);
+    // console.log("WORD:", token);
+    // console.log("IPA:", ipa);
+    // console.log("MAPPED:", mapped);
         
         // If mapping fails → recover
         
@@ -935,6 +935,11 @@ function validateOrReturnOriginal(originalWord, mappedString) {  //  It accepts 
   return mappedString;  //  If execution reaches this line, every grapheme-to-IPA pair was considered valid. The function returns the original aligned mapping unchanged. For example: Input: c(tʃ)i(a)a(o)o() ↓ Validated successfully ↓ Returned: c(tʃ)i(a)a(o)o() If any single pair had failed—for example, ci(k) or gn(n)—the function would have exited earlier with: return originalWord; So this final line is only reached when the entire mapping passes validation.
 }
 
+
+
+
+
+  
   // G2P button
 // G2P button
 document.getElementById('g2p').addEventListener('click', async () => {
@@ -945,15 +950,11 @@ document.getElementById('g2p').addEventListener('click', async () => {
   const rawInput = normalizeCurlyApostrophes(
     inputElem.value.trim()
   ).normalize('NFC');
-  
-
 
   //  if (!wasmReady) {
   //  alert('Please wait, WASM is still loading...');
   //  return;
  //   }
-
-
   
   if (!rawInput) {
     showPlaceholder();
