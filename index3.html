@@ -563,9 +563,9 @@ document.getElementById('afi').addEventListener('click', async () => {  //  What
         let mapped = applyG2PMapping(token, ipa);  // This is one of the most important function calls in the whole program. It takes the original spelling token and its IPA pronunciation ipa and aligns them letter by letter. For example token = "ciao" ipa   = "tʃao" becomes something like ci(tʃ)a(a)o(o) or whatever alignment your mapping function produces. Notice that this function does not merely return IPA—it creates a correspondence between each written grapheme and its phonetic value. This aligned representation is then used differently by the three buttons: Only IPA extracts only the IPA symbols. Word before IPA shows word (IPA). G2P displays the full grapheme-to-phoneme alignment.
         
         // show in console how words map 2026 delete
-    console.log("WORD:", token);
-    console.log("IPA:", ipa);
-    console.log("MAPPED:", mapped);
+    // console.log("WORD:", token);
+    // console.log("IPA:", ipa);
+    // console.log("MAPPED:", mapped);
         
         // If mapping fails → recover
         
@@ -865,9 +865,9 @@ async function computeIPAMap(words) {  //  This is one of the most important fun
         ipaWords[i] || ""  //  Adds the new IPA into the Map. Iteration 1 unique[0] "occhi" ipaWords[0] "ɔkːi" stores occhi → ɔkːi Iteration 2 computer → komˈputer Now the Map contains both dictionary words and eSpeak words. Map ciao      → tʃao gli       → ʎi occhi     → ɔkːi computer  → komˈputer Why ipaWords[i] || "" instead of simply ipaWords[i] ? Suppose eSpeak unexpectedly returns fewer pronunciations than expected. Then ipaWords[3] would be undefined Instead, the code stores "" (an empty string) which prevents crashes later.
       );
     // delete
-      console.log(
-        `[ESPEAK] ${unique[i]} → ${ipaWords[i]}`
-       );
+      //    console.log(
+      //    `[ESPEAK] ${unique[i]} → ${ipaWords[i]}`
+      //    );
 
       
     }
