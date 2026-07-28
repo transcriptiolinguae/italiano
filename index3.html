@@ -406,14 +406,26 @@ languageValidate = language.validateOrReturnOriginal;
 
         // console.log('eSpeak NG WASM loaded and ready');
 
-    } catch (e) {
+ //   } catch (e) {
 
-        outputElem.classList.remove('placeholder');
+     //   outputElem.classList.remove('placeholder');
 
-        outputElem.innerText =
-            'Error loading dictionary or eSpeak.';
+     //   outputElem.innerText =
+     //       'Error loading dictionary or eSpeak.';
 
-    }
+   // }
+
+
+  } catch (e) {
+
+    console.error("STARTUP ERROR:", e);
+
+    outputElem.classList.remove('placeholder');
+
+    outputElem.innerText =
+        'Error loading dictionary or eSpeak: ' + e.message;
+
+}
 
 });
 
