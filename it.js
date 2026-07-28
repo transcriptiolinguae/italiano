@@ -1,4 +1,4 @@
-export function validateOrReturnOriginal(token, mapped) {
+export function validateOrReturnOriginal(originalWord, mappedString) {
 
   const allowedMappings = {  //  Creates a constant object. Think of it as a dictionary of legal pronunciations. The keys are letter sequences. The values are all IPA symbols those letters are allowed to represent. Example: a: ['a', 'ˈa', 'ˌa'], means The grapheme a may only correspond to a ˈa ˌa If it ever maps to i u ʃ ŋ the validator rejects the word. Example ci: ['tʃ', 'ˈtʃ'], means ci → tʃ is allowed. But ci → k would be rejected.
     ha: ['a', 'ˈa', 'ˌa'],
