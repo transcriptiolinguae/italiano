@@ -546,9 +546,9 @@ function splitTextByLength(text, maxLength = 500) {  //  Creates a helper functi
 
 
   
-// ======================================================================================================================================
+// ======================================================================================================================================================================================
 //  Only IPA BUTTON
-// ======================================================================================================================================
+// ======================================================================================================================================================================================
   
 document.getElementById('afi').addEventListener('click', async () => {  //  What does this line do? document.getElementById('afi') Searches the HTML page for the element whose ID is "afi". That element is your first button: <button id="afi"> The browser returns a reference to that button. addEventListener('click', ...) Attaches an event listener. An event listener tells JavaScript: "Whenever someone clicks this button, execute the following function." Nothing happens yet. The code simply waits until the user presses the button. async () => { Creates an asynchronous arrow function. Because it is async, the function is allowed to use await. Execution will look like this: User clicks button │ ▼ JavaScript starts this function │ ▼ Waits for eSpeak if necessary │ ▼ Processes the text │ ▼ Displays IPA
   showProgressPlaceholder();  //  Calls the helper function explained earlier. This immediately changes the output area to Transcription in progress... This gives instant feedback so the user knows the program is working. Without this line, the page would appear frozen during long transcriptions.
@@ -701,9 +701,9 @@ document.getElementById('afi').addEventListener('click', async () => {  //  What
 
   
 
-// ======================================================================================================================================
+// ======================================================================================================================================================================================
 //  Word before IPA BUTTTON
-// ======================================================================================================================================
+// ======================================================================================================================================================================================
   
 document.getElementById('testoafi').addEventListener('click', async () => {
   showProgressPlaceholder();
@@ -947,9 +947,9 @@ function validateOrReturnOriginal(originalWord, mappedString) {  //  It accepts 
 
 
   
-// ======================================================================================================================================
+// ======================================================================================================================================================================================
 //  Grapheme-to-phoneme BUTTTON
-// ======================================================================================================================================
+// ======================================================================================================================================================================================
 
 document.getElementById('g2p').addEventListener('click', async () => {
   showProgressPlaceholder();
