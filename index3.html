@@ -258,7 +258,7 @@
   import initESpeak from './espeak-ng.js';
 
 // eSpeak voices
-const voices = {
+const voices = {  //  creates a JavaScript object called voices. Its purpose in your program is to connect your website's language codes with the eSpeak voice names that should be used for pronunciation. 1. const const voices = ... const creates a variable that cannot be reassigned. So this is allowed: voices.it but this is not: voices = {}; You cannot replace the whole object. However, the contents of the object can technically be changed: voices.it = "something else"; would work. 2. The object { } The curly brackets create an object: { it: "it", en: "en", de: "de", fr: "fr" } An object stores key → value pairs. The structure is: key : value So your object contains: Key	Value it	"it" en	"en" de	"de" fr	"fr" The left side is the name you use in your program. The right side is the value you want to retrieve. 3. Why are both sides the same? You might ask: Why write: it: "it" instead of something different? Because eSpeak voice names happen to use the same abbreviations. For example: it: "it" means: Your program language code:  it | v eSpeak voice name:          it When eSpeak receives: -v it it loads the Italian pronunciation rules. 4. How it is used in your code You have this function: function getVoice() { return voices[currentLanguage]; } This uses the current language to look up the correct eSpeak voice. At the beginning: currentLanguage = "it"; So: voices[currentLanguage] becomes: voices["it"] which returns: "it" Therefore: getVoice() returns: "it" Then your eSpeak command: arguments: [ '-v', getVoice(), '--ipa=3', text ] becomes: arguments: [ '-v', 'it', '--ipa=3', text ] which is equivalent to: espeak-ng -v it --ipa=3 "ciao" and eSpeak knows to use Italian pronunciation. 5. What happens when the user changes language? Suppose the user selects German: currentLanguage = "de"; Now: voices[currentLanguage] becomes: voices["de"] which returns: "de" Now eSpeak receives: espeak-ng -v de --ipa=3 "Hallo" and uses German pronunciation rules. 6. Why not simply write currentLanguage directly? You could technically do: function getVoice() { return currentLanguage; } and in your current setup it would work because: it → it en → en de → de fr → fr are identical. However, the object gives you flexibility. For example, if later eSpeak uses different names: const voices = { it: "italian", en: "en-us", de: "german", fr: "french" }; you would not need to change the rest of your program. Your language selector could still use: <option value="en">English</option> while eSpeak receives: -v en-us So voices acts as a translation table between your website languages and eSpeak voice identifiers.
     it: "it",
     en: "en",
     de: "de",
@@ -266,8 +266,8 @@ const voices = {
 };
   
 // Dictionary files
-const dictionaries = {
-    it: "./phonitalia.json",  //  it: "./dictionary/phonitalia.json",
+const dictionaries = {  //  his object maps each language code to its IPA dictionary file. It is connected to the code through: function getDictionaryFile() { return dictionaries[currentLanguage]; } currentLanguage stores the selected language. getDictionaryFile() uses it to choose the correct dictionary. Example: currentLanguage = "it"; then: getDictionaryFile() returns: "./phonitalia.json" This file is loaded by: const response = await fetch(getDictionaryFile()); inside loadDictionary(), which fills ipaDictionary with word → IPA entries. Connection flow: Language selection → currentLanguage → getDictionaryFile() → dictionaries object → load JSON IPA dictionary.
+    it: "./phonitalia.json",  
     en: "./phonenglish.json",
     de: "./phongerman.json",
     fr: "./phonfrench.json"
@@ -303,41 +303,41 @@ let ipaDictionary = {};  //  let creates a variable whose value can change later
 
 
   
-window.addEventListener('load', async () => {
+window.addEventListener('load', async () => {  //  This function runs when the webpage finishes loading. Its job is to prepare everything needed before the user can press the transcription buttons. window = the browser page. load = an event that happens when the HTML, images, scripts, and resources are fully loaded. When loading finishes, the function inside runs. async allows the function to use await because loading dictionaries and eSpeak takes time. Connection: This runs before the user clicks afi, testoafi, or g2p. It prepares ipaDictionary, G2P functions, and eSpeak.
 
-    try {
+    try {  //  Starts error handling. If something fails inside this block (missing JSON, failed import, eSpeak error), execution jumps to catch.
 
         // Load pronunciation dictionary
-        await loadDictionary();
+        await loadDictionary();  //  Calls your function: async function loadDictionary() { const response = await fetch(getDictionaryFile()); ... } What happens: getDictionaryFile() checks: currentLanguage Initially: currentLanguage = "it"; so: getDictionaryFile() returns: "./phonitalia.json" fetch() loads that JSON file. The entries are stored in: ipaDictionary Example: ipaDictionary = { "ciao": "ˈtʃao", "cane": "ˈkane" } Connection: currentLanguage ↓ getDictionaryFile() ↓ phonitalia.json ↓ ipaDictionary ↓ getDictionaryIPA() ↓ computeIPAMap()
 
       // g2p & validate
-const language = await import(`./${currentLanguage}.js`);
+const language = await import(`./${currentLanguage}.js`);  //  Dynamically imports the language file. Because: currentLanguage = "it" this becomes: import("./it.js") That file contains your Italian rules: export function applyG2PMapping() export function validateOrReturnOriginal()
 
-languageApplyG2P = language.applyG2PMapping;
-languageValidate = language.validateOrReturnOriginal;
+languageApplyG2P = language.applyG2PMapping;  //  Takes the G2P function from the language file and stores it globally. Before: languageApplyG2P = null; After: languageApplyG2P = applyG2PMapping function from it.js Connection: Later when you run: applyG2PMapping(token, ipa) your wrapper calls: languageApplyG2P(originalWord, ipa) which uses the current language rules.
+languageValidate = language.validateOrReturnOriginal;  //  Stores the validation function from the language file. Before: languageValidate = null; After: languageValidate = validateOrReturnOriginal from it.js Connection: Later: validateOrReturnOriginal(token, mapped) calls: languageValidate(token, mapped) to check if the G2P alignment is valid.
       
         // Load eSpeak
-        await initESpeak({
+        await initESpeak({  //  Starts loading eSpeak. Your imported module: import initESpeak from './espeak-ng.js'; provides this function.
 
-            print: () => {},
+            print: () => {},  //  print: () => {}, Defines what happens when eSpeak prints normal output during initialization. () means no parameters. {} means do nothing. It hides startup messages.
 
-            printErr: () => {}
+            printErr: () => {}  //  Defines what happens when eSpeak prints errors during initialization. Also ignored during startup.
 
-        });
+        });  //  Waits until eSpeak finishes loading. After this line, eSpeak is ready to generate IP
 
-        wasmReady = true;
+        wasmReady = true;  //  Changes: Before: wasmReady = false; After: wasmReady = true; Connection: Your buttons use: await waitForWasm(); waitForWasm() waits until this becomes true. So this prevents the user from running transcription before eSpeak is ready.
 
-  } catch (e) {
+  } catch (e) {  //  If anything above fails, this runs. Examples: dictionary file missing language file missing eSpeak loading failure
 
-    console.error("STARTUP ERROR:", e);
+    console.error("STARTUP ERROR:", e);  //  Prints the error in the browser console for debugging.
 
-    outputElem.classList.remove('placeholder');
+    outputElem.classList.remove('placeholder');  //  Removes the grey placeholder style from the output box.
 
     outputElem.innerText =
-        'Error loading dictionary or eSpeak: ' + e.message;
+        'Error loading dictionary or eSpeak: ' + e.message;  //  Displays the error message to the user. Example: Error loading dictionary or eSpeak: Failed to fetch
 
 }
-});
+});  //  Complete connection flow Page loads ↓ load event fires ↓ loadDictionary() ↓ phonitalia.json loaded ↓ ipaDictionary filled ↓ import("./it.js") ↓ G2P + validation functions loaded ↓ initESpeak() ↓ WebAssembly eSpeak ready ↓ wasmReady = true ↓ User can press transcription buttons In short: this startup function loads the language dictionary, loads the correct G2P rules, starts eSpeak, and prepares the application for transcription.
 
 
 
