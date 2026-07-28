@@ -469,8 +469,10 @@ function validateOrReturnOriginal(originalWord, mappedString) {  //  It accepts 
     if (languageValidate) {
         return languageValidate(originalWord, mappedString);
     }
-    //  return mapped;
-    return mappedString;
+
+   console.log("Fallback reached");
+      return mapped;
+
 }
 
 
