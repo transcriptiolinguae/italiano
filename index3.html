@@ -257,6 +257,11 @@
 <script type="module">
   import initESpeak from './espeak-ng.js';
 
+
+
+
+
+  
 // g2p & validate
 let g2pRules = null;
 let validateRules = null;
@@ -296,7 +301,24 @@ export function getVoice(){
     return voices[currentLanguage];
 }
 
+
+
   
+document
+    .getElementById("language")
+    .addEventListener("change", async (e) => {
+
+        setLanguage(e.target.value);
+
+        await loadDictionary();
+
+        const language = await import(`./${currentLanguage}.js`);
+
+        languageApplyG2P = language.applyG2PMapping;
+        languageValidate = language.validateOrReturnOriginal;
+
+    });
+
 
 
   
@@ -1119,24 +1141,6 @@ converted.push(mapped);
   }
 });
 
-
-
-
-
-document
-    .getElementById("language")
-    .addEventListener("change", async (e) => {
-
-        setLanguage(e.target.value);
-
-        await loadDictionary();
-
-        const language = await import(`./${currentLanguage}.js`);
-
-        languageApplyG2P = language.applyG2PMapping;
-        languageValidate = language.validateOrReturnOriginal;
-
-    });
 
   
 </script>
