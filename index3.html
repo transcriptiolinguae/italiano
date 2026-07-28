@@ -301,25 +301,7 @@ let ipaDictionary = {};  //  let creates a variable whose value can change later
 
 
 
-
-
-
-document
-    .getElementById("language")
-    .addEventListener("change", async (e) => {
-
-        setLanguage(e.target.value);
-
-        await loadDictionary();
-
-        const language = await import(`./${currentLanguage}.js`);
-
-        languageApplyG2P = language.applyG2PMapping;
-        languageValidate = language.validateOrReturnOriginal;
-
-    });
-
-
+  
 
 
 
@@ -645,6 +627,21 @@ async function loadDictionary() {
 
 
 
+document
+    .getElementById("language")
+    .addEventListener("change", async (e) => {
+
+        setLanguage(e.target.value);
+
+        await loadDictionary();
+
+        const language = await import(`./${currentLanguage}.js`);
+
+        languageApplyG2P = language.applyG2PMapping;
+        languageValidate = language.validateOrReturnOriginal;
+
+    });
+  
 
   
 
