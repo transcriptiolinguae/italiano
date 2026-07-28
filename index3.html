@@ -279,15 +279,12 @@ const dictionaries = {
 
   
 // g2p & validate
-let g2pRules = null;
-let validateRules = null;
-
-let languageApplyG2P = null;
-let languageValidate = null;
+let languageApplyG2P = null;  //  This is much more important. It will later store the G2P function from the selected language file. At startup you do: const language = await import(`./${currentLanguage}.js`); languageApplyG2P = language.applyG2PMapping; Since: currentLanguage = "it"; JavaScript loads: ./it.js Inside it.js you probably have something like: export function applyG2PMapping(word, ipa) { ... } Then this line: languageApplyG2P = language.applyG2PMapping; copies that function into your variable. Before loading: languageApplyG2P = null; After loading Italian: languageApplyG2P = function applyG2PMapping(word, ipa) { ... } Now your generic HTML code can call: languageApplyG2P(token, ipa); without knowing whether it is Italian, English, German, or French.
+let languageValidate = null;  //  This works the same way. Later: languageValidate = language.validateOrReturnOriginal; loads the validation function from the language file. For example, it.js might contain: export function validateOrReturnOriginal(word, mapped) { if (mapped.includes("c(z)")) { return word; } return mapped; } Then your main file calls: mapped = validateOrReturnOriginal(token, mapped); Your wrapper function: function validateOrReturnOriginal(originalWord, mappedString) { if (languageValidate) { return languageValidate(originalWord, mappedString); } return mappedString; } checks: if (languageValidate) Meaning: "Has a language-specific validator been loaded?" If yes: return languageValidate(originalWord, mappedString); Use the language rules. If no: return mappedString; Do nothing.
 
 
 // Current language
-let currentLanguage = "it";
+let currentLanguage = "it";  //  This stores the currently selected language. At the beginning: currentLanguage = "it"; means: Italian is active. So this line: await import(`./${currentLanguage}.js`); becomes: await import("./it.js"); When the user changes the dropdown: document .getElementById("language") .addEventListener("change", async (e) => { setLanguage(e.target.value); Suppose the user selects German. The <select> gives: e.target.value = "de" Then: setLanguage("de"); runs: function setLanguage(lang) { currentLanguage = lang; } Now: currentLanguage = "de"; Then your code loads: ./de.js and replaces: languageApplyG2P languageValidate with German versions.
 
 
 let wasmReady = false;  // This creates a variable. Unlike const, let allows changing the value later.
