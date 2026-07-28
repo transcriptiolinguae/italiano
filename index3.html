@@ -342,48 +342,13 @@ let wasmReady = false;  // This creates a variable. Unlike const, let allows cha
 
 
 
-
-
-  
-  async function waitForWasm() {  // "Async" tells JavaScript that a function may need to wait for something that takes time. Normally, JavaScript executes code line by line without stopping. Without async, JavaScript would either freeze the webpage while waiting or continue running before eSpeak is ready. So async allows the function to pause itself while letting the rest of the webpage continue running. So it's job is to wait until the WebAssembly engine has finished loading.
-  while (!wasmReady) {  //  A while loop keeps repeating as long as the condition is true. The exclamation mark means NOT. So when eSpeak is not loaded, then "wasmReady = false" and so "!wasmReady = true". When eSpeak is loaded, the condition "wasmReady = false" is not anymore true when negated, so the loop stops.
-    await new Promise(r => setTimeout(r, 100));  //  Await pauses only this function for 100 ms until something finishes. A promise represents something that will finish later, what in this case is 100ms delay. r => is an arrow function and shorthand for "function(r){setTimeout(r,100);}". So the this means: "Create Promise ↓ Wait 100 ms ↓ Resolve Promise ↓ Await Continues" or "pause this function for 100 milliseconds". So the loop repeats: "While (!wasmReady) ↓ Wait 100 ms ↓ Check Again ↓ Wait 100 ms ↓ Check Again ↓ Wait 100 ms until wasmReady = true".
-  }
-}
-
-
-
-
-
 // IPA dictionary
 let ipaDictionary = {};  //  let creates a variable whose value can change later. {} creates an empty JavaScript object. Think of it as a dictionary or lookup table. Initially it contains nothing. Later it will become something like { "ciao": "ˈtʃa.o" }. Then your code can instantly look up pronunciations.
 
 
 
 
-
-async function loadDictionary() {
-
-    const response = await fetch(getDictionaryFile());
-
-    const rawDictionary = await response.json();
-
-    ipaDictionary = {};
-
-    for (const [key, value] of Object.entries(rawDictionary)) {
-
-        ipaDictionary[
-            key.normalize("NFC").toLowerCase()
-        ] = value;
-
-    }
-
-    // console.log(
-    //     `Loaded ${Object.keys(ipaDictionary).length} IPA entries`
-    // );
-
-}
-
+  
 
   
   
@@ -590,6 +555,35 @@ function applyG2PMapping(text, ipa) {
 
 
   
+  
+  async function waitForWasm() {  // "Async" tells JavaScript that a function may need to wait for something that takes time. Normally, JavaScript executes code line by line without stopping. Without async, JavaScript would either freeze the webpage while waiting or continue running before eSpeak is ready. So async allows the function to pause itself while letting the rest of the webpage continue running. So it's job is to wait until the WebAssembly engine has finished loading.
+  while (!wasmReady) {  //  A while loop keeps repeating as long as the condition is true. The exclamation mark means NOT. So when eSpeak is not loaded, then "wasmReady = false" and so "!wasmReady = true". When eSpeak is loaded, the condition "wasmReady = false" is not anymore true when negated, so the loop stops.
+    await new Promise(r => setTimeout(r, 100));  //  Await pauses only this function for 100 ms until something finishes. A promise represents something that will finish later, what in this case is 100ms delay. r => is an arrow function and shorthand for "function(r){setTimeout(r,100);}". So the this means: "Create Promise ↓ Wait 100 ms ↓ Resolve Promise ↓ Await Continues" or "pause this function for 100 milliseconds". So the loop repeats: "While (!wasmReady) ↓ Wait 100 ms ↓ Check Again ↓ Wait 100 ms ↓ Check Again ↓ Wait 100 ms until wasmReady = true".
+  }
+}
+
+
+
+
+async function loadDictionary() {
+
+    const response = await fetch(getDictionaryFile());
+
+    const rawDictionary = await response.json();
+
+    ipaDictionary = {};
+
+    for (const [key, value] of Object.entries(rawDictionary)) {
+
+        ipaDictionary[
+            key.normalize("NFC").toLowerCase()
+        ] = value;
+
+    }
+    // console.log(
+    //     `Loaded ${Object.keys(ipaDictionary).length} IPA entries`
+    // );
+}
   
 
 
