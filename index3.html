@@ -388,7 +388,7 @@ window.addEventListener('load', async () => {
         // Load pronunciation dictionary
         await loadDictionary();
 
-const language = await import(`./g2p/${currentLanguage}.js`);
+const language = await import(`./${currentLanguage}.js`);
 
 languageApplyG2P = language.applyG2PMapping;
 languageValidate = language.validateOrReturnOriginal;
@@ -1102,7 +1102,7 @@ document
 
         await loadDictionary();
 
-        const language = await import(`./g2p/${currentLanguage}.js`);
+        const language = await import(`./${currentLanguage}.js`);
 
         languageApplyG2P = language.applyG2PMapping;
         languageValidate = language.validateOrReturnOriginal;
