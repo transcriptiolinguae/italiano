@@ -533,21 +533,22 @@ function applyG2PMapping(text, ipa) {
 
 
 
-async function loadDictionary() {
+async function loadDictionary() {  //  Defines an asynchronous function that loads the pronunciation dictionary. It is called during startup and whenever the user changes language.
 
-    const response = await fetch(getDictionaryFile());
+    const response = await fetch(getDictionaryFile());  //  Gets the correct dictionary file path from getDictionaryFile(). Downloads the JSON file (for example phonenglish.json or phongerman.json).
 
-    const rawDictionary = await response.json();
+    const rawDictionary = await response.json();  //  Converts the downloaded JSON data into a JavaScript object.
 
-    ipaDictionary = {};
+    ipaDictionary = {};  //  Clears the old dictionary before loading the new language dictionary.
 
-    for (const [key, value] of Object.entries(rawDictionary)) {
+    for (const [key, value] of Object.entries(rawDictionary)) {  //  Loops through every word and its IPA pronunciation in the dictionary.
 
-        ipaDictionary[
+        ipaDictionary[  //  Stores each word in a cleaned format: normalize("NFC") fixes character formatting. toLowerCase() makes lookup case-insensitive. The pronunciation value is saved under the cleaned word.
             key.normalize("NFC").toLowerCase()
         ] = value;
 
-    }
+    }  //  Connection with other code: dictionaries object provides the file path. getDictionaryFile() chooses the correct JSON file based on currentLanguage. loadDictionary() fills ipaDictionary. Later, the text-to-pronunciation code uses ipaDictionary to find IPA symbols for words.
+  
     // console.log(
     //     `Loaded ${Object.keys(ipaDictionary).length} IPA entries`
     // );
