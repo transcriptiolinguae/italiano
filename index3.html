@@ -257,9 +257,25 @@
 <script type="module">
   import initESpeak from './espeak-ng.js';
 
+// eSpeak voices
+const voices = {
+    it: "it",
+    en: "en",
+    de: "de",
+    fr: "fr"
+};
+  
+// Dictionary files
+const dictionaries = {
+    it: "./phonitalia.json",  //  it: "./dictionary/phonitalia.json",
+    en: "./phonenglish.json",
+    de: "./phongerman.json",
+    fr: "./phonfrench.json"
+};
 
+  const outputElem = document.getElementById('output');  // This looks inside your HTML for "<pre id="output">" and stores it. Why const? Because this variable never changes. It always points to the same HTML element.
 
-
+  const inputElem = document.getElementById('input');
 
   
 // g2p & validate
@@ -271,23 +287,11 @@ let languageValidate = null;
 
 
 // Current language
-export let currentLanguage = "it";
+let currentLanguage = "it";
 
-// Dictionary files
-const dictionaries = {
-    it: "./phonitalia.json",  //  it: "./dictionary/phonitalia.json",
-    en: "./phonenglish.json",
-    de: "./phongerman.json",
-    fr: "./phonfrench.json"
-};
 
-// eSpeak voices
-const voices = {
-    it: "it",
-    en: "en",
-    de: "de",
-    fr: "fr"
-};
+
+
 
 function setLanguage(lang) {
     currentLanguage = lang;
@@ -328,16 +332,7 @@ function normalizeCurlyApostrophes(text) {  // The parameter text will contain w
   
 
   
-  
-  
-  const outputElem = document.getElementById('output');  // This looks inside your HTML for "<pre id="output">" and stores it. Why const? Because this variable never changes. It always points to the same HTML element.
-
-  
-  
-  
-  
-  const inputElem = document.getElementById('input');
-
+   
 
 
 
