@@ -925,9 +925,9 @@ async function computeIPAMap(words) {  //  This is one of the most important fun
         ipaWords[i] || ""  //  Adds the new IPA into the Map. Iteration 1 unique[0] "occhi" ipaWords[0] "ɔkːi" stores occhi → ɔkːi Iteration 2 computer → komˈputer Now the Map contains both dictionary words and eSpeak words. Map ciao      → tʃao gli       → ʎi occhi     → ɔkːi computer  → komˈputer Why ipaWords[i] || "" instead of simply ipaWords[i] ? Suppose eSpeak unexpectedly returns fewer pronunciations than expected. Then ipaWords[3] would be undefined Instead, the code stores "" (an empty string) which prevents crashes later.
       );
     // delete
-      //    console.log(
-      //    `[ESPEAK] ${unique[i]} → ${ipaWords[i]}`
-      //    );
+       console.log(
+      `[ESPEAK] ${unique[i]} → ${ipaWords[i]}`
+        );
 
       
     }
