@@ -613,20 +613,20 @@ async function loadDictionary() {
 
 
 
-document
-    .getElementById("language")
-    .addEventListener("change", async (e) => {
+document  //  This code runs whenever the user selects a different language from the language dropdown.
+    .getElementById("language")  //  Finds the HTML element with the ID "language" (usually a <select> menu). It connects JavaScript to the language selector in the webpage.
+    .addEventListener("change", async (e) => {  //  Listens for the "change" event, which happens when the user selects a new language. async allows the use of await. e is the event object containing information about the selected option.
 
-        setLanguage(e.target.value);
+        setLanguage(e.target.value);  //  Updates currentLanguage to the language chosen by the user. This value is used by other functions to know which language files to load.
 
-        await loadDictionary();
+        await loadDictionary();  //  Loads the pronunciation dictionary for the selected language. It uses currentLanguage together with the dictionaries object to find the correct JSON file.
 
-        const language = await import(`./${currentLanguage}.js`);
+        const language = await import(`./${currentLanguage}.js`);  //  Dynamically imports the JavaScript module for the selected language (for example, en.js or de.js). This provides language-specific pronunciation rules.
 
-        languageApplyG2P = language.applyG2PMapping;
-        languageValidate = language.validateOrReturnOriginal;
+        languageApplyG2P = language.applyG2PMapping;  //  Stores the imported applyG2PMapping() function. Other parts of the program call languageApplyG2P() to convert text into phonemes.
+        languageValidate = language.validateOrReturnOriginal;  //  Stores the imported validateOrReturnOriginal() function. Other code uses it to validate or correct the generated pronunciation before displaying or speaking it.
 
-    });
+    });  //  How it connects to the rest of the code setLanguage() updates currentLanguage. loadDictionary() loads the correct pronunciation dictionary using currentLanguage. import() loads the matching language rules (en.js, it.js, etc.). languageApplyG2P and languageValidate are then used by the pronunciation-generation code, so all processing matches the language the user selected.
   
 
   
