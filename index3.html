@@ -943,7 +943,7 @@ async function computeIPAMap(words) {  //  This is one of the most important fun
 function validateOrReturnOriginal(originalWord, mappedString) {  //  It accepts two parameters: originalWord — the original spelling of the word. Example: ciao mappedString — the grapheme-to-phoneme alignment produced by applyG2PMapping(). Example: c(tʃ)i(a)a(o)o() or g(g)l(ʎ)i() The function will inspect mappedString and decide: ✔ keep it ✘ reject it and return the original word.
 
     if (languageValidate) {
-        return languageValidate(token, mapped);
+        return languageValidate(originalWord, mappedString);
     }
 
     return mapped;
