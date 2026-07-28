@@ -297,35 +297,13 @@ let ipaDictionary = {};  //  let creates a variable whose value can change later
 
 
 
-  
 
 
 
 
-function setLanguage(lang) {
-    currentLanguage = lang;
-}
-
-function getDictionaryFile() {
-    return dictionaries[currentLanguage];
-}
-
-function getVoice() {
-    return voices[currentLanguage];
-}
 
 
-  
 
-  // Normalize curly apostrophes to straight apostrophes
-function normalizeCurlyApostrophes(text) {  // The parameter text will contain whatever string you pass into the function.
-  return text.replace(/[’‘]/g, "'");  // Match one character from the list in [] square brackets, where "g" means replace globally every word with character in quotes "'".
-}
-  
-
-
-  
-  
 document
     .getElementById("language")
     .addEventListener("change", async (e) => {
@@ -398,8 +376,36 @@ languageValidate = language.validateOrReturnOriginal;
 
 
 
+  
+
+  
 
 
+
+
+function setLanguage(lang) {
+    currentLanguage = lang;
+}
+
+function getDictionaryFile() {
+    return dictionaries[currentLanguage];
+}
+
+function getVoice() {
+    return voices[currentLanguage];
+}
+
+
+  
+
+  // Normalize curly apostrophes to straight apostrophes
+function normalizeCurlyApostrophes(text) {  // The parameter text will contain whatever string you pass into the function.
+  return text.replace(/[’‘]/g, "'");  // Match one character from the list in [] square brackets, where "g" means replace globally every word with character in quotes "'".
+}
+  
+
+
+ 
 
   
 
