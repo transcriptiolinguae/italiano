@@ -1,4 +1,93 @@
-  export function applyG2PMapping(text, ipa) {
+export function validateOrReturnOriginal(token, mapped) {
+
+  const allowedMappings = {  //  Creates a constant object. Think of it as a dictionary of legal pronunciations. The keys are letter sequences. The values are all IPA symbols those letters are allowed to represent. Example: a: ['a', 'ˈa', 'ˌa'], means The grapheme a may only correspond to a ˈa ˌa If it ever maps to i u ʃ ŋ the validator rejects the word. Example ci: ['tʃ', 'ˈtʃ'], means ci → tʃ is allowed. But ci → k would be rejected.
+    ha: ['a', 'ˈa', 'ˌa'],
+    a: ['a', 'ˈa', 'ˌa'],
+    à: ['a', 'ˈa', 'ˌa'],
+    á: ['a', 'ˈa', 'ˌa'],  
+    bb: ['bː', 'ˈbː'],
+    b: ['b', 'ˈb'],
+    cci: ['tʃː', 'ˈtʃː'],
+    cch: ['kː', 'ˈkː'],
+    cc: ['tʃː', 'kː', 'ˈkː', 'ˈtʃː'],    
+    ch: ['k', 'ˈk'],
+    ci: ['tʃ', 'ˈtʃ'],
+    cq: ['kː'], 
+    c: ['k', 'tʃ', 'ˈk', 'ˈtʃ', 'ˈtʃː'],
+    dd: ['dː', 'ˈdː'],
+    d: ['d', 'ˈd'],
+    e: ['e', 'ˈe', 'ɛ', 'ˈɛ'],
+    è: ['e', 'ˈe', 'ɛ', 'ˈɛ'],
+    é: ['e', 'ˈe', 'ɛ', 'ˈɛ'],
+    ff: ['fː', 'ˈfː'],
+    f: ['f', 'ˈf'],
+    gli: ['ʎ', 'ˈʎ', 'ʎː', 'ˈʎː'], // 2026
+    ggh: ['gː'],
+    ggi: ['dʒː', 'ˈdʒː'],
+    gl: ['ʎ', 'ˈʎ', 'ʎː'],
+    gg: ['gː', 'dʒː', 'ˈgː', 'ˈdʒː'],
+    gn: ['ɲː', 'ɲ', 'ˈɲ', 'ˈɲː'],
+    gh: ['g', 'ˈg'],
+    gi: ['dʒ', 'ˈdʒ'],
+    g: ['g', 'ˈg', 'dʒ', 'ˈdʒ'],
+    i: ['i', 'ˈi', 'j', 'ˈj'],
+    ì: ['i', 'ˈi', 'j', ''],
+    ll: ['lː', 'ˈlː'],
+    l: ['l', 'ˈl'],
+    mm: ['mː', 'ˈmː'],
+    m: ['m', 'ˈm'],
+    nn: ['nː', 'ˈnː'],
+    n: ['n', 'ˈn', 'ŋ', 'ˈŋ'],
+    ho: ['o', 'ˈo', 'ɔ', 'ˈɔ', 'ˌo', 'ˌɔ'],
+    o: ['o', 'ˈo', 'ɔ', 'ˈɔ', 'oː', '.o'],
+    ò: ['o', 'ˈo', 'ɔ', 'ˈɔ'],
+    pp: ['pː', 'ˈpː'], // 2026
+    p: ['p', 'ˈp'],
+    q: ['k', 'ˈk'],
+    rr: ['rː', 'ˈrː'], // 2026
+    r: ['r', 'ˈr'],
+    sci: ['ʃ', 'ˈʃ', 'ˈʃː'],
+    sc: ['ʃ', 'ˈʃ', 'ʃː', 'ˈʃː'],
+    ss: ['sː', 'ˈsː'],
+    s: ['s', 'ˈs', 'z', 'ˈz', '.z', 'ˌz'],
+    tt: ['tː', 'ˈtː'], //2026
+    t: ['t', 'ˈt'],
+    u: ['u', 'ˈu', 'w', 'ˈw'],
+    ù: ['u', 'ˈu'],
+    vv: ['vː', 'ˈvː'],
+    v: ['v', 'ˈv'],
+    zz: ['tsː', 'dzː', 'ˈtsː', 'ˈdzː'],
+    z: ['ts', 'dz', 'ˈts', 'ˈdz', 'ˈtsː', 'tsː', 'dzː']
+  };
+
+  const regex = /([\p{L}]+)\(([^()]*)\)/gu;  //  This creates a regular expression. Its job is to find every letters(IPA) pair inside v(v)o(o)l(l)o(o)n(n)t(t)à(ˈa) Let's dissect it. ( Starts capture group 1. [\p{L}] Means any Unicode letter. Not only A-Z but also à é ñ ö č + Means one or more. So g works. gli also works. gn also works. First capture group ([\p{L}]+) captures g gli gn bb sci Everything before the parentheses. \( Matches ( literally. Second capture group ([^()]*) means Match everything except ( ) zero or more times. That becomes the IPA. Example g(ʎ) captures ʎ Example à(ˈa) captures ˈa \) Matches ) Flags g Global. Continue finding every match. u Unicode mode. Necessary because of accented letters.
+
+  let match;  //  Creates a variable. Initially undefined Later it will hold each regex match.
+
+  while ((match = regex.exec(mappedString)) !== null) {  //  This repeatedly searches the string. Suppose mappedString = v(v)o(o)l(l)o(o)n(n)t(t)à(ˈa) Iteration 1 match ↓ v(v) Iteration 2 o(o) Iteration 3 l(l) Iteration 4 o(o) Iteration 5 n(n) Iteration 6 t(t) Iteration 7 à(ˈa) When there are no more matches, regex.exec() returns null and the loop ends.
+    const letters = match[1].toLowerCase();  //  Remember capture group 1 contains letters Examples SCI ↓ sci because of toLowerCase() This ensures SCI Sci sci all use the same lookup.
+    const ipa = match[2];  //  Gets capture group 2. Examples ˈa tʃ ŋ ʎ dʒ
+    
+    // NEW: empty mapping
+    if (ipa.trim() === '') return originalWord;  //  Suppose mapping produced o() Then ipa = "" or "   " That means the mapper couldn't assign a sound. The function immediately rejects the mapping. Returns originalWord instead.
+    
+    // letter sequence not in allowed list → return original
+    if (!allowedMappings[letters]) return originalWord;  //  letters = xyz There is no allowedMappings["xyz"] Therefore the validator refuses to trust it. Returns originalWord
+
+    // ipa value not allowed → return original
+    if (!allowedMappings[letters].includes(ipa)) return originalWord;  //  This is the core of the validator. Suppose letters = ci Allowed list [ tʃ, ˈtʃ ] If ipa = tʃ ✔ accepted. If ipa = k Rejected. Returns originalWord Another example Suppose letters = gn Allowed ɲ ɲː ˈɲ ˈɲː If IPA is n then includes("n") is false The word is rejected.
+  }  //  If every grapheme passed all three tests the loop finishes normally. Nothing has been rejected.
+
+  return mappedString;  //  If execution reaches this line, every grapheme-to-IPA pair was considered valid. The function returns the original aligned mapping unchanged. For example: Input: c(tʃ)i(a)a(o)o() ↓ Validated successfully ↓ Returned: c(tʃ)i(a)a(o)o() If any single pair had failed—for example, ci(k) or gn(n)—the function would have exited earlier with: return originalWord; So this final line is only reached when the entire mapping passes validation.
+
+
+
+  
+}
+
+
+
+export function applyG2PMapping(text, ipa) {
   
   const result = [];
   let ipaIndex = 0;
