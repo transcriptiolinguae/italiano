@@ -461,48 +461,6 @@ languageValidate = language.validateOrReturnOriginal;
 
 
 
-
-  
-
-  
-  async function runESpeak(text) {  //  Defines an asynchronous function named runESpeak. It accepts one parameter, text, which is the Italian text to be transcribed into IPA. Why async? Because running the WebAssembly version of eSpeak takes time. async lets the function pause while waiting for eSpeak to finish without freezing the webpage.
-    let ipaOutput = '';  //  Creates an empty string that will collect everything eSpeak prints. Example: Initially: ipaOutput = "" Later eSpeak might output: ˈkaːne After collecting: ipaOutput = "ˈkaːne"
-    await initESpeak({  //  Starts eSpeak. Because await is used, JavaScript pauses here until eSpeak has completely finished processing. Without await, the function would immediately continue and return an empty result before eSpeak had time to generate the transcription.
-      arguments: ['-v', getVoice(), '--ipa=3', text],  //  These are exactly the command-line arguments passed to eSpeak. Equivalent terminal command: espeak-ng -v it --ipa=3 "ciao" Each argument means: -v Select a voice. 'it' Choose the Italian voice. So together: -v it means Use the Italian pronunciation rules. '--ipa=3' Tell eSpeak to output IPA instead of speech. The =3 format gives a cleaner IPA transcription. Without this option eSpeak would try to synthesize speech instead. text The text you supplied. If text = "ciao mondo" then eSpeak receives -v it --ipa=3 "ciao mondo"
-      print: (text) => {  //  Defines a function that is called every time eSpeak prints normal output. Think of it like: Whenever eSpeak says something, execute this code.
-        ipaOutput += text;  //  Append whatever eSpeak printed to the growing string. Example: First callback: text = "ˈtʃa" ipaOutput becomes "ˈtʃa" Second callback: text = "o" Now ipaOutput = "ˈtʃao" Using += means "add to the end."
-      },  //  Ends the print callback.
-      printErr: printErrFiltered  //  Whenever eSpeak prints an error or warning, it sends it to the printErrFiltered() function instead of directly to the console. That function ignores harmless startup messages but still shows real errors.
-    });  //  Finishes the initialization and waits until eSpeak has completed. At this point, ipaOutput contains the complete IPA transcription.
-
-    return ipaOutput  //  Now the code improves eSpeak's output before returning it. Start returning the transcription. Everything after this is a chain of text replacements.
-      .replace(/[\u0300-\u036F\u200B-\u200D\uFEFF]/g, '')  //  Removes invisible Unicode characters. These include: combining accents zero-width spaces byte-order marks They can interfere with later processing.
-      .replace(/rɾ/g, 'rː')  //  Whenever eSpeak outputs rɾ replace it with rː Why? Italian double rr is a long trill. eSpeak sometimes represents it as rɾ Your application prefers rː
-      .replace(/mm/g, 'mː')
-      .replace(/ff/g, 'fː')
-      .replace(/vv/g, 'vː')
-      .replace(/ll/g, 'lː')
-      .replace(/kk/g, 'kː')
-      .replace(/nn/g, 'nː')
-      .replace(/ɲɲ/g, 'ɲː')
-      .replace(/oo/g, 'oː')      
-      .replace(/ss/g, 'sː')
-      .replace(/tt/g, 't')
-      .replace(/dd/g, 'd')
-      .replace(/ɾ/g, 'r')
-      .replace(/ɪ/g, 'i')
-      .replace(/ʊ/g, 'u')
-      .replace(/ɡ/g, 'g')
-      .trim();  //  Removes whitespace at the beginning and end. Example: "   ˈkaːne   " becomes "ˈkaːne"
-  }  //  This function does three major jobs: Sends text to eSpeak. Waits until eSpeak produces IPA. Cleans and normalizes the IPA so the rest of your G2P code receives a consistent transcription. This normalization is important because applyG2PMapping() expects IPA in a very specific format. Without these replacements, many mappings would fail because eSpeak's output would not exactly match the symbols your mapping code is designed to recognize.
-
-
-
-
-
-
-  
-
   
   
   function showPlaceholder() {  //  Defines a normal (non-async) function named showPlaceholder. Its job is to reset the output area to its default empty state.
@@ -593,6 +551,46 @@ function applyG2PMapping(text, ipa) {
 
 
 
+
+
+
+ async function runESpeak(text) {  //  Defines an asynchronous function named runESpeak. It accepts one parameter, text, which is the Italian text to be transcribed into IPA. Why async? Because running the WebAssembly version of eSpeak takes time. async lets the function pause while waiting for eSpeak to finish without freezing the webpage.
+    let ipaOutput = '';  //  Creates an empty string that will collect everything eSpeak prints. Example: Initially: ipaOutput = "" Later eSpeak might output: ˈkaːne After collecting: ipaOutput = "ˈkaːne"
+    await initESpeak({  //  Starts eSpeak. Because await is used, JavaScript pauses here until eSpeak has completely finished processing. Without await, the function would immediately continue and return an empty result before eSpeak had time to generate the transcription.
+      arguments: ['-v', getVoice(), '--ipa=3', text],  //  These are exactly the command-line arguments passed to eSpeak. Equivalent terminal command: espeak-ng -v it --ipa=3 "ciao" Each argument means: -v Select a voice. 'it' Choose the Italian voice. So together: -v it means Use the Italian pronunciation rules. '--ipa=3' Tell eSpeak to output IPA instead of speech. The =3 format gives a cleaner IPA transcription. Without this option eSpeak would try to synthesize speech instead. text The text you supplied. If text = "ciao mondo" then eSpeak receives -v it --ipa=3 "ciao mondo"
+      print: (text) => {  //  Defines a function that is called every time eSpeak prints normal output. Think of it like: Whenever eSpeak says something, execute this code.
+        ipaOutput += text;  //  Append whatever eSpeak printed to the growing string. Example: First callback: text = "ˈtʃa" ipaOutput becomes "ˈtʃa" Second callback: text = "o" Now ipaOutput = "ˈtʃao" Using += means "add to the end."
+      },  //  Ends the print callback.
+      printErr: printErrFiltered  //  Whenever eSpeak prints an error or warning, it sends it to the printErrFiltered() function instead of directly to the console. That function ignores harmless startup messages but still shows real errors.
+    });  //  Finishes the initialization and waits until eSpeak has completed. At this point, ipaOutput contains the complete IPA transcription.
+
+    return ipaOutput  //  Now the code improves eSpeak's output before returning it. Start returning the transcription. Everything after this is a chain of text replacements.
+      .replace(/[\u0300-\u036F\u200B-\u200D\uFEFF]/g, '')  //  Removes invisible Unicode characters. These include: combining accents zero-width spaces byte-order marks They can interfere with later processing.
+      .replace(/rɾ/g, 'rː')  //  Whenever eSpeak outputs rɾ replace it with rː Why? Italian double rr is a long trill. eSpeak sometimes represents it as rɾ Your application prefers rː
+      .replace(/mm/g, 'mː')
+      .replace(/ff/g, 'fː')
+      .replace(/vv/g, 'vː')
+      .replace(/ll/g, 'lː')
+      .replace(/kk/g, 'kː')
+      .replace(/nn/g, 'nː')
+      .replace(/ɲɲ/g, 'ɲː')
+      .replace(/oo/g, 'oː')      
+      .replace(/ss/g, 'sː')
+      .replace(/tt/g, 't')
+      .replace(/dd/g, 'd')
+      .replace(/ɾ/g, 'r')
+      .replace(/ɪ/g, 'i')
+      .replace(/ʊ/g, 'u')
+      .replace(/ɡ/g, 'g')
+      .trim();  //  Removes whitespace at the beginning and end. Example: "   ˈkaːne   " becomes "ˈkaːne"
+  }  //  This function does three major jobs: Sends text to eSpeak. Waits until eSpeak produces IPA. Cleans and normalizes the IPA so the rest of your G2P code receives a consistent transcription. This normalization is important because applyG2PMapping() expects IPA in a very specific format. Without these replacements, many mappings would fail because eSpeak's output would not exactly match the symbols your mapping code is designed to recognize.
+
+
+
+
+
+  
+  
 
 
   
