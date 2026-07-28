@@ -290,6 +290,15 @@ let languageValidate = null;
 let currentLanguage = "it";
 
 
+let wasmReady = false;  // This creates a variable. Unlike const, let allows changing the value later.
+
+// IPA dictionary
+let ipaDictionary = {};  //  let creates a variable whose value can change later. {} creates an empty JavaScript object. Think of it as a dictionary or lookup table. Initially it contains nothing. Later it will become something like { "ciao": "ˈtʃa.o" }. Then your code can instantly look up pronunciations.
+
+
+
+  
+
 
 
 
@@ -306,6 +315,16 @@ function getVoice() {
 }
 
 
+  
+
+  // Normalize curly apostrophes to straight apostrophes
+function normalizeCurlyApostrophes(text) {  // The parameter text will contain whatever string you pass into the function.
+  return text.replace(/[’‘]/g, "'");  // Match one character from the list in [] square brackets, where "g" means replace globally every word with character in quotes "'".
+}
+  
+
+
+  
   
 document
     .getElementById("language")
@@ -324,33 +343,8 @@ document
 
 
 
-  
-  // Normalize curly apostrophes to straight apostrophes
-function normalizeCurlyApostrophes(text) {  // The parameter text will contain whatever string you pass into the function.
-  return text.replace(/[’‘]/g, "'");  // Match one character from the list in [] square brackets, where "g" means replace globally every word with character in quotes "'".
-}
-  
-
-  
-   
 
 
-
-
-  
-let wasmReady = false;  // This creates a variable. Unlike const, let allows changing the value later.
-
-
-
-// IPA dictionary
-let ipaDictionary = {};  //  let creates a variable whose value can change later. {} creates an empty JavaScript object. Think of it as a dictionary or lookup table. Initially it contains nothing. Later it will become something like { "ciao": "ˈtʃa.o" }. Then your code can instantly look up pronunciations.
-
-
-
-
-  
-
-  
   
 window.addEventListener('load', async () => {
 
