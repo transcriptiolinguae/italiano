@@ -289,18 +289,17 @@ const voices = {
     fr: "fr"
 };
 
-export function setLanguage(lang){
+function setLanguage(lang) {
     currentLanguage = lang;
 }
 
-export function getDictionaryFile(){
+function getDictionaryFile() {
     return dictionaries[currentLanguage];
 }
 
-export function getVoice(){
+function getVoice() {
     return voices[currentLanguage];
 }
-
 
 
   
