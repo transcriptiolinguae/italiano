@@ -349,17 +349,17 @@ languageValidate = language.validateOrReturnOriginal;  //  Stores the validation
 
 
 
-function setLanguage(lang) {
+function setLanguage(lang) {  //  Updates the global currentLanguage variable with the language selected by the user. Other functions use this value to know which language settings to load.
     currentLanguage = lang;
 }
 
-function getDictionaryFile() {
+function getDictionaryFile() {  //  Gets the dictionary file path from the dictionaries object. Example: if currentLanguage = "en", it returns "./phonenglish.json". Used by loadDictionary() to load the correct pronunciation dictionary.
     return dictionaries[currentLanguage];
 }
 
-function getVoice() {
+function getVoice() {  //  Gets the voice/language code from the voices object. Example: if currentLanguage = "de", it returns "de". Used by the speech system (eSpeak) to select the correct pronunciation voice.
     return voices[currentLanguage];
-}
+}  //  Connection with other code: Language dropdown calls setLanguage() when the user changes language. loadDictionary() uses getDictionaryFile() to load the matching JSON dictionary. Speech generation uses getVoice() to select the correct eSpeak voice. These functions connect the selected language with dictionaries, G2P rules, and speech output.
 
 
   
@@ -367,7 +367,7 @@ function getVoice() {
   // Normalize curly apostrophes to straight apostrophes
 function normalizeCurlyApostrophes(text) {  // The parameter text will contain whatever string you pass into the function.
   return text.replace(/[’‘]/g, "'");  // Match one character from the list in [] square brackets, where "g" means replace globally every word with character in quotes "'".
-}
+}  
   
 
 
@@ -462,12 +462,12 @@ function getDictionaryIPA(word) {  //  Defines a new function named getDictionar
   
    // g2p & validate 
 
-function validateOrReturnOriginal(originalWord, mappedString) {  //  It accepts two parameters: originalWord — the original spelling of the word. Example: ciao mappedString — the grapheme-to-phoneme alignment produced by applyG2PMapping(). Example: c(tʃ)i(a)a(o)o() or g(g)l(ʎ)i() The function will inspect mappedString and decide: ✔ keep it ✘ reject it and return the original word.
+function validateOrReturnOriginal(originalWord, mappedString) {  //  It accepts two parameters: originalWord — the original spelling of the word. Example: ciao mappedString — the grapheme-to-phoneme alignment produced by applyG2PMapping(). Example: c(tʃ)i(a)a(o)o() or g(g)l(ʎ)i() The function will inspect mappedString and decide: ✔ keep it ✘ reject it and return the original word. Takes two inputs: originalWord: the original written word. mappedString: the IPA/G2P result created from that word.
     if (languageValidate) {
-        return languageValidate(originalWord, mappedString);
+        return languageValidate(originalWord, mappedString);  //  If the selected language has a custom validation function, it uses it. The validation checks if the G2P result is correct.
     }
 
- return mappedString;
+ return mappedString;  //  If no language-specific validator exists, it accepts the generated pronunciation. Connection with other code: languageValidate is loaded from the language file (en.js, it.js, etc.). It checks the output created by applyG2PMapping(). Prevents incorrect pronunciation mappings from being used.
 
 }
 
@@ -475,11 +475,11 @@ function validateOrReturnOriginal(originalWord, mappedString) {  //  It accepts 
 
  // g2p & validate 
   
-function applyG2PMapping(text, ipa) {
-    if (languageApplyG2P) {
-        return languageApplyG2P(text, ipa);
+function applyG2PMapping(text, ipa) {  //  Takes the original text and its IPA representation.
+    if (languageApplyG2P) {  
+        return languageApplyG2P(text, ipa);  //  If the selected language has a G2P mapping function, it applies language-specific pronunciation rules.
     }
-    return ipa;
+    return ipa;  //  If no custom rules exist, it returns the original IPA unchanged. Connection with other code: languageApplyG2P is loaded dynamically from the selected language file. It modifies IPA output according to language rules. Its result is then checked by validateOrReturnOriginal() before final speech output.
 }
 
 
