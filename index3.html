@@ -488,7 +488,10 @@ function applyG2PMapping(text, ipa) {  //  Takes the original text and its IPA r
 
 
  async function runESpeak(text) {  //  Defines an asynchronous function named runESpeak. It accepts one parameter, text, which is the Italian text to be transcribed into IPA. Why async? Because running the WebAssembly version of eSpeak takes time. async lets the function pause while waiting for eSpeak to finish without freezing the webpage.
-    let ipaOutput = '';  //  Creates an empty string that will collect everything eSpeak prints. Example: Initially: ipaOutput = "" Later eSpeak might output: ˈkaːne After collecting: ipaOutput = "ˈkaːne"
+       console.log("runESpeak CALLED with:", text);
+
+   
+   let ipaOutput = '';  //  Creates an empty string that will collect everything eSpeak prints. Example: Initially: ipaOutput = "" Later eSpeak might output: ˈkaːne After collecting: ipaOutput = "ˈkaːne"
     await initESpeak({  //  Starts eSpeak. Because await is used, JavaScript pauses here until eSpeak has completely finished processing. Without await, the function would immediately continue and return an empty result before eSpeak had time to generate the transcription.
       arguments: ['-v', getVoice(), '--ipa=3', text],  //  These are exactly the command-line arguments passed to eSpeak. Equivalent terminal command: espeak-ng -v it --ipa=3 "ciao" Each argument means: -v Select a voice. 'it' Choose the Italian voice. So together: -v it means Use the Italian pronunciation rules. '--ipa=3' Tell eSpeak to output IPA instead of speech. The =3 format gives a cleaner IPA transcription. Without this option eSpeak would try to synthesize speech instead. text The text you supplied. If text = "ciao mondo" then eSpeak receives -v it --ipa=3 "ciao mondo"
       print: (text) => {  //  Defines a function that is called every time eSpeak prints normal output. Think of it like: Whenever eSpeak says something, execute this code.
