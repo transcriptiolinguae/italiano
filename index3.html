@@ -315,6 +315,9 @@ const language = await import(`./${currentLanguage}.js`);  //  Dynamically impor
 
 languageApplyG2P = language.applyG2PMapping;  //  Takes the G2P function from the language file and stores it globally. Before: languageApplyG2P = null; After: languageApplyG2P = applyG2PMapping function from it.js Connection: Later when you run: applyG2PMapping(token, ipa) your wrapper calls: languageApplyG2P(originalWord, ipa) which uses the current language rules.
 languageValidate = language.validateOrReturnOriginal;  //  Stores the validation function from the language file. Before: languageValidate = null; After: languageValidate = validateOrReturnOriginal from it.js Connection: Later: validateOrReturnOriginal(token, mapped) calls: languageValidate(token, mapped) to check if the G2P alignment is valid.
+
+console.log("Before initESpeak");  //  ORIGINAL eSpean NG
+
       
         // Load eSpeak
         await initESpeak({  //  Starts loading eSpeak. Your imported module: import initESpeak from './espeak-ng.js'; provides this function.
