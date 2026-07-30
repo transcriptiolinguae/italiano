@@ -327,7 +327,9 @@ console.log("Before initESpeak");  //  ORIGINAL eSpean NG
             printErr: () => {}  //  Defines what happens when eSpeak prints errors during initialization. Also ignored during startup.
 
         });  //  Waits until eSpeak finishes loading. After this line, eSpeak is ready to generate IP
-
+      
+    console.log("After initESpeak");  //  ORIGINAL eSpean NG
+      
         wasmReady = true;  //  Changes: Before: wasmReady = false; After: wasmReady = true; Connection: Your buttons use: await waitForWasm(); waitForWasm() waits until this becomes true. So this prevents the user from running transcription before eSpeak is ready.
 
   } catch (e) {  //  If anything above fails, this runs. Examples: dictionary file missing language file missing eSpeak loading failure
