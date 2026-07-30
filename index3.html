@@ -494,6 +494,9 @@ function applyG2PMapping(text, ipa) {  //  Takes the original text and its IPA r
     await initESpeak({  //  Starts eSpeak. Because await is used, JavaScript pauses here until eSpeak has completely finished processing. Without await, the function would immediately continue and return an empty result before eSpeak had time to generate the transcription.
       arguments: ['-v', getVoice(), '--ipa=3', text],  //  These are exactly the command-line arguments passed to eSpeak. Equivalent terminal command: espeak-ng -v it --ipa=3 "ciao" Each argument means: -v Select a voice. 'it' Choose the Italian voice. So together: -v it means Use the Italian pronunciation rules. '--ipa=3' Tell eSpeak to output IPA instead of speech. The =3 format gives a cleaner IPA transcription. Without this option eSpeak would try to synthesize speech instead. text The text you supplied. If text = "ciao mondo" then eSpeak receives -v it --ipa=3 "ciao mondo"
       print: (text) => {  //  Defines a function that is called every time eSpeak prints normal output. Think of it like: Whenever eSpeak says something, execute this code.
+          
+        console.log("RAW eSpeak chunk:", text);  //  ORIGINAL eSpeak NG
+
         ipaOutput += text;  //  Append whatever eSpeak printed to the growing string. Example: First callback: text = "ˈtʃa" ipaOutput becomes "ˈtʃa" Second callback: text = "o" Now ipaOutput = "ˈtʃao" Using += means "add to the end."
       },  //  Ends the print callback.
       printErr: printErrFiltered  //  Whenever eSpeak prints an error or warning, it sends it to the printErrFiltered() function instead of directly to the console. That function ignores harmless startup messages but still shows real errors.
