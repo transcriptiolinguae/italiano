@@ -502,7 +502,8 @@ function applyG2PMapping(text, ipa) {  //  Takes the original text and its IPA r
       printErr: printErrFiltered  //  Whenever eSpeak prints an error or warning, it sends it to the printErrFiltered() function instead of directly to the console. That function ignores harmless startup messages but still shows real errors.
     });  //  Finishes the initialization and waits until eSpeak has completed. At this point, ipaOutput contains the complete IPA transcription.
 
-   
+   console.log("RAW eSpeak complete:", JSON.stringify(ipaOutput));  //  ORIGINAL eSpeak NG
+
     return ipaOutput  //  Now the code improves eSpeak's output before returning it. Start returning the transcription. Everything after this is a chain of text replacements.
       .replace(/[\u0300-\u036F\u200B-\u200D\uFEFF]/g, '')  //  Removes invisible Unicode characters. These include: combining accents zero-width spaces byte-order marks They can interfere with later processing.
       .replace(/rɾ/g, 'rː')  //  Whenever eSpeak outputs rɾ replace it with rː Why? Italian double rr is a long trill. eSpeak sometimes represents it as rɾ Your application prefers rː
