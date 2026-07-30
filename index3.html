@@ -297,7 +297,30 @@ let ipaDictionary = {};  //  let creates a variable whose value can change later
 
 
 
+outputElem.tabIndex = 0;
 
+outputElem.addEventListener("click", () => {
+    outputElem.focus();
+});
+  
+outputElem.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") {
+        e.preventDefault();
+
+        const selection = window.getSelection();
+        const range = document.createRange();
+
+        range.selectNodeContents(outputElem);
+
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+});
+
+
+
+
+  
   
 
 
