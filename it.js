@@ -339,7 +339,7 @@ if (
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
       if (ipa[ipaIndex] === 'l' && ipa[ipaIndex + 1] === 'ˈ' && ipa[ipaIndex + 2] === 'w') {
           result.push(`${text[i]}(ˈl)${text[i + 1]}${text[i + 2]}(w)`);
-          i += 2; // Skip past "ci"
+          i += 3; // Skip past "ci"
           ipaIndex += 3; // Skip past the "tʃ" in IPA
           continue; // Skip the rest of the processing for this "ci"
        }
