@@ -341,7 +341,7 @@ if (
     const italianConsonantIpa = 'bdfɡklʎmnprstv';
     const italianVowelsIpa = 'aeɛijoɔuw';
 
-            if (italianConsonants.includes(lowerText[i]) && lowerText[i + 1] === "'" && italianVowels.includes(lowerText[i + 2])') {
+            if (italianConsonants.includes(lowerText[i]) && lowerText[i + 1] === "'" && italianVowels.includes(lowerText[i + 2])) {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
       if (italianConsonantsIpa.includes(ipa[ipaIndex]) && ipa[ipaIndex + 1] === 'ˈ' && italianConsonantsIpa.includes(ipa[ipaIndex + 2])) {
           result.push(`${italianConsonantIpa.includes[text[i]]}${text[i + 1]}${italianVowelsIpa.includes[text[i + 2]]}`);
