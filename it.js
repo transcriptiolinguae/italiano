@@ -333,7 +333,7 @@ if (
        
 
 
-// RESYLL
+// RESYLLIBIFICATION
 
 const italianConsonants = 'bcdfghlmnpqrstvw';
 const italianVowels = 'aeiou';
@@ -366,6 +366,31 @@ if (
   }
 }
 
+
+
+
+if (
+  lowerText[i] === "l" &&
+  lowerText[i + 1] === "l" &&
+  lowerText[i + 2] === "'" &&
+  italianVowels.includes(lowerText[i + 3])
+) {
+  if (
+    ipa[ipaIndex] === 'l' &&
+    ipa[ipaIndex + 1] === 'ː' &&
+    ipa[ipaIndex + 2] === 'ˈ' &&
+    italianVowelsIpa.includes(ipa[ipaIndex + 3])
+  ) {
+    result.push(
+      `ll(ˈlː)'${text[i + 3]}(${ipa[ipaIndex + 3]})`
+    );
+
+    i += 4;
+    ipaIndex += 4;
+    continue;
+  }
+}
+    
 
 
     
