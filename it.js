@@ -335,7 +335,7 @@ if (
 
 // RESYLL
 
-            if (lowerText[i] === "l" && lowerText[i + 1] === ''' && lowerText[i + 2] === 'u') {
+            if (lowerText[i] === 'l' && lowerText[i + 1] === "'" && lowerText[i + 2] === 'u') {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
       if (ipa[ipaIndex] === 'l' && ipa[ipaIndex + 1] === 'ˈ' && ipa[ipaIndex + 2] === 'w') {
           result.push(`${text[i]}(ˈl)${text[i + 1]}${text[i + 2]}(w)`);
