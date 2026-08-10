@@ -352,7 +352,7 @@ if (
 ) {
   if (
     italianZIpa.includes(ipa[ipaIndex]) &&
-    italianZIpa.includes(ipa[ipaIndex + 1])
+    italianZIpa.includes(ipa[ipaIndex + 1]) &&
     ipa[ipaIndex + 2] === 'ˈ' &&
     italianVowelsIpa.includes(ipa[ipaIndex + 3])
   ) {
