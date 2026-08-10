@@ -336,15 +336,15 @@ if (
 // RESYLL
 
     const italianConsonants = 'bcdfghlmnpqrstvw';
-    const italianVowels = new Set('aeiou');
+    const italianVowels = 'aeiou';
     
-    const italianConsonantIpa = new Set('bdfɡklʎmnprstv');
-    const italianVowelsIpa = new Set('aeɛijoɔuw');
+    const italianConsonantIpa = 'bdfɡklʎmnprstv';
+    const italianVowelsIpa = 'aeɛijoɔuw';
 
             if (italianConsonants.includes(lowerText[i]) && lowerText[i + 1] === "'" && italianVowels.includes(lowerText[i + 2])') {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
       if (italianConsonantsIpa.includes(ipa[ipaIndex]) && ipa[ipaIndex + 1] === 'ˈ' && italianConsonantsIpa.includes(ipa[ipaIndex + 2])) {
-          result.push(`${italianConsonantIpa[text[i]]}${text[i + 1]}${italianVowelsIpa[text[i + 2]]}`);
+          result.push(`${italianConsonantIpa.includes[text[i]]}${text[i + 1]}${italianVowelsIpa.includes[text[i + 2]]}`);
           i += 3; // Skip past "ci"
           ipaIndex += 3; // Skip past the "tʃ" in IPA
           continue; // Skip the rest of the processing for this "ci"
