@@ -483,23 +483,11 @@ const key = word  //  Creates a new constant named key. This variable will conta
 }
 
 
-const dictIPA = getDictionaryIPA(word);
 
-if (dictIPA) {
-    // Normal dictionary word
-    map.set(word, dictIPA);
 
-} else {
-    // Try dictionary-based Italian elision.
-    const elisionIPA = getElisionDictionaryIPA(word);
+  
 
-    if (elisionIPA) {
-        map.set(word, elisionIPA);
-    } else {
-        // Nothing in the dictionary → let eSpeak handle it.
-        espeakWords.push(word);
-    }
-}
+
 
   
 
