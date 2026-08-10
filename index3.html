@@ -473,17 +473,107 @@ function splitTextByLength(text, maxLength = 500) {  //  Creates a helper functi
 
 
 
-function getDictionaryIPA(word) {  //  Defines a new function named getDictionaryIPA. It accepts one parameter: word. word is expected to be a single word such as: "ciao" or "Perché" The function's job is simple: Look inside your custom IPA dictionary (phonitalia.json) and return the IPA transcription if the word exists.
+// function getDictionaryIPA(word) {  //  Defines a new function named getDictionaryIPA. It accepts one parameter: word. word is expected to be a single word such as: "ciao" or "Perché" The function's job is simple: Look inside your custom IPA dictionary (phonitalia.json) and return the IPA transcription if the word exists.
 
-  const key = word  //  Creates a new constant named key. This variable will contain a normalized version of the word before searching the dictionary. It does not modify the original word. Example: word = "Caffè" After this line: word = "Caffè" key  = (still being built)
-    .normalize('NFC')  //  Normalizes Unicode characters into NFC (Normalization Form C). This is extremely important because some accented characters can be stored in two different ways. For example, these two strings look identical: é and e + ◌́ One is a single Unicode character. The other is the letter plus a combining accent. Visually they are identical, but JavaScript considers them different strings. Calling .normalize('NFC') converts both into exactly the same representation. Example: "Caffè" becomes "Caffè" Now dictionary lookup becomes reliable.
-    .toLowerCase();  //  Converts the normalized word to lowercase. Examples: "CIAO" ↓ "ciao" "Perché" ↓ "perché" This means your dictionary only needs one entry: "ciao" instead of "Ciao" "CIAO" "CiAo" "cIaO" ... Everything becomes lowercase before searching. After these two operations together: word = "Perché" becomes key = "perché"
+//  const key = word  //  Creates a new constant named key. This variable will contain a normalized version of the word before searching the dictionary. It does not modify the original word. Example: word = "Caffè" After this line: word = "Caffè" key  = (still being built)
+ //   .normalize('NFC')  //  Normalizes Unicode characters into NFC (Normalization Form C). This is extremely important because some accented characters can be stored in two different ways. For example, these two strings look identical: é and e + ◌́ One is a single Unicode character. The other is the letter plus a combining accent. Visually they are identical, but JavaScript considers them different strings. Calling .normalize('NFC') converts both into exactly the same representation. Example: "Caffè" becomes "Caffè" Now dictionary lookup becomes reliable.
+ //   .toLowerCase();  //  Converts the normalized word to lowercase. Examples: "CIAO" ↓ "ciao" "Perché" ↓ "perché" This means your dictionary only needs one entry: "ciao" instead of "Ciao" "CIAO" "CiAo" "cIaO" ... Everything becomes lowercase before searching. After these two operations together: word = "Perché" becomes key = "perché"
+//
+//  return ipaDictionary[key] || null;  //  This is the actual dictionary lookup. ipaDictionary is the object you loaded earlier from phonitalia.json. Suppose it contains: ipaDictionary = { "ciao": "ˈtʃao", "cane": "ˈkane", "gli": "ʎi" } JavaScript checks: ipaDictionary[key] If key = "ciao" then ipaDictionary["ciao"] returns ˈtʃao The function immediately returns that IPA. If the word is not found: ipaDictionary["computer"] returns undefined The operator || means: "If the value on the left is missing or false, use the value on the right." So undefined || null becomes null The function therefore returns null to indicate: "This word is not in the custom dictionary." This is the actual dictionary lookup. Remember that earlier your code loaded ipaDictionary = { "ciao": "tʃao", "gli": "ʎi", "occhi": "ɔkːi" } Now JavaScript checks ipaDictionary[key] Suppose key = "ciao" Then it evaluates ipaDictionary["ciao"] which returns "tʃao" So the function returns return "tʃao"; If the word is not in the dictionary: key = "javascript" then ipaDictionary["javascript"] is undefined The operator || means "if the thing on the left is missing or false, use the thing on the right." So undefined || null becomes null Therefore the function returns null instead of undefined. Returning null is intentional because later your code checks if (dictIPA) { ... } else { ... } or if (dictIPA === null) to decide whether to call eSpeak.
+//}
 
-  return ipaDictionary[key] || null;  //  This is the actual dictionary lookup. ipaDictionary is the object you loaded earlier from phonitalia.json. Suppose it contains: ipaDictionary = { "ciao": "ˈtʃao", "cane": "ˈkane", "gli": "ʎi" } JavaScript checks: ipaDictionary[key] If key = "ciao" then ipaDictionary["ciao"] returns ˈtʃao The function immediately returns that IPA. If the word is not found: ipaDictionary["computer"] returns undefined The operator || means: "If the value on the left is missing or false, use the value on the right." So undefined || null becomes null The function therefore returns null to indicate: "This word is not in the custom dictionary." This is the actual dictionary lookup. Remember that earlier your code loaded ipaDictionary = { "ciao": "tʃao", "gli": "ʎi", "occhi": "ɔkːi" } Now JavaScript checks ipaDictionary[key] Suppose key = "ciao" Then it evaluates ipaDictionary["ciao"] which returns "tʃao" So the function returns return "tʃao"; If the word is not in the dictionary: key = "javascript" then ipaDictionary["javascript"] is undefined The operator || means "if the thing on the left is missing or false, use the thing on the right." So undefined || null becomes null Therefore the function returns null instead of undefined. Returning null is intentional because later your code checks if (dictIPA) { ... } else { ... } or if (dictIPA === null) to decide whether to call eSpeak.
+
+const dictIPA = getDictionaryIPA(word);
+
+if (dictIPA) {
+    // Normal dictionary word
+    map.set(word, dictIPA);
+
+} else {
+    // Try dictionary-based Italian elision.
+    const elisionIPA = getElisionDictionaryIPA(word);
+
+    if (elisionIPA) {
+        map.set(word, elisionIPA);
+    } else {
+        // Nothing in the dictionary → let eSpeak handle it.
+        espeakWords.push(word);
+    }
+}
+
+  
+
+
+  
+
+function getElisionDictionaryIPA(word) {
+    // Only handle words containing an apostrophe.
+    if (!word.includes("'")) {
+        return null;
+    }
+
+    const parts = word.split("'");
+
+    // We only expect one apostrophe:
+    // quest'anno → ["quest", "anno"]
+    if (parts.length !== 2) {
+        return null;
+    }
+
+    const firstPart = parts[0];
+    const secondPart = parts[1];
+
+    if (!firstPart || !secondPart) {
+        return null;
+    }
+
+    // The elided vowel must be recovered from the dictionary.
+    // We try all five Italian vowels.
+    const vowels = ["a", "e", "i", "o", "u"];
+
+    let firstIPA = null;
+    let recoveredWord = null;
+
+    for (const vowel of vowels) {
+        const candidate = firstPart + vowel;
+
+        const candidateIPA = getDictionaryIPA(candidate);
+
+        if (candidateIPA) {
+            firstIPA = candidateIPA;
+            recoveredWord = candidate;
+            break;
+        }
+    }
+
+    // The second word must also exist in the dictionary.
+    const secondIPA = getDictionaryIPA(secondPart);
+
+    if (!firstIPA || !secondIPA) {
+        return null;
+    }
+
+    // Remove primary/secondary stress from the first word.
+    let firstClean = firstIPA
+        .replace(/[ˈˌ]/g, '');
+
+    // Remove the final vowel of the recovered first word.
+    //
+    // We deliberately remove the final IPA vowel rather than simply
+    // removing the last character, because the IPA may contain
+    // other symbols before the vowel.
+    firstClean = firstClean.replace(
+        /[aeiouɛɔəɪʊ]+$/,
+        ''
+    );
+
+    return firstClean + secondIPA;
 }
 
 
 
+
+  
 
 
 
@@ -609,22 +699,30 @@ console.log("==================");
     
   const espeakWords = [];  //  Creates an empty array. Its job is to collect words that are not found in your custom dictionary. Initially []
 
-  for (const word of words) {  //  Starts a loop. Suppose words = [ "ciao", "gli", "occhi", "ciao" ] The loop runs four times. First iteration word = "ciao" Second word = "gli" Third word = "occhi" Fourth word = "ciao" Notice that duplicates are still present. Nothing has been removed yet.
+for (const word of words) {
+    const dictIPA = getDictionaryIPA(word);
 
-    const dictIPA = getDictionaryIPA(word);  //  Looks inside your custom JSON dictionary. For example word = "ciao" calls getDictionaryIPA("ciao") Suppose the dictionary contains "ciao": "tʃao" Then dictIPA = "tʃao" If the dictionary does not contain the word word = "computer" then dictIPA = null
+    if (dictIPA) {
+        // Normal dictionary word
+        map.set(word, dictIPA);
 
-    if (dictIPA) {  //  Checks whether the lookup succeeded. Remember: dictIPA = "tʃao" is considered true. dictIPA = null is considered false.
+    } else {
+        // Try dictionary-based elision
+        const elisionIPA = getElisionDictionaryIPA(word);
 
-      map.set(word, dictIPA);  //  Now the Map becomes Map { "ciao" → "tʃao" }
-      
-    //    console.log(
-     //   `[DICT] ${word} → ${dictIPA}`
-    //    );
-      
-    } else {  //  This executes only if the word was not found in the dictionary.
-      espeakWords.push(word);  //  Adds the unknown word to the list for eSpeak. Suppose word = "computer" Then espeakWords becomes [ "computer" ] Later "javascript" might also be added. After the loop finishes, imagine Dictionary contains ciao gli Input is [ "ciao", "gli", "occhi", "computer", "ciao" ] The results are map ciao → tʃao gli  → ʎi and espeakWords [ "occhi", "computer" ]
-    }  
-  }
+        if (elisionIPA) {
+            // Elision was successfully reconstructed
+            map.set(word, elisionIPA);
+
+        } else {
+            // Not in dictionary and not a valid elision
+            // → send to eSpeak
+            espeakWords.push(word);
+        }
+    }
+}
+
+    
   if (espeakWords.length > 0) {  //  Checks whether there is anything left for eSpeak. If [] there is nothing to do. If [ "occhi", "computer" ] then eSpeak must be called.
 
     const unique = [...new Set(espeakWords)];  //  Removes duplicate words. Suppose espeakWords [ "occhi", "computer", "occhi", "computer" ] Set automatically removes duplicates. Set { "occhi", "computer" } The spread operator ... turns it back into an array. Result unique [ "occhi", "computer" ] Why? Because there's no point asking eSpeak to pronounce the same word four times.
@@ -715,9 +813,9 @@ document.getElementById('afi').addEventListener('click', async () => {  //  What
 
     for (const chunk of chunks) {  //  Begins a for...of loop. This loop processes one chunk at a time. If chunks = [ "Prima frase.", "Seconda frase.", "Terza frase." ] then the loop runs three times. Iteration 1 chunk = "Prima frase." Iteration 2 chunk = "Seconda frase." Iteration 3 chunk = "Terza frase." Each chunk goes through exactly the same transcription pipeline. Everything after this point operates on one chunk only, and the process repeats until every chunk has been transcribed and appended to finalResult.
 
-      const tokens = chunk.match(  //  We now arrive at one of the most important lines in your entire program. This line converts one chunk of text into an array of tokens. A token is simply one piece of text that the program wants to process individually. For example, if the user types L'acqua costa 3,50 euro. the program produces approximately [ "L'acqua", "costa", "3,50", "euro", "." ] Notice that spaces are not included. Everything is split into meaningful pieces. chunk.match(...) The JavaScript function string.match(regex) searches the string using a regular expression. If matches are found, it returns an array. Example: "one two three".match(/\w+/g) returns [ "one", "two", "three" ] Your program uses a much more advanced regular expression because Italian contains accented letters, apostrophes, numbers and punctuation.
-        /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu  //  Although it looks intimidating, it is really just three patterns joined together with |. The | means OR So JavaScript tries match a word OR match a number OR match one punctuation character. Part 1 — Words [A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+ This means one or more alphabetic letters It accepts a b c but also à è é ì ò ù and hundreds of other Unicode letters. Examples matched: cane perché università più Why all those strange ranges? Instead of writing every accented letter individually, À Á Â Ã Ä Å ... the expression uses Unicode ranges. For example, À-Ö means every Unicode character between À and Ö. That includes many accented capital letters. Similarly, ø-ÿ includes many lowercase accented letters. This makes the tokenizer work for Italian and many other Latin-based languages. The + At the end you see + This means one or more Without it, cane would become c a n e With +, JavaScript keeps reading letters until they stop. So you obtain cane as one token. Part 2 — Apostrophes After the word pattern comes (?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)* This is what allows words like l'acqua instead of splitting them into l ' acqua Let's examine it. (?: ) This creates a non-capturing group. It groups several characters together but does not save them separately. JavaScript only needs the whole word. ' The apostrophe itself. [letters]+ After the apostrophe there must be one or more letters. So l' alone is not considered a word. But l'acqua is. The * The entire apostrophe group ends with * meaning zero or more repetitions Therefore these all match: acqua l'acqua Sant'Agata Even multiple apostrophes would technically work: dell'amico Part 3 — Numbers The next alternative is [0-9]+ This matches 12 2026 500 Decimal part After that comes (?:[.,][0-9]+)? This means optionally accept a decimal part. Examples accepted: 3.14 3,14 12,5 9.8 The final ? means this whole decimal section is optional. So plain integers still match. Part 4 — Everything else Finally [^\s] means one character that is NOT whitespace. \s means whitespace: space tab newline The ^ inside brackets means NOT Therefore . matches , matches ? matches ! matches ( matches ) matches Everything except spaces. The flags At the end of the regular expression are gu g Global search. Instead of stopping after the first match, JavaScript finds every token. Without g cane gatto topo would return cane only. With g it returns [ "cane", "gatto", "topo" ] u Unicode mode. Without Unicode mode, many accented characters would not behave correctly. Because your application processes Italian, the u flag is essential. The result Suppose the input chunk is L'acqua costa 3,50 euro! After this line, tokens contains [ "L'acqua", "costa", "3,50", "euro", "!" ] Notice what disappeared: (space) (space) (space) The spaces are not tokens. Later, your program reconstructs the original spacing manually.
-      );
+const tokens = chunk.match(
+    /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
+);
 
       if (!tokens) {  //  Sometimes .match() finds nothing. In that case it returns null instead of an array. This if checks for exactly that situation.
         finalResult += chunk;  //  If no tokens were found, the program simply copies the original chunk into the final output. Nothing is modified.
@@ -725,9 +823,9 @@ document.getElementById('afi').addEventListener('click', async () => {  //  What
       }
 
       // Extract real words
-      let words = tokens.filter(t =>  //  This line extracts only the words from the array of tokens. Earlier, tokens contained everything: [ "L'acqua", "costa", "3,50", "euro", "." ] However, only actual words need to be sent to eSpeak. Numbers and punctuation do not. After this line, words becomes [ "L'acqua", "costa", "euro" ] Notice that 3,50 and . have disappeared. filter() is an Array method. It examines every element in an array. For each element, it asks a question. If the answer is true, the element is kept. If the answer is false, the element is discarded. Its general form is array.filter(element => condition) Example: const numbers = [1,2,3,4,5]; const even = numbers.filter(n => n % 2 === 0); Result: [2,4] Only the elements satisfying the condition remain. The variable t simply means the current token. Suppose tokens = [ "ciao", ",", "come", "?", "stai" ] During the loop JavaScript automatically assigns Iteration 1 t = "ciao" Iteration 2 t = "," Iteration 3 t = "come" and so on. You could have written token => instead. The author simply chose a shorter variable name.
-        /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)  //  The .test() method asks one simple question: Does this string match the regular expression? It returns either true or false Example: /^[A-Za-z]+$/.test("ciao") returns true while /^[A-Za-z]+$/.test("123") returns false Those true/false values are exactly what filter() needs. Understanding the regular expression The pattern is /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u Unlike the previous regular expression, this one is not splitting text. Instead, it simply checks "Is this token a valid word?" ^ ^ means beginning of the string. The match must start immediately. [A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+ Exactly as before, this means one or more letters. Examples: ciao università perché '? The apostrophe ' is followed by ? meaning zero or one apostrophe. Therefore these match: acqua l'acqua But something like l''acqua would fail. [letters]* After the apostrophe, the expression accepts * which means zero or more letters. This allows d' although in normal Italian this is uncommon. Usually you'll have d'amore or l'acqua $ The dollar sign means end of the string. Nothing else may appear afterward. For example ciao! does not match, because after ciao there is still ! remaining. The u flag Again, Unicode mode. It allows accented Italian letters to be interpreted correctly. Why perform this filter? Imagine the original tokens were [ "Roma", ",", "2025", "è", "bella", "." ] Without filtering, the program would try sending , and 2025 to eSpeak as words. That would produce useless or unexpected output. Filtering removes everything except [ "Roma", "è", "bella" ] which are the only items requiring IPA transcription.
-      );
+let words = tokens.filter(t =>
+    /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
+);
 
       // First IPA pass
       let ipaMap = await computeIPAMap(words);  //  Now the program asks: "What is the IPA pronunciation of each word?" The function computeIPAMap() returns a JavaScript Map. A Map stores pairs of values. One value is called the key. The other is called the value. For example, Map { "casa" => "ˈkaːza", "pane" => "ˈpaːne", "gatto" => "ˈɡatto" } Later, instead of recalculating the pronunciation every time, the program can simply ask ipaMap.get("casa") which immediately returns ˈkaːza This is much faster than calling eSpeak repeatedly for the same word. Notice the keyword await The program pauses here until all IPA transcriptions have been computed. Only after every word has a pronunciation does execution continue.
@@ -881,9 +979,9 @@ document.getElementById('testoafi').addEventListener('click', async () => {
     for (const chunk of chunks) {
 
       // Tokenize text
-      const tokens = chunk.match(
-        /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
-      );
+const tokens = chunk.match(
+    /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
+);
 
       if (!tokens) {
         finalResult += chunk;
@@ -891,9 +989,9 @@ document.getElementById('testoafi').addEventListener('click', async () => {
       }
 
       // Collect word-only tokens
-      let words = tokens.filter(t =>
-        /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
-      );
+ let words = tokens.filter(t =>
+    /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
+);
 
       // Initial IPA pass
       let ipaMap = await computeIPAMap(words);
@@ -1049,9 +1147,9 @@ document.getElementById('g2p').addEventListener('click', async () => {
     let finalResult = '';
 
     for (const chunk of chunks) {
-      const tokens = chunk.match(
-      /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
-      );
+   const tokens = chunk.match(
+    /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
+);
 
       if (!tokens) {
         finalResult += chunk;
@@ -1061,7 +1159,7 @@ document.getElementById('g2p').addEventListener('click', async () => {
 
 // Extract real words, Collect word-only tokens
 let words = tokens.filter(t =>
-  /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
+    /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
 );
 
 // First IPA pass, Initial IPA pass
