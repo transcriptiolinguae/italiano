@@ -341,6 +341,8 @@ const italianVowels = 'aeiou';
 const italianConsonantsIpa = 'bdfɡklʎmnprstv';
 const italianVowelsIpa = 'aeɛijoɔuw';
 
+const italianZIpa = 'tdsz';
+
 if (
   italianConsonants.includes(lowerText[i]) &&
   lowerText[i + 1] === "'" &&
@@ -363,7 +365,35 @@ if (
 
 
 
+if (
+  lowerText[i] === "z" &&
+  lowerText[i + 1] === "'" &&
+  italianVowels.includes(lowerText[i + 2])
+) {
+  if (
+    italianZIpa.includes(ipa[ipaIndex]) &&
+    italianZIpa.includes(ipa[ipaIndex + 1])
+    ipa[ipaIndex + 2] === 'ˈ' &&
+    italianVowelsIpa.includes(ipa[ipaIndex + 2])
+  ) {
+    result.push(
+      `${text[i]}(ˈ${ipa[ipaIndex]}${ipa[ipaIndex + 1]})'${text[i + 2]}(${ipa[ipaIndex + 2]})`
+    );
 
+    i += 3;
+    ipaIndex += 4;
+    continue;
+  }
+}
+
+
+
+
+
+
+
+
+    
 
 
 
