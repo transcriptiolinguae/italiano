@@ -489,10 +489,9 @@ const key = word  //  Creates a new constant named key. This variable will conta
 
 
 
-  
 
 
-  
+  // Change for Ellisione-Dictionary
 
 function getElisionDictionaryIPA(word) {
     // Only handle words containing an apostrophe.
@@ -688,6 +687,8 @@ console.log("==================");
   const espeakWords = [];  //  Creates an empty array. Its job is to collect words that are not found in your custom dictionary. Initially []
 
 for (const word of words) {
+
+  // Change for Ellisione-Dictionary
     const dictIPA = getDictionaryIPA(word);
 
     if (dictIPA) {
@@ -709,7 +710,7 @@ for (const word of words) {
         }
     }
 }
-
+// Change for Ellisione-Dictionary. To here.
     
   if (espeakWords.length > 0) {  //  Checks whether there is anything left for eSpeak. If [] there is nothing to do. If [ "occhi", "computer" ] then eSpeak must be called.
 
@@ -801,6 +802,7 @@ document.getElementById('afi').addEventListener('click', async () => {  //  What
 
     for (const chunk of chunks) {  //  Begins a for...of loop. This loop processes one chunk at a time. If chunks = [ "Prima frase.", "Seconda frase.", "Terza frase." ] then the loop runs three times. Iteration 1 chunk = "Prima frase." Iteration 2 chunk = "Seconda frase." Iteration 3 chunk = "Terza frase." Each chunk goes through exactly the same transcription pipeline. Everything after this point operates on one chunk only, and the process repeats until every chunk has been transcribed and appended to finalResult.
 
+// Change for Ellisione-Dictionary
 const tokens = chunk.match(
     /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
 );
@@ -810,6 +812,8 @@ const tokens = chunk.match(
         continue;  //  continue skips the rest of the current loop iteration. Execution immediately jumps to the next chunk. This prevents errors later, because the remaining code expects tokens to be an array.
       }
 
+      
+// Change for Ellisione-Dictionary
       // Extract real words
 let words = tokens.filter(t =>
     /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
@@ -966,6 +970,7 @@ document.getElementById('testoafi').addEventListener('click', async () => {
 
     for (const chunk of chunks) {
 
+      // Change for Ellisione-Dictionary
       // Tokenize text
 const tokens = chunk.match(
     /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
@@ -976,6 +981,7 @@ const tokens = chunk.match(
         continue;
       }
 
+      // Change for Ellisione-Dictionary
       // Collect word-only tokens
  let words = tokens.filter(t =>
     /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
@@ -1135,6 +1141,8 @@ document.getElementById('g2p').addEventListener('click', async () => {
     let finalResult = '';
 
     for (const chunk of chunks) {
+      
+      // Change for Ellisione-Dictionary
    const tokens = chunk.match(
     /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
 );
@@ -1144,7 +1152,7 @@ document.getElementById('g2p').addEventListener('click', async () => {
         continue;
       }
 
-
+// Change for Ellisione-Dictionary
 // Extract real words, Collect word-only tokens
 let words = tokens.filter(t =>
     /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
