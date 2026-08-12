@@ -788,6 +788,28 @@ if (
 } 
 
     
+           // sc(ˈʃ) 2026    
+
+    if (
+  lowerText[i] === 's' &&
+  lowerText[i + 1] === 'c'
+) {
+
+  // Match either ʎː or ʎʎ
+  if (
+    (ipa[ipaIndex] === 'ʃ' && ipa[ipaIndex + 1] === 'ʃ' || ipa[ipaIndex] === 'ʃ' && ipa[ipaIndex + 1] === 'ˈ' && ipa[ipaIndex + 2] === 'i' )
+  ) {
+
+    result.push(
+      `${text[i]}${text[i + 1]}(ʃ)`
+    );
+
+    i += 2;
+    ipaIndex += 1;
+
+    continue;
+  }
+} 
 
 
 
