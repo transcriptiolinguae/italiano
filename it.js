@@ -1015,6 +1015,22 @@ if (
 }
 
 
+
+        // gl(ˈʎ) 2026
+        if (lowerText[i] === 'g' && lowerText[i + 1] === 'l' && lowerText[i + 2] === 'i') {
+      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
+      if (ipa[ipaIndex] === 'ʎ' && ipa[ipaIndex + 1] === 'i') {
+     
+          result.push(`${letter}${text[i + 1]}(ʎ)`);
+          i += 2; // Skip past "ci"
+          ipaIndex += 1; // Skip past the "tʃ" in IPA
+          continue; // Skip the rest of the processing for this "ci"
+        
+      }
+    }
+
+    
+
 //  gli → ʎ  2026
 if (
   lowerText[i] === 'g' &&
@@ -1060,18 +1076,7 @@ if (
 
 
 
-        // gl(ˈʎ) 2026
-        if (lowerText[i] === 'g' && lowerText[i + 1] === 'l' && lowerText[i + 2] === 'i') {
-      // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
-      if (ipa[ipaIndex] === 'ʎ' && ipa[ipaIndex + 1] === 'i') {
-     
-          result.push(`${letter}${text[i + 1]}(ʎ)`);
-          i += 2; // Skip past "ci"
-          ipaIndex += 1; // Skip past the "tʃ" in IPA
-          continue; // Skip the rest of the processing for this "ci"
-        
-      }
-    }
+
 
 
 
