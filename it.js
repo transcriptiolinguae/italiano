@@ -1063,16 +1063,13 @@ if (
         // gl(ˈʎ) 2026
         if (lowerText[i] === 'g' && lowerText[i + 1] === 'l' && lowerText[i + 2] === 'i') {
       // Check if the IPA contains "tʃ" and if it is followed by "i", "ˈi", "j", or "ˈj"
-      if (ipa[ipaIndex] === 'ʎ') {
-        const nextIpa = ipa.slice(ipaIndex + 1, ipaIndex + 3); // Check the next two IPA chars
-
-        if (/i|ˈi|j|ˈj/.test(nextIpa)) { // If "tʃ" is not followed by those sounds
-          // map "ci" with "tʃ" to "ci(tʃ)"
+      if (ipa[ipaIndex] === 'ʎ' && ipa[ipaIndex + 1] === 'i') {
+     
           result.push(`${letter}${text[i + 1]}(ʎ)`);
           i += 2; // Skip past "ci"
           ipaIndex += 1; // Skip past the "tʃ" in IPA
           continue; // Skip the rest of the processing for this "ci"
-        }
+        
       }
     }
 
