@@ -688,28 +688,7 @@ if (
  }
 
 
-        // sc(ˈʃː) 2026    
-
-    if (
-  lowerText[i] === 's' &&
-  lowerText[i + 1] === 'c'
-) {
-
-  // Match either ʎː or ʎʎ
-  if (
-    (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'ʃ' && ipa[ipaIndex + 2] === 'ː')
-  ) {
-
-    result.push(
-      `${text[i]}${text[i + 1]}(ˈʃː)`
-    );
-
-    i += 2;
-    ipaIndex += 3;
-
-    continue;
-  }
-}
+      
 
 
     
@@ -724,7 +703,7 @@ if (
 
   // Match either ʎː or ʎʎ
   if (
-    (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'ʃ')
+    (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'ʃ' && ipa[ipaIndex + 2] !== 'i')
   ) {
 
     result.push(
@@ -741,6 +720,31 @@ if (
 
 
 
+      // sc(ˈʃː) 2026    
+
+    if (
+  lowerText[i] === 's' &&
+  lowerText[i + 1] === 'c'
+) {
+
+  // Match either ʎː or ʎʎ
+  if (
+    (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'ʃ' && ipa[ipaIndex + 2] === 'ː'  && ipa[ipaIndex + 2] !== 'i')
+  ) {
+
+    result.push(
+      `${text[i]}${text[i + 1]}(ˈʃː)`
+    );
+
+    i += 2;
+    ipaIndex += 3;
+
+    continue;
+  }
+}
+
+
+
 
 
 
@@ -753,7 +757,7 @@ if (
 
   // Match either ʎː or ʎʎ
   if (
-    (ipa[ipaIndex] === 'ʃ' && ipa[ipaIndex + 1] === 'i' || ipa[ipaIndex] === 'ʃ' && ipa[ipaIndex + 1] === 'ˈ' && ipa[ipaIndex + 2] === 'i')
+    (ipa[ipaIndex] === 'ˈ' && ipa[ipaIndex + 1] === 'ʃ' && ipa[ipaIndex + 2] === 'i')
   ) {
 
     result.push(
@@ -761,7 +765,7 @@ if (
     );
 
     i += 2;
-    ipaIndex += 1;
+    ipaIndex += 2;
 
     continue;
   }
