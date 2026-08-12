@@ -761,7 +761,7 @@ if (
   ) {
 
     result.push(
-      `${text[i]}${text[i + 1]}(ʃ)`
+      `${text[i]}${text[i + 1]}(ˈʃ)`
     );
 
     i += 2;
