@@ -362,7 +362,7 @@ languageValidate = language.validateOrReturnOriginal;  //  Stores the validation
     outputElem.classList.remove('placeholder');  //  Removes the grey placeholder style from the output box.
 
     outputElem.innerText =
-        'Error loading dictionary or eSpeak: ' + e.message;  //  Displays the error message to the user. Example: Error loading dictionary or eSpeak: Failed to fetch
+        'Error loading dictionary or eSpeak: ' + e.message;  //  Displays the error message to the user. Example: Error loading dictionary or eSpeak: Failed to fetch When no internet connection
 
 }
 });  //  Complete connection flow Page loads ↓ load event fires ↓ loadDictionary() ↓ phonitalia.json loaded ↓ ipaDictionary filled ↓ import("./it.js") ↓ G2P + validation functions loaded ↓ initESpeak() ↓ WebAssembly eSpeak ready ↓ wasmReady = true ↓ User can press transcription buttons In short: this startup function loads the language dictionary, loads the correct G2P rules, starts eSpeak, and prepares the application for transcription.
