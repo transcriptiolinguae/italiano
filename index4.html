@@ -236,7 +236,7 @@
 @media (max-width: 600px) {
 
     body {
-    padding: 0 20px;
+    padding: 0 24px;
   }
   
   .text-columns {
@@ -295,7 +295,7 @@
   
 <script type="module">
   import initESpeak from './espeak-ng.js';
-
+-
 // eSpeak voices
 const voices = {  //  creates a JavaScript object called voices. Its purpose in your program is to connect your website's language codes with the eSpeak voice names that should be used for pronunciation. 1. const const voices = ... const creates a variable that cannot be reassigned. So this is allowed: voices.it but this is not: voices = {}; You cannot replace the whole object. However, the contents of the object can technically be changed: voices.it = "something else"; would work. 2. The object { } The curly brackets create an object: { it: "it", en: "en", de: "de", fr: "fr" } An object stores key → value pairs. The structure is: key : value So your object contains: Key	Value it	"it" en	"en" de	"de" fr	"fr" The left side is the name you use in your program. The right side is the value you want to retrieve. 3. Why are both sides the same? You might ask: Why write: it: "it" instead of something different? Because eSpeak voice names happen to use the same abbreviations. For example: it: "it" means: Your program language code:  it | v eSpeak voice name:          it When eSpeak receives: -v it it loads the Italian pronunciation rules. 4. How it is used in your code You have this function: function getVoice() { return voices[currentLanguage]; } This uses the current language to look up the correct eSpeak voice. At the beginning: currentLanguage = "it"; So: voices[currentLanguage] becomes: voices["it"] which returns: "it" Therefore: getVoice() returns: "it" Then your eSpeak command: arguments: [ '-v', getVoice(), '--ipa=3', text ] becomes: arguments: [ '-v', 'it', '--ipa=3', text ] which is equivalent to: espeak-ng -v it --ipa=3 "ciao" and eSpeak knows to use Italian pronunciation. 5. What happens when the user changes language? Suppose the user selects German: currentLanguage = "de"; Now: voices[currentLanguage] becomes: voices["de"] which returns: "de" Now eSpeak receives: espeak-ng -v de --ipa=3 "Hallo" and uses German pronunciation rules. 6. Why not simply write currentLanguage directly? You could technically do: function getVoice() { return currentLanguage; } and in your current setup it would work because: it → it en → en de → de fr → fr are identical. However, the object gives you flexibility. For example, if later eSpeak uses different names: const voices = { it: "italian", en: "en-us", de: "german", fr: "french" }; you would not need to change the rest of your program. Your language selector could still use: <option value="en">English</option> while eSpeak receives: -v en-us So voices acts as a translation table between your website languages and eSpeak voice identifiers.
     it: "it",
