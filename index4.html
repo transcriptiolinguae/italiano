@@ -650,18 +650,18 @@ function applyG2PMapping(text, ipa) {  //  Takes the original text and its IPA r
 
     return ipaOutput  //  Now the code improves eSpeak's output before returning it. Start returning the transcription. Everything after this is a chain of text replacements.
       .replace(/[\u0300-\u036F\u200B-\u200D\uFEFF]/g, '')  //  Removes invisible Unicode characters. These include: combining accents zero-width spaces byte-order marks They can interfere with later processing.
-      .replace(/rɾ/g, 'rː')  //  Whenever eSpeak outputs rɾ replace it with rː Why? Italian double rr is a long trill. eSpeak sometimes represents it as rɾ Your application prefers rː
-      .replace(/mm/g, 'mː')
-      .replace(/ff/g, 'fː')
-      .replace(/vv/g, 'vː')
-      .replace(/ll/g, 'lː')
-      .replace(/kk/g, 'kː')
-      .replace(/nn/g, 'nː')
-      .replace(/ɲɲ/g, 'ɲː')
-      .replace(/oo/g, 'oː')      
-      .replace(/ss/g, 'sː')
+  //  .replace(/rɾ/g, 'rː')  //  Whenever eSpeak outputs rɾ replace it with rː Why? Italian double rr is a long trill. eSpeak sometimes represents it as rɾ Your application prefers rː
+  //  .replace(/mm/g, 'mː')
+  //  .replace(/ff/g, 'fː')
+  //  .replace(/vv/g, 'vː')
+  //  .replace(/ll/g, 'lː')
+  //  .replace(/kk/g, 'kː')
+  //  .replace(/nn/g, 'nː')
+  //  .replace(/ɲɲ/g, 'ɲː')
+  //  .replace(/oo/g, 'oː')      
+  //  .replace(/ss/g, 'sː')
   //  .replace(/tt/g, 't')
- //   .replace(/dd/g, 'd')
+  //  .replace(/dd/g, 'd')
       .replace(/ɾ/g, 'r')
       .replace(/ɪ/g, 'i')
       .replace(/ʊ/g, 'u')
