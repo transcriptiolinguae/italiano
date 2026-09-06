@@ -663,9 +663,9 @@ function applyG2PMapping(text, ipa) {  //  Takes the original text and its IPA r
   //  .replace(/tt/g, 't')
   //  .replace(/dd/g, 'd')
   //    .replace(/ɾ/g, 'r')
-      .replace(/ɪ/g, 'i')
-      .replace(/ʊ/g, 'u')
-      .replace(/ɡ/g, 'g')
+   //   .replace(/ɪ/g, 'i')
+    //  .replace(/ʊ/g, 'u')
+    //  .replace(/ɡ/g, 'g')
       .trim();  //  Removes whitespace at the beginning and end. Example: "   ˈkaːne   " becomes "ˈkaːne"
   }  //  This function does three major jobs: Sends text to eSpeak. Waits until eSpeak produces IPA. Cleans and normalizes the IPA so the rest of your G2P code receives a consistent transcription. This normalization is important because applyG2PMapping() expects IPA in a very specific format. Without these replacements, many mappings would fail because eSpeak's output would not exactly match the symbols your mapping code is designed to recognize.
 
