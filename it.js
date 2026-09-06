@@ -88,6 +88,24 @@ export function validateOrReturnOriginal(originalWord, mappedString) {
 
 
 export function applyG2PMapping(text, ipa) {
+
+    ipa = ipa
+    .replace(/rɾ/g, 'rː')
+    .replace(/mm/g, 'mː')
+    .replace(/ff/g, 'fː')
+    .replace(/vv/g, 'vː')
+    .replace(/ll/g, 'lː')
+    .replace(/kk/g, 'kː')
+    .replace(/nn/g, 'nː')
+    .replace(/ɲɲ/g, 'ɲː')
+    .replace(/oo/g, 'oː')
+    .replace(/ss/g, 'sː')
+    .replace(/tt/g, 't')
+    .replace(/dd/g, 'd')
+    .replace(/ɾ/g, 'r')
+    .replace(/ɪ/g, 'i')
+    .replace(/ʊ/g, 'u')
+    .replace(/ɡ/g, 'g');
   
   const result = [];
   let ipaIndex = 0;
