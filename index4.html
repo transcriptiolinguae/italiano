@@ -12,32 +12,30 @@
     }
 
     body {
-      font-family: Arial, sans-serif;
       max-width: 1280px;
       margin: 2rem auto;
       padding: 0 3rem;
+      font: 1rem/1.6 Arial, sans-serif;
       color: #2c3e50;
       background: #fff;
-      line-height: 1.6;
-      font-size: 1rem;
     }
 
     .site-header {
       display: flex;
       flex-direction: column;
-      justify-content: center;
       align-items: center;
-      padding: 20px 0;
-      text-align: center;
+      justify-content: center;
       width: 100%;
+      padding: 20px 0;
       box-sizing: border-box;
+      text-align: center;
       background: #fff;
     }
 
     .site-logo {
+      width: 400px;
       max-width: 100%;
       height: auto;
-      width: 400px;
       margin-bottom: 10px;
     }
 
@@ -47,19 +45,18 @@
     }
 
     h1 {
+      margin: 0 0 0.5rem;
       font-family: "Times New Roman", Times, serif;
+      font-weight: 700;
       text-align: center;
       color: #34495e;
-      margin: 0 0 0.5rem;
-      font-weight: 700;
     }
 
     h3 {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      font-weight: 500;
-      color: #7f8c8d;
       margin-bottom: 2rem;
+      font-weight: 500;
+      text-align: center;
+      color: #7f8c8d;
     }
 
     .text-columns {
@@ -80,31 +77,28 @@
     }
 
     .text-columns pre {
-      margin-top: 0;
-      margin-bottom: 0;
+      margin: 0;
     }
 
     textarea,
     pre {
-      font-family: Arial, sans-serif;
-      font-size: 1rem;
-      line-height: 1.5;
+      font: 1rem/1.5 Arial, sans-serif;
     }
 
     textarea {
       width: 100%;
       min-height: 6em;
       padding: 0.75em 1em;
+      box-sizing: border-box;
       border: 1.5px solid #ccc;
       border-radius: 5px;
       resize: vertical;
-      box-sizing: border-box;
       transition: border-color 0.3s ease;
     }
 
     textarea:focus {
       outline: none;
-      border: 1.5px solid #ccc;
+      border-color: #ccc;
       box-shadow: none;
     }
 
@@ -114,12 +108,13 @@
     }
 
     pre {
-      background: #ecf0f1;
+      margin-top: 0;
       padding: 1.25rem 1.5rem;
-      border-radius: 5px;
+      overflow-wrap: break-word;
       white-space: pre-wrap;
       word-break: break-word;
-      margin-top: 0;
+      background: #ecf0f1;
+      border-radius: 5px;
       box-shadow: inset 0 0 5px #dfe6e9;
     }
 
@@ -134,29 +129,27 @@
     }
 
     #language {
-      font-family: Arial, sans-serif;
-      font-size: 14px;
+      padding: 0;
+      font: 14px Arial, sans-serif;
       color: #000;
       background: #fff;
-      border: none;
-      padding: 0;
-      cursor: pointer;
+      border: 0;
       outline: none;
+      cursor: pointer;
     }
 
     #language option {
-      background: #fff;
       color: #000;
+      background: #fff;
     }
 
     button {
-      font-family: Arial, sans-serif;
-      background: #fff;
-      color: grey;
-      border: none;
-      border-radius: 5px;
       padding: 0.65em 1em;
-      font-size: 1rem;
+      font: 1rem Arial, sans-serif;
+      color: grey;
+      background: #fff;
+      border: 0;
+      border-radius: 5px;
       cursor: pointer;
       transition: background-color 0.25s ease;
     }
@@ -168,23 +161,23 @@
 
     .button-row {
       display: flex;
-      justify-content: left;
       flex-wrap: wrap;
+      justify-content: flex-start;
       margin: 10px 0;
     }
 
     .triple-line-button {
       display: flex;
-      color: grey;
-      line-height: 1.2;
-      text-decoration: none;
-      width: auto;
-      font-size: 14px;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      text-align: center;
+      width: auto;
       padding: 8px 12px;
+      font-size: 14px;
+      line-height: 1.2;
+      color: grey;
+      text-align: center;
+      text-decoration: none;
     }
 
     .triple-line-button span {
@@ -198,18 +191,6 @@
 
     .line-1 {
       font-weight: 600;
-    }
-
-    @media (max-width: 768px) {
-      .site-logo {
-        width: 400px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .site-logo {
-        width: 400px;
-      }
     }
 
     @media (max-width: 600px) {
@@ -303,14 +284,24 @@
     };
 
     const WORD_REGEX =
-      /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*/u;
+      /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*$/u;
 
     const TOKEN_REGEX =
       /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu;
 
-    const WHITESPACE_REGEX = /\s/;
-    const DIACRITIC_REGEX = /[\u0300-\u036F\u200B-\u200D\uFEFF]/g;
-    const IPA_PARENTHESES_REGEX = /\(([^()]*)\)/g;
+    const DIACRITIC_REGEX =
+      /[\u0300-\u036F\u200B-\u200D\uFEFF]/g;
+
+    const IPA_PARENTHESES_REGEX =
+      /\(([^()]*)\)/g;
+
+    const APOSTROPHE_REGEX =
+      /[’‘]/g;
+
+    const WHITESPACE_REGEX =
+      /\s/u;
+
+    const VOWELS = ['a', 'e', 'i', 'o', 'u'];
 
     const outputElem = document.getElementById('output');
     const inputElem = document.getElementById('input');
@@ -322,23 +313,30 @@
       g2p: document.getElementById('g2p')
     };
 
+    outputElem.tabIndex = 0;
+
     /* ------------------------------------------------------------------
        State
     ------------------------------------------------------------------ */
 
-    let currentLanguage = 'it';
+    let currentLanguage = languageElem.value;
+
     let languageApplyG2P = null;
     let languageValidate = null;
 
-    // Cache dictionaries and language modules so changing languages
-    // does not repeatedly download the same files.
     const dictionaryCache = new Map();
     const languageCache = new Map();
 
     let ipaDictionary = {};
     let wasmReady = false;
+    let initializationPromise = null;
 
-    outputElem.tabIndex = 0;
+    /*
+     * Each processing operation receives an ID.
+     * If a newer operation starts, older operations cannot overwrite
+     * the newer result.
+     */
+    let processId = 0;
 
     /* ------------------------------------------------------------------
        Output helpers
@@ -346,17 +344,17 @@
 
     function showPlaceholder() {
       outputElem.className = 'placeholder';
-      outputElem.innerText = 'Transcription';
+      outputElem.textContent = 'Transcription';
     }
 
     function showProgressPlaceholder() {
       outputElem.className = 'placeholder';
-      outputElem.innerText = 'Transcription in progress...';
+      outputElem.textContent = 'Transcription in progress...';
     }
 
     function setOutput(text) {
       outputElem.classList.remove('placeholder');
-      outputElem.innerText = text;
+      outputElem.textContent = text;
     }
 
     /* ------------------------------------------------------------------
@@ -364,7 +362,7 @@
     ------------------------------------------------------------------ */
 
     function normalizeCurlyApostrophes(text) {
-      return text.replace(/[’‘]/g, "'");
+      return text.replace(APOSTROPHE_REGEX, "'");
     }
 
     function splitTextByLength(text, maxLength = 500) {
@@ -401,25 +399,24 @@
        Dictionary
     ------------------------------------------------------------------ */
 
-    function getDictionaryFile() {
-      return DICTIONARIES[currentLanguage];
-    }
-
-    function getVoice() {
-      return VOICES[currentLanguage];
-    }
-
     async function loadDictionary() {
       const language = currentLanguage;
+      const cachedDictionary = dictionaryCache.get(language);
 
-      if (dictionaryCache.has(language)) {
-        ipaDictionary = dictionaryCache.get(language);
-        return;
+      if (cachedDictionary) {
+        ipaDictionary = cachedDictionary;
+        return cachedDictionary;
       }
 
       const response = await fetch(DICTIONARIES[language]);
-      const rawDictionary = await response.json();
 
+      if (!response.ok) {
+        throw new Error(
+          `Failed to load dictionary: ${response.status} ${response.statusText}`
+        );
+      }
+
+      const rawDictionary = await response.json();
       const dictionary = {};
 
       for (const [key, value] of Object.entries(rawDictionary)) {
@@ -428,6 +425,8 @@
 
       dictionaryCache.set(language, dictionary);
       ipaDictionary = dictionary;
+
+      return dictionary;
     }
 
     function getDictionaryIPA(word) {
@@ -436,29 +435,30 @@
     }
 
     function getElisionDictionaryIPA(word) {
-      if (!word.includes("'")) {
+      const apostropheIndex = word.indexOf("'");
+
+      /*
+       * Only accept words containing exactly one apostrophe with
+       * characters on both sides.
+       */
+      if (
+        apostropheIndex <= 0 ||
+        apostropheIndex !== word.lastIndexOf("'") ||
+        apostropheIndex === word.length - 1
+      ) {
         return null;
       }
 
-      const parts = word.split("'");
-
-      if (parts.length !== 2) {
-        return null;
-      }
-
-      const [firstPart, secondPart] = parts;
-
-      if (!firstPart || !secondPart) {
-        return null;
-      }
+      const firstPart = word.slice(0, apostropheIndex);
+      const secondPart = word.slice(apostropheIndex + 1);
 
       let firstIPA = null;
 
-      for (const vowel of ['a', 'e', 'i', 'o', 'u']) {
-        const candidateIPA = getDictionaryIPA(firstPart + vowel);
+      for (const vowel of VOWELS) {
+        const candidate = getDictionaryIPA(firstPart + vowel);
 
-        if (candidateIPA) {
-          firstIPA = candidateIPA;
+        if (candidate) {
+          firstIPA = candidate;
           break;
         }
       }
@@ -483,21 +483,17 @@
     async function loadLanguageModule() {
       const language = currentLanguage;
 
-      if (languageCache.has(language)) {
-        const module = languageCache.get(language);
+      let module = languageCache.get(language);
 
-        languageApplyG2P = module.applyG2PMapping;
-        languageValidate = module.validateOrReturnOriginal;
-
-        return;
+      if (!module) {
+        module = await import(`./${language}.js`);
+        languageCache.set(language, module);
       }
-
-      const module = await import(`./${language}.js`);
-
-      languageCache.set(language, module);
 
       languageApplyG2P = module.applyG2PMapping;
       languageValidate = module.validateOrReturnOriginal;
+
+      return module;
     }
 
     function applyG2PMapping(text, ipa) {
@@ -534,13 +530,13 @@
       await initESpeak({
         arguments: [
           '-v',
-          getVoice(),
+          VOICES[currentLanguage],
           '--ipa=3',
           text
         ],
 
-        print: text => {
-          ipaOutput += text;
+        print: chunk => {
+          ipaOutput += chunk;
         },
 
         printErr: printErrFiltered
@@ -558,20 +554,21 @@
     async function computeIPAMap(words) {
       const map = new Map();
 
-      // Remove duplicates before sending anything to eSpeak.
-      const uniqueWords = [...new Set(words)];
-
-      if (!uniqueWords.length) {
+      if (!words.length) {
         return map;
       }
 
+      /*
+       * Do not send the same word to eSpeak more than once.
+       */
+      const uniqueWords = [...new Set(words)];
       const espeakWords = [];
 
       for (const word of uniqueWords) {
-        const dictIPA = getDictionaryIPA(word);
+        const dictionaryIPA = getDictionaryIPA(word);
 
-        if (dictIPA) {
-          map.set(word, dictIPA);
+        if (dictionaryIPA) {
+          map.set(word, dictionaryIPA);
           continue;
         }
 
@@ -590,6 +587,7 @@
       }
 
       const ipaRaw = await runESpeak(espeakWords.join('|'));
+
       const ipaWords = ipaRaw
         .replace(/\|/g, ' ')
         .trim()
@@ -607,8 +605,18 @@
     ------------------------------------------------------------------ */
 
     function extractIPA(mapped) {
-      const pieces = [...mapped.matchAll(IPA_PARENTHESES_REGEX)];
-      return pieces.map(match => match[1]).join('');
+      let result = '';
+      let match;
+
+      IPA_PARENTHESES_REGEX.lastIndex = 0;
+
+      while (
+        (match = IPA_PARENTHESES_REGEX.exec(mapped)) !== null
+      ) {
+        result += match[1];
+      }
+
+      return result;
     }
 
     function reconstructChunk(chunk, tokens, converted) {
@@ -616,6 +624,8 @@
       let position = 0;
 
       for (let i = 0; i < tokens.length; i++) {
+        const token = tokens[i];
+
         while (
           position < chunk.length &&
           WHITESPACE_REGEX.test(chunk[position])
@@ -624,7 +634,7 @@
         }
 
         result += converted[i];
-        position += tokens[i].length;
+        position += token.length;
       }
 
       return result;
@@ -637,15 +647,25 @@
         return chunk;
       }
 
-      const words = tokens.filter(isWord);
+      /*
+       * Determine whether each token is a word only once.
+       */
+      const tokenInfo = tokens.map(token => ({
+        token,
+        isWord: isWord(token)
+      }));
+
+      const words = tokenInfo
+        .filter(item => item.isWord)
+        .map(item => item.token);
 
       let ipaMap = await computeIPAMap(words);
       const converted = new Array(tokens.length);
 
-      for (let i = 0; i < tokens.length; i++) {
-        const token = tokens[i];
+      for (let i = 0; i < tokenInfo.length; i++) {
+        const { token, isWord: tokenIsWord } = tokenInfo[i];
 
-        if (!isWord(token)) {
+        if (!tokenIsWord) {
           converted[i] = token;
           continue;
         }
@@ -654,28 +674,28 @@
         let mapped = applyG2PMapping(token, ipa);
 
         /*
-         * Some language modules return null when they need more context.
-         * Re-run eSpeak starting at the current word, matching the
-         * behavior of the original implementation.
+         * Some language modules return null when additional context
+         * is required. Preserve the original fallback behavior.
          */
         if (mapped === null) {
           let nextWordIndex = i + 1;
 
           while (
-            nextWordIndex < tokens.length &&
-            !isWord(tokens[nextWordIndex])
+            nextWordIndex < tokenInfo.length &&
+            !tokenInfo[nextWordIndex].isWord
           ) {
             nextWordIndex++;
           }
 
-          if (nextWordIndex >= tokens.length) {
+          if (nextWordIndex >= tokenInfo.length) {
             converted[i] = token;
             continue;
           }
 
-          const remainingWords = tokens
+          const remainingWords = tokenInfo
             .slice(i)
-            .filter(isWord);
+            .filter(item => item.isWord)
+            .map(item => item.token);
 
           ipaMap = await computeIPAMap(remainingWords);
 
@@ -710,30 +730,51 @@
     }
 
     async function processText(mode) {
+      const requestId = ++processId;
+
       showProgressPlaceholder();
 
-      await waitForWasm();
-
-      const rawInput = normalizeCurlyApostrophes(
-        inputElem.value.trim()
-      ).normalize('NFC');
-
-      if (!rawInput) {
-        showPlaceholder();
-        return;
-      }
-
       try {
-        const chunks = splitTextByLength(rawInput, 500);
+        await waitForWasm();
+
+        const rawInput = normalizeCurlyApostrophes(
+          inputElem.value.trim()
+        ).normalize('NFC');
+
+        if (!rawInput) {
+          if (requestId === processId) {
+            showPlaceholder();
+          }
+
+          return;
+        }
+
+        const chunks = splitTextByLength(rawInput);
         const results = [];
 
         for (const chunk of chunks) {
+          /*
+           * Stop an older conversion if the user started a newer one.
+           */
+          if (requestId !== processId) {
+            return;
+          }
+
           results.push(await convertChunk(chunk, mode));
         }
 
-        setOutput(results.join('').trim());
+        if (requestId === processId) {
+          setOutput(results.join('').trim());
+        }
       } catch (error) {
-        console.error(`Error during ${mode} processing:`, error);
+        if (requestId !== processId) {
+          return;
+        }
+
+        console.error(
+          `Error during ${mode} processing:`,
+          error
+        );
 
         setOutput(
           `Error during ${mode} processing: ${error.message}`
@@ -746,29 +787,58 @@
     ------------------------------------------------------------------ */
 
     async function initialize() {
-      try {
-        await loadDictionary();
-        await loadLanguageModule();
+      if (initializationPromise) {
+        return initializationPromise;
+      }
 
+      initializationPromise = (async () => {
+        /*
+         * Dictionary and language module are independent,
+         * so load them concurrently.
+         */
+        await Promise.all([
+          loadDictionary(),
+          loadLanguageModule()
+        ]);
+
+        /*
+         * Initialize eSpeak once.
+         */
         await initESpeak({
           print: () => {},
           printErr: () => {}
         });
 
         wasmReady = true;
-      } catch (error) {
-        console.error('STARTUP ERROR:', error);
+      })();
 
-        outputElem.classList.remove('placeholder');
-        outputElem.innerText =
-          'Error loading dictionary or eSpeak: ' + error.message;
+      try {
+        await initializationPromise;
+      } catch (error) {
+        initializationPromise = null;
+        throw error;
       }
     }
 
     async function waitForWasm() {
-      while (!wasmReady) {
-        await new Promise(resolve => setTimeout(resolve, 100));
+      if (wasmReady) {
+        return;
       }
+
+      if (!initializationPromise) {
+        await initialize();
+        return;
+      }
+
+      await initializationPromise;
+    }
+
+    function handleStartupError(error) {
+      console.error('STARTUP ERROR:', error);
+
+      outputElem.classList.remove('placeholder');
+      outputElem.textContent =
+        'Error loading dictionary or eSpeak: ' + error.message;
     }
 
     /* ------------------------------------------------------------------
@@ -800,10 +870,15 @@
       currentLanguage = event.target.value;
 
       try {
-        await loadDictionary();
-        await loadLanguageModule();
+        await Promise.all([
+          loadDictionary(),
+          loadLanguageModule()
+        ]);
       } catch (error) {
-        console.error('LANGUAGE CHANGE ERROR:', error);
+        console.error(
+          'LANGUAGE CHANGE ERROR:',
+          error
+        );
       }
     });
 
@@ -823,7 +898,9 @@
        Start
     ------------------------------------------------------------------ */
 
-    window.addEventListener('load', initialize);
+    window.addEventListener('load', () => {
+      initialize().catch(handleStartupError);
+    });
   </script>
 
 </body>
