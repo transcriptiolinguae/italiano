@@ -1,7 +1,7 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Transcriptio Linguae</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -11,87 +11,46 @@
       font-size: 16px;
     }
 
-/* Reset max-width for header so it can center properly */
-.site-header {
-  display: flex;
-  flex-direction: column;   /* Stack logo and headings vertically */
-  justify-content: center;
-  align-items: center;      /* Center horizontally */
-  padding: 20px 0;
-  text-align: center;
-  width: 100%;              /* Full width of page */
-  box-sizing: border-box;   /* Ensure padding doesn’t break width */
-  background-color: #ffffff;
-}
-
-/* Make the logo responsive */
-.site-logo {
-  max-width: 100%;   /* Never exceed container width */
-  height: auto;      /* Keep aspect ratio */
-  width: 400px;      /* Default width */
-  margin-bottom: 10px;
-}
-
-.text-columns {
-  display: flex;
-  gap: 1rem;
-  align-items: stretch;
-}
-
-.text-columns textarea,
-.text-columns pre {
-  flex: 1;
-  min-width: 0;
-  box-sizing: border-box;
-}
-
-.text-columns textarea {
-  min-height: 6em;
-}
-
-.text-columns pre {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-    
-/* Optional: Adjust logo size on smaller screens */
-@media (max-width: 768px) {
-  .site-logo {
-    width: 400px;
-  }
-}
-
-@media (max-width: 480px) {
-  .site-logo {
-    width: 400px;
-  }
-}
-
-/* Center headings under logo */
-.site-header h1,
-.site-header h3 {
-  margin: 0.2rem 0;
-}
-
-
-
-    
     body {
       font-family: Arial, sans-serif;
       max-width: 1280px;
       margin: 2rem auto;
       padding: 0 3rem;
       color: #2c3e50;
-      background: #ffffff;
+      background: #fff;
       line-height: 1.6;
       font-size: 1rem;
+    }
+
+    .site-header {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px 0;
+      text-align: center;
+      width: 100%;
+      box-sizing: border-box;
+      background: #fff;
+    }
+
+    .site-logo {
+      max-width: 100%;
+      height: auto;
+      width: 400px;
+      margin-bottom: 10px;
+    }
+
+    .site-header h1,
+    .site-header h3 {
+      margin: 0.2rem 0;
     }
 
     h1 {
       font-family: "Times New Roman", Times, serif;
       text-align: center;
       color: #34495e;
-      margin: 0 0 0.5rem 0;
+      margin: 0 0 0.5rem;
       font-weight: 700;
     }
 
@@ -103,7 +62,30 @@
       margin-bottom: 2rem;
     }
 
-    textarea, pre {
+    .text-columns {
+      display: flex;
+      gap: 1rem;
+      align-items: stretch;
+    }
+
+    .text-columns textarea,
+    .text-columns pre {
+      flex: 1;
+      min-width: 0;
+      box-sizing: border-box;
+    }
+
+    .text-columns textarea {
+      min-height: 6em;
+    }
+
+    .text-columns pre {
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    textarea,
+    pre {
       font-family: Arial, sans-serif;
       font-size: 1rem;
       line-height: 1.5;
@@ -139,7 +121,6 @@
       word-break: break-word;
       margin-top: 0;
       box-shadow: inset 0 0 5px #dfe6e9;
-
     }
 
     pre.placeholder {
@@ -155,26 +136,22 @@
     #language {
       font-family: Arial, sans-serif;
       font-size: 14px;
-      color: black;
+      color: #000;
       background: #fff;
       border: none;
-      padding: 0px;
+      padding: 0;
       cursor: pointer;
       outline: none;
     }
 
-
-
     #language option {
       background: #fff;
-      color: black;
+      color: #000;
     }
 
-      
-        
     button {
       font-family: Arial, sans-serif;
-      background: #ffffff;
+      background: #fff;
       color: grey;
       border: none;
       border-radius: 5px;
@@ -182,169 +159,632 @@
       font-size: 1rem;
       cursor: pointer;
       transition: background-color 0.25s ease;
-     /* margin-right: 1rem; */
-     /* margin-bottom: 2px; */
     }
-
-
 
     button:disabled {
       background: #ecf0f1;
       cursor: not-allowed;
     }
 
+    .button-row {
+      display: flex;
+      justify-content: left;
+      flex-wrap: wrap;
+      margin: 10px 0;
+    }
 
+    .triple-line-button {
+      display: flex;
+      color: grey;
+      line-height: 1.2;
+      text-decoration: none;
+      width: auto;
+      font-size: 14px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8px 12px;
+    }
 
+    .triple-line-button span {
+      display: block;
+      opacity: 0.6;
+    }
 
-.button-row {
-  display: flex;             /* ← puts the buttons side by side in a row */
-    justify-content: left;  /* centers buttons horizontally */
-    flex-wrap: wrap;      /* <-- allows stacking on small screens */
-    margin: 10px 0px;
-}
+    .triple-line-button:hover span {
+      opacity: 1;
+    }
 
-.triple-line-button {
-  display: flex;
-  color: grey;
-  line-height: 1.2;
-  text-decoration: none;
-  width: auto; 
-  font-size: 14px;
-  flex-direction: column;    /* stack the spans vertically */
-  align-items: center;       /* center horizontally inside button */
-  justify-content: center;   /* center vertically, if you wish */
-  /* optional: padding, width, text-align etc. */
-  text-align: center;
-  padding: 8px 12px;
-}
+    .line-1 {
+      font-weight: 600;
+    }
 
-.triple-line-button span {
-  display: block;
-  opacity: 0.6;          /* normal state: slightly transparent */
-}
+    @media (max-width: 768px) {
+      .site-logo {
+        width: 400px;
+      }
+    }
 
+    @media (max-width: 480px) {
+      .site-logo {
+        width: 400px;
+      }
+    }
 
- .triple-line-button:hover span {
-  opacity: 1;            /* hover: fully visible */
-}   
+    @media (max-width: 600px) {
+      body {
+        padding: 0 24px;
+      }
 
-    
-.line-1 {
-  font-weight: 600;
-}
+      .text-columns {
+        flex-direction: column;
+      }
 
-@media (max-width: 600px) {
-
-    body {
-    padding: 0 24px;
-  }
-  
-  .text-columns {
-    flex-direction: column;
-  }
-
-  .text-columns textarea,
-  .text-columns pre {
-    flex: none;
-  }
-
-  .text-columns textarea,
-  .text-columns pre {
-    font-size: 1.1rem;
-  }
-}
+      .text-columns textarea,
+      .text-columns pre {
+        flex: none;
+        font-size: 1.1rem;
+      }
+    }
   </style>
 </head>
+
 <body>
 
   <header class="site-header">
     <a href="https://transcriptiolinguae.github.io/">
-    <img src="/img/logo.svg" alt="Transcriptio Linguae Logo" class="site-logo" />
-    </a> 
-  </header>  
+      <img
+        src="/img/logo.svg"
+        alt="Transcriptio Linguae Logo"
+        class="site-logo"
+      >
+    </a>
+  </header>
 
   <select id="language">
-      <option value="it">Italian</option>
-      <option value="en">English</option>
-      <option value="de">German</option>
-      <option value="fr">French</option>
+    <option value="it">Italian</option>
+    <option value="en">English</option>
+    <option value="de">German</option>
+    <option value="fr">French</option>
   </select>
-  
+
   <div class="button-row">
-  <button id="afi" class="triple-line-button">
+    <button id="afi" class="triple-line-button">
+      <span class="line-1">IPA</span>
+    </button>
 
-  <span class="line-1">IPA</span>
-  </button>
-  <button id="testoafi" class="triple-line-button">
-  
-  <span class="line-1">Word IPA</span>
-  </button>
-  <button id="g2p" class="triple-line-button">
+    <button id="testoafi" class="triple-line-button">
+      <span class="line-1">Word IPA</span>
+    </button>
 
-  <span class="line-1">G2P</span>
-  </button>
-  <a class="triple-line-button" href="https://transcriptiolinguae.gumroad.com/"> 
-  <span class="line-1">Align</span>
-  </a>
+    <button id="g2p" class="triple-line-button">
+      <span class="line-1">G2P</span>
+    </button>
+
+    <a
+      class="triple-line-button"
+      href="https://transcriptiolinguae.gumroad.com/"
+    >
+      <span class="line-1">Align</span>
+    </a>
   </div>
+
   <div class="text-columns">
- <textarea id="input" rows="6" cols="60" placeholder="Enter text"></textarea>
-  
-  <pre id="output" class="placeholder">Transcription</pre>
-    </div>
-  
-<script type="module">
-  import initESpeak from './espeak-ng.js';
+    <textarea
+      id="input"
+      rows="6"
+      cols="60"
+      placeholder="Enter text"
+    ></textarea>
 
-// eSpeak voices
-const voices = {  //  creates a JavaScript object called voices. Its purpose in your program is to connect your website's language codes with the eSpeak voice names that should be used for pronunciation. 1. const const voices = ... const creates a variable that cannot be reassigned. So this is allowed: voices.it but this is not: voices = {}; You cannot replace the whole object. However, the contents of the object can technically be changed: voices.it = "something else"; would work. 2. The object { } The curly brackets create an object: { it: "it", en: "en", de: "de", fr: "fr" } An object stores key → value pairs. The structure is: key : value So your object contains: Key	Value it	"it" en	"en" de	"de" fr	"fr" The left side is the name you use in your program. The right side is the value you want to retrieve. 3. Why are both sides the same? You might ask: Why write: it: "it" instead of something different? Because eSpeak voice names happen to use the same abbreviations. For example: it: "it" means: Your program language code:  it | v eSpeak voice name:          it When eSpeak receives: -v it it loads the Italian pronunciation rules. 4. How it is used in your code You have this function: function getVoice() { return voices[currentLanguage]; } This uses the current language to look up the correct eSpeak voice. At the beginning: currentLanguage = "it"; So: voices[currentLanguage] becomes: voices["it"] which returns: "it" Therefore: getVoice() returns: "it" Then your eSpeak command: arguments: [ '-v', getVoice(), '--ipa=3', text ] becomes: arguments: [ '-v', 'it', '--ipa=3', text ] which is equivalent to: espeak-ng -v it --ipa=3 "ciao" and eSpeak knows to use Italian pronunciation. 5. What happens when the user changes language? Suppose the user selects German: currentLanguage = "de"; Now: voices[currentLanguage] becomes: voices["de"] which returns: "de" Now eSpeak receives: espeak-ng -v de --ipa=3 "Hallo" and uses German pronunciation rules. 6. Why not simply write currentLanguage directly? You could technically do: function getVoice() { return currentLanguage; } and in your current setup it would work because: it → it en → en de → de fr → fr are identical. However, the object gives you flexibility. For example, if later eSpeak uses different names: const voices = { it: "italian", en: "en-us", de: "german", fr: "french" }; you would not need to change the rest of your program. Your language selector could still use: <option value="en">English</option> while eSpeak receives: -v en-us So voices acts as a translation table between your website languages and eSpeak voice identifiers.
-    it: "it",
-    en: "en",
-    de: "de",
-    fr: "fr"
-};
-  
-// Dictionary files
-const dictionaries = {  //  his object maps each language code to its IPA dictionary file. It is connected to the code through: function getDictionaryFile() { return dictionaries[currentLanguage]; } currentLanguage stores the selected language. getDictionaryFile() uses it to choose the correct dictionary. Example: currentLanguage = "it"; then: getDictionaryFile() returns: "./phonitalia.json" This file is loaded by: const response = await fetch(getDictionaryFile()); inside loadDictionary(), which fills ipaDictionary with word → IPA entries. Connection flow: Language selection → currentLanguage → getDictionaryFile() → dictionaries object → load JSON IPA dictionary.
-    it: "./phonitalia.json",  
-    en: "./phonenglish.json",
-    de: "./phongerman.json",
-    fr: "./phonfrench.json"
-};
+    <pre id="output" class="placeholder">Transcription</pre>
+  </div>
 
-  const outputElem = document.getElementById('output');  // This looks inside your HTML for "<pre id="output">" and stores it. Why const? Because this variable never changes. It always points to the same HTML element.
+  <script type="module">
+    import initESpeak from './espeak-ng.js';
 
-  const inputElem = document.getElementById('input');
+    /* ------------------------------------------------------------------
+       Configuration
+    ------------------------------------------------------------------ */
 
-  
-// g2p & validate
-let languageApplyG2P = null;  //  This is much more important. It will later store the G2P function from the selected language file. At startup you do: const language = await import(`./${currentLanguage}.js`); languageApplyG2P = language.applyG2PMapping; Since: currentLanguage = "it"; JavaScript loads: ./it.js Inside it.js you probably have something like: export function applyG2PMapping(word, ipa) { ... } Then this line: languageApplyG2P = language.applyG2PMapping; copies that function into your variable. Before loading: languageApplyG2P = null; After loading Italian: languageApplyG2P = function applyG2PMapping(word, ipa) { ... } Now your generic HTML code can call: languageApplyG2P(token, ipa); without knowing whether it is Italian, English, German, or French.
-let languageValidate = null;  //  This works the same way. Later: languageValidate = language.validateOrReturnOriginal; loads the validation function from the language file. For example, it.js might contain: export function validateOrReturnOriginal(word, mapped) { if (mapped.includes("c(z)")) { return word; } return mapped; } Then your main file calls: mapped = validateOrReturnOriginal(token, mapped); Your wrapper function: function validateOrReturnOriginal(originalWord, mappedString) { if (languageValidate) { return languageValidate(originalWord, mappedString); } return mappedString; } checks: if (languageValidate) Meaning: "Has a language-specific validator been loaded?" If yes: return languageValidate(originalWord, mappedString); Use the language rules. If no: return mappedString; Do nothing.
+    const VOICES = {
+      it: 'it',
+      en: 'en',
+      de: 'de',
+      fr: 'fr'
+    };
 
+    const DICTIONARIES = {
+      it: './phonitalia.json',
+      en: './phonenglish.json',
+      de: './phongerman.json',
+      fr: './phonfrench.json'
+    };
 
-// Current language
-let currentLanguage = "it";  //  This stores the currently selected language. At the beginning: currentLanguage = "it"; means: Italian is active. So this line: await import(`./${currentLanguage}.js`); becomes: await import("./it.js"); When the user changes the dropdown: document .getElementById("language") .addEventListener("change", async (e) => { setLanguage(e.target.value); Suppose the user selects German. The <select> gives: e.target.value = "de" Then: setLanguage("de"); runs: function setLanguage(lang) { currentLanguage = lang; } Now: currentLanguage = "de"; Then your code loads: ./de.js and replaces: languageApplyG2P languageValidate with German versions.
+    const WORD_REGEX =
+      /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*/u;
 
+    const TOKEN_REGEX =
+      /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu;
 
-let wasmReady = false;  // This creates a variable. Unlike const, let allows changing the value later.
+    const WHITESPACE_REGEX = /\s/;
+    const DIACRITIC_REGEX = /[\u0300-\u036F\u200B-\u200D\uFEFF]/g;
+    const IPA_PARENTHESES_REGEX = /\(([^()]*)\)/g;
 
-// IPA dictionary
-let ipaDictionary = {};  //  let creates a variable whose value can change later. {} creates an empty JavaScript object. Think of it as a dictionary or lookup table. Initially it contains nothing. Later it will become something like { "ciao": "ˈtʃa.o" }. Then your code can instantly look up pronunciations.
+    const outputElem = document.getElementById('output');
+    const inputElem = document.getElementById('input');
+    const languageElem = document.getElementById('language');
 
+    const buttons = {
+      ipa: document.getElementById('afi'),
+      inline: document.getElementById('testoafi'),
+      g2p: document.getElementById('g2p')
+    };
 
+    /* ------------------------------------------------------------------
+       State
+    ------------------------------------------------------------------ */
 
+    let currentLanguage = 'it';
+    let languageApplyG2P = null;
+    let languageValidate = null;
 
-//  Select with Ctrl + A only Output field
+    // Cache dictionaries and language modules so changing languages
+    // does not repeatedly download the same files.
+    const dictionaryCache = new Map();
+    const languageCache = new Map();
 
-outputElem.tabIndex = 0;
+    let ipaDictionary = {};
+    let wasmReady = false;
 
-outputElem.addEventListener("click", () => {
-    outputElem.focus();
-});
-  
-outputElem.addEventListener("keydown", (e) => {
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "a") {
-        e.preventDefault();
+    outputElem.tabIndex = 0;
+
+    /* ------------------------------------------------------------------
+       Output helpers
+    ------------------------------------------------------------------ */
+
+    function showPlaceholder() {
+      outputElem.className = 'placeholder';
+      outputElem.innerText = 'Transcription';
+    }
+
+    function showProgressPlaceholder() {
+      outputElem.className = 'placeholder';
+      outputElem.innerText = 'Transcription in progress...';
+    }
+
+    function setOutput(text) {
+      outputElem.classList.remove('placeholder');
+      outputElem.innerText = text;
+    }
+
+    /* ------------------------------------------------------------------
+       Text helpers
+    ------------------------------------------------------------------ */
+
+    function normalizeCurlyApostrophes(text) {
+      return text.replace(/[’‘]/g, "'");
+    }
+
+    function splitTextByLength(text, maxLength = 500) {
+      const chunks = [];
+      let start = 0;
+
+      while (start < text.length) {
+        let end = Math.min(start + maxLength, text.length);
+
+        if (end < text.length) {
+          const lastSpace = text.lastIndexOf(' ', end);
+
+          if (lastSpace > start) {
+            end = lastSpace;
+          }
+        }
+
+        chunks.push(text.slice(start, end));
+        start = end;
+      }
+
+      return chunks;
+    }
+
+    function tokenize(text) {
+      return text.match(TOKEN_REGEX);
+    }
+
+    function isWord(token) {
+      return WORD_REGEX.test(token);
+    }
+
+    /* ------------------------------------------------------------------
+       Dictionary
+    ------------------------------------------------------------------ */
+
+    function getDictionaryFile() {
+      return DICTIONARIES[currentLanguage];
+    }
+
+    function getVoice() {
+      return VOICES[currentLanguage];
+    }
+
+    async function loadDictionary() {
+      const language = currentLanguage;
+
+      if (dictionaryCache.has(language)) {
+        ipaDictionary = dictionaryCache.get(language);
+        return;
+      }
+
+      const response = await fetch(DICTIONARIES[language]);
+      const rawDictionary = await response.json();
+
+      const dictionary = {};
+
+      for (const [key, value] of Object.entries(rawDictionary)) {
+        dictionary[key.normalize('NFC').toLowerCase()] = value;
+      }
+
+      dictionaryCache.set(language, dictionary);
+      ipaDictionary = dictionary;
+    }
+
+    function getDictionaryIPA(word) {
+      const key = word.normalize('NFC').toLowerCase();
+      return ipaDictionary[key] || null;
+    }
+
+    function getElisionDictionaryIPA(word) {
+      if (!word.includes("'")) {
+        return null;
+      }
+
+      const parts = word.split("'");
+
+      if (parts.length !== 2) {
+        return null;
+      }
+
+      const [firstPart, secondPart] = parts;
+
+      if (!firstPart || !secondPart) {
+        return null;
+      }
+
+      let firstIPA = null;
+
+      for (const vowel of ['a', 'e', 'i', 'o', 'u']) {
+        const candidateIPA = getDictionaryIPA(firstPart + vowel);
+
+        if (candidateIPA) {
+          firstIPA = candidateIPA;
+          break;
+        }
+      }
+
+      const secondIPA = getDictionaryIPA(secondPart);
+
+      if (!firstIPA || !secondIPA) {
+        return null;
+      }
+
+      const firstClean = firstIPA
+        .replace(/[ˈˌ]/g, '')
+        .replace(/[aeiouɛɔəɪʊ]+$/, '');
+
+      return firstClean + secondIPA;
+    }
+
+    /* ------------------------------------------------------------------
+       Language modules
+    ------------------------------------------------------------------ */
+
+    async function loadLanguageModule() {
+      const language = currentLanguage;
+
+      if (languageCache.has(language)) {
+        const module = languageCache.get(language);
+
+        languageApplyG2P = module.applyG2PMapping;
+        languageValidate = module.validateOrReturnOriginal;
+
+        return;
+      }
+
+      const module = await import(`./${language}.js`);
+
+      languageCache.set(language, module);
+
+      languageApplyG2P = module.applyG2PMapping;
+      languageValidate = module.validateOrReturnOriginal;
+    }
+
+    function applyG2PMapping(text, ipa) {
+      return languageApplyG2P
+        ? languageApplyG2P(text, ipa)
+        : ipa;
+    }
+
+    function validateOrReturnOriginal(originalWord, mappedString) {
+      return languageValidate
+        ? languageValidate(originalWord, mappedString)
+        : mappedString;
+    }
+
+    /* ------------------------------------------------------------------
+       eSpeak
+    ------------------------------------------------------------------ */
+
+    function printErrFiltered(error) {
+      if (
+        error.includes('still waiting on run dependencies') ||
+        error.includes('dependency: wasm-instantiate') ||
+        error.includes('(end of list)')
+      ) {
+        return;
+      }
+
+      console.error('eSpeak stderr:', error);
+    }
+
+    async function runESpeak(text) {
+      let ipaOutput = '';
+
+      await initESpeak({
+        arguments: [
+          '-v',
+          getVoice(),
+          '--ipa=3',
+          text
+        ],
+
+        print: text => {
+          ipaOutput += text;
+        },
+
+        printErr: printErrFiltered
+      });
+
+      return ipaOutput
+        .replace(DIACRITIC_REGEX, '')
+        .trim();
+    }
+
+    /* ------------------------------------------------------------------
+       IPA map
+    ------------------------------------------------------------------ */
+
+    async function computeIPAMap(words) {
+      const map = new Map();
+
+      // Remove duplicates before sending anything to eSpeak.
+      const uniqueWords = [...new Set(words)];
+
+      if (!uniqueWords.length) {
+        return map;
+      }
+
+      const espeakWords = [];
+
+      for (const word of uniqueWords) {
+        const dictIPA = getDictionaryIPA(word);
+
+        if (dictIPA) {
+          map.set(word, dictIPA);
+          continue;
+        }
+
+        const elisionIPA = getElisionDictionaryIPA(word);
+
+        if (elisionIPA) {
+          map.set(word, elisionIPA);
+          continue;
+        }
+
+        espeakWords.push(word);
+      }
+
+      if (!espeakWords.length) {
+        return map;
+      }
+
+      const ipaRaw = await runESpeak(espeakWords.join('|'));
+      const ipaWords = ipaRaw
+        .replace(/\|/g, ' ')
+        .trim()
+        .split(/\s+/);
+
+      for (let i = 0; i < espeakWords.length; i++) {
+        map.set(espeakWords[i], ipaWords[i] || '');
+      }
+
+      return map;
+    }
+
+    /* ------------------------------------------------------------------
+       Conversion
+    ------------------------------------------------------------------ */
+
+    function extractIPA(mapped) {
+      const pieces = [...mapped.matchAll(IPA_PARENTHESES_REGEX)];
+      return pieces.map(match => match[1]).join('');
+    }
+
+    function reconstructChunk(chunk, tokens, converted) {
+      let result = '';
+      let position = 0;
+
+      for (let i = 0; i < tokens.length; i++) {
+        while (
+          position < chunk.length &&
+          WHITESPACE_REGEX.test(chunk[position])
+        ) {
+          result += chunk[position++];
+        }
+
+        result += converted[i];
+        position += tokens[i].length;
+      }
+
+      return result;
+    }
+
+    async function convertChunk(chunk, mode) {
+      const tokens = tokenize(chunk);
+
+      if (!tokens) {
+        return chunk;
+      }
+
+      const words = tokens.filter(isWord);
+
+      let ipaMap = await computeIPAMap(words);
+      const converted = new Array(tokens.length);
+
+      for (let i = 0; i < tokens.length; i++) {
+        const token = tokens[i];
+
+        if (!isWord(token)) {
+          converted[i] = token;
+          continue;
+        }
+
+        let ipa = ipaMap.get(token) || '';
+        let mapped = applyG2PMapping(token, ipa);
+
+        /*
+         * Some language modules return null when they need more context.
+         * Re-run eSpeak starting at the current word, matching the
+         * behavior of the original implementation.
+         */
+        if (mapped === null) {
+          let nextWordIndex = i + 1;
+
+          while (
+            nextWordIndex < tokens.length &&
+            !isWord(tokens[nextWordIndex])
+          ) {
+            nextWordIndex++;
+          }
+
+          if (nextWordIndex >= tokens.length) {
+            converted[i] = token;
+            continue;
+          }
+
+          const remainingWords = tokens
+            .slice(i)
+            .filter(isWord);
+
+          ipaMap = await computeIPAMap(remainingWords);
+
+          ipa = ipaMap.get(token) || '';
+          mapped = applyG2PMapping(token, ipa);
+        }
+
+        if (mapped === null) {
+          converted[i] = token;
+          continue;
+        }
+
+        mapped = validateOrReturnOriginal(token, mapped);
+
+        if (mode === 'g2p') {
+          converted[i] = mapped;
+          continue;
+        }
+
+        const ipaString = extractIPA(mapped);
+
+        if (!ipaString.trim()) {
+          converted[i] = token;
+        } else if (mode === 'inline') {
+          converted[i] = `${token} (${ipaString})`;
+        } else {
+          converted[i] = ipaString;
+        }
+      }
+
+      return reconstructChunk(chunk, tokens, converted);
+    }
+
+    async function processText(mode) {
+      showProgressPlaceholder();
+
+      await waitForWasm();
+
+      const rawInput = normalizeCurlyApostrophes(
+        inputElem.value.trim()
+      ).normalize('NFC');
+
+      if (!rawInput) {
+        showPlaceholder();
+        return;
+      }
+
+      try {
+        const chunks = splitTextByLength(rawInput, 500);
+        const results = [];
+
+        for (const chunk of chunks) {
+          results.push(await convertChunk(chunk, mode));
+        }
+
+        setOutput(results.join('').trim());
+      } catch (error) {
+        console.error(`Error during ${mode} processing:`, error);
+
+        setOutput(
+          `Error during ${mode} processing: ${error.message}`
+        );
+      }
+    }
+
+    /* ------------------------------------------------------------------
+       WASM initialization
+    ------------------------------------------------------------------ */
+
+    async function initialize() {
+      try {
+        await loadDictionary();
+        await loadLanguageModule();
+
+        await initESpeak({
+          print: () => {},
+          printErr: () => {}
+        });
+
+        wasmReady = true;
+      } catch (error) {
+        console.error('STARTUP ERROR:', error);
+
+        outputElem.classList.remove('placeholder');
+        outputElem.innerText =
+          'Error loading dictionary or eSpeak: ' + error.message;
+      }
+    }
+
+    async function waitForWasm() {
+      while (!wasmReady) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+    }
+
+    /* ------------------------------------------------------------------
+       Events
+    ------------------------------------------------------------------ */
+
+    outputElem.addEventListener('click', () => {
+      outputElem.focus();
+    });
+
+    outputElem.addEventListener('keydown', event => {
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        event.key.toLowerCase() === 'a'
+      ) {
+        event.preventDefault();
 
         const selection = window.getSelection();
         const range = document.createRange();
@@ -353,948 +793,38 @@ outputElem.addEventListener("keydown", (e) => {
 
         selection.removeAllRanges();
         selection.addRange(range);
-    }
-});
-
-
-
-
-  
-  
-
-
-
-  
-window.addEventListener('load', async () => {  //  This function runs when the webpage finishes loading. Its job is to prepare everything needed before the user can press the transcription buttons. window = the browser page. load = an event that happens when the HTML, images, scripts, and resources are fully loaded. When loading finishes, the function inside runs. async allows the function to use await because loading dictionaries and eSpeak takes time. Connection: This runs before the user clicks afi, testoafi, or g2p. It prepares ipaDictionary, G2P functions, and eSpeak.
-
-    try {  //  Starts error handling. If something fails inside this block (missing JSON, failed import, eSpeak error), execution jumps to catch.
-
-        // Load pronunciation dictionary
-        await loadDictionary();  //  Calls your function: async function loadDictionary() { const response = await fetch(getDictionaryFile()); ... } What happens: getDictionaryFile() checks: currentLanguage Initially: currentLanguage = "it"; so: getDictionaryFile() returns: "./phonitalia.json" fetch() loads that JSON file. The entries are stored in: ipaDictionary Example: ipaDictionary = { "ciao": "ˈtʃao", "cane": "ˈkane" } Connection: currentLanguage ↓ getDictionaryFile() ↓ phonitalia.json ↓ ipaDictionary ↓ getDictionaryIPA() ↓ computeIPAMap()
-
-      // g2p & validate
-const language = await import(`./${currentLanguage}.js`);  //  Dynamically imports the language file. Because: currentLanguage = "it" this becomes: import("./it.js") That file contains your Italian rules: export function applyG2PMapping() export function validateOrReturnOriginal()
-
-languageApplyG2P = language.applyG2PMapping;  //  Takes the G2P function from the language file and stores it globally. Before: languageApplyG2P = null; After: languageApplyG2P = applyG2PMapping function from it.js Connection: Later when you run: applyG2PMapping(token, ipa) your wrapper calls: languageApplyG2P(originalWord, ipa) which uses the current language rules.
-languageValidate = language.validateOrReturnOriginal;  //  Stores the validation function from the language file. Before: languageValidate = null; After: languageValidate = validateOrReturnOriginal from it.js Connection: Later: validateOrReturnOriginal(token, mapped) calls: languageValidate(token, mapped) to check if the G2P alignment is valid.
-
-
-
-      
-        // Load eSpeak
-        await initESpeak({  //  Starts loading eSpeak. Your imported module: import initESpeak from './espeak-ng.js'; provides this function.
-
-            print: () => {},  //  print: () => {}, Defines what happens when eSpeak prints normal output during initialization. () means no parameters. {} means do nothing. It hides startup messages.
-
-            printErr: () => {}  //  Defines what happens when eSpeak prints errors during initialization. Also ignored during startup.
-
-        });  //  Waits until eSpeak finishes loading. After this line, eSpeak is ready to generate IP
-      
-  
-      
-        wasmReady = true;  //  Changes: Before: wasmReady = false; After: wasmReady = true; Connection: Your buttons use: await waitForWasm(); waitForWasm() waits until this becomes true. So this prevents the user from running transcription before eSpeak is ready.
-
-  } catch (e) {  //  If anything above fails, this runs. Examples: dictionary file missing language file missing eSpeak loading failure
-
-    console.error("STARTUP ERROR:", e);  //  Prints the error in the browser console for debugging.
-
-    outputElem.classList.remove('placeholder');  //  Removes the grey placeholder style from the output box.
-
-    outputElem.innerText =
-        'Error loading dictionary or eSpeak: ' + e.message;  //  Displays the error message to the user. Example: Error loading dictionary or eSpeak: Failed to fetch When no internet connection
-
-}
-});  //  Complete connection flow Page loads ↓ load event fires ↓ loadDictionary() ↓ phonitalia.json loaded ↓ ipaDictionary filled ↓ import("./it.js") ↓ G2P + validation functions loaded ↓ initESpeak() ↓ WebAssembly eSpeak ready ↓ wasmReady = true ↓ User can press transcription buttons In short: this startup function loads the language dictionary, loads the correct G2P rules, starts eSpeak, and prepares the application for transcription.
-
-
-
-
-  
-
-  
-
-
-
-
-function setLanguage(lang) {  //  Updates the global currentLanguage variable with the language selected by the user. Other functions use this value to know which language settings to load.
-    currentLanguage = lang;
-}
-
-function getDictionaryFile() {  //  Gets the dictionary file path from the dictionaries object. Example: if currentLanguage = "en", it returns "./phonenglish.json". Used by loadDictionary() to load the correct pronunciation dictionary.
-    return dictionaries[currentLanguage];
-}
-
-function getVoice() {  //  Gets the voice/language code from the voices object. Example: if currentLanguage = "de", it returns "de". Used by the speech system (eSpeak) to select the correct pronunciation voice.
-    return voices[currentLanguage];
-}  //  Connection with other code: Language dropdown calls setLanguage() when the user changes language. loadDictionary() uses getDictionaryFile() to load the matching JSON dictionary. Speech generation uses getVoice() to select the correct eSpeak voice. These functions connect the selected language with dictionaries, G2P rules, and speech output.
-
-
-  
-
-  // Normalize curly apostrophes to straight apostrophes
-function normalizeCurlyApostrophes(text) {  // The parameter text will contain whatever string you pass into the function.
-  return text.replace(/[’‘]/g, "'");  // Match one character from the list in [] square brackets, where "g" means replace globally every word with character in quotes "'".
-}  
-  
-
-
- 
-
-  
-
-  
-  function printErrFiltered(err) {  //  This helper function is used later whenever eSpeak is run. Instead of hiding all error messages, it filters out only the harmless initialization messages while allowing genuine errors to be displayed. Defines a function that accepts one argument: err which is a string sent by eSpeak to stderr. Example values: still waiting on run dependencies or dependency: wasm-instantiate or an actual error such as cannot open voice file
-    if (  //  Begins an if statement. The following conditions decide whether this message should be ignored.
-      err.includes('still waiting on run dependencies') ||  //  Checks whether the message contains still waiting on run dependencies. includes() returns either true or false. || Logical OR. 
-      err.includes('dependency: wasm-instantiate') ||  //  Looks for another harmless WebAssembly loading message.
-      err.includes('(end of list)')  // Checks for another message that eSpeak sometimes prints while starting. Again, it is harmless.
-    ) {  //  Ends the condition. 
-      return;  //  If any of those three messages was detected...return; Immediately exits the function. Nothing is printed. The harmless message is silently ignored.
-    }  //  Ends the if statement. If execution reaches here, it means the message was not one of the ignored ones.
-    console.error('eSpeak stderr:', err);  //  Prints the remaining message to the browser console. For example, eSpeak stderr: cannot load voice or eSpeak stderr: unknown option This way, only real problems are shown while startup noise is hidden.
-  }  //  Ends the printErrFiltered() function. Its entire purpose is simply: Ignore harmless initialization messages. Display genuine eSpeak errors.
-
-
-
-
-
-
-  
-  
-  function showPlaceholder() {  //  Defines a normal (non-async) function named showPlaceholder. Its job is to reset the output area to its default empty state.
-    outputElem.className = 'placeholder';  //  Replaces the CSS class of the <pre> output element with "placeholder". This causes the CSS rule pre.placeholder { color: grey; user-select: none; } to become active, making the text appear as a grey placeholder instead of actual transcription output.
-    outputElem.innerText = 'Transcription';  //  Changes the visible text inside the output box to Transcription This is what the user sees before any transcription has been generated.
-  }
-
-
-
-  
-
-  function showProgressPlaceholder() {  //  Defines another helper function. Unlike the previous one, this one is used while the program is still working.
-    outputElem.className = 'placeholder';  //  Again switches the output element into placeholder mode. The text becomes grey and unselectable.
-    outputElem.innerText = 'Transcription in progress...';  //  Displays Transcription in progress... so the user knows that eSpeak is still processing. This is important because WebAssembly can take a few seconds on long texts.
-  }
-
-
-
-  
-
-  function setOutput(text) {  //  Defines a function that displays the finished transcription. Unlike the previous two functions, this one removes placeholder styling.
-    outputElem.classList.remove('placeholder');  //  Removes the "placeholder" CSS class. This means the output will now use the normal CSS rule: pre:not(.placeholder) instead of pre.placeholder The text becomes selectable and uses the normal transcription color.
-    outputElem.innerText = text;  //  Displays whatever string was passed into the function. Example: setOutput("ˈka.ne"); The user will see ˈka.ne
-  }
-
-
-
-
-  
-// Helper: Split text into manageable chunks (max 500 characters)
-function splitTextByLength(text, maxLength = 500) {  //  Creates a helper function that splits very long input into smaller pieces. The second parameter has a default value: maxLength = 500 meaning that if you simply call splitTextByLength(text) JavaScript automatically uses 500
-  const chunks = [];  //  Creates an empty array. Each piece of the text will later be stored here. Example: [ "First 500 characters...", "Next 500 characters...", "Last part..." ]
-  let start = 0;  //  Keeps track of where the next chunk begins. Initially, we start at the first character.
-  while (start < text.length) {  //  Loops until we've reached the end of the input. Example: If the text has 1500 characters the loop runs approximately three times.
-    let end = start + maxLength;  //  Assumes that the current chunk ends 500 characters later. Suppose start = 0 then end = 500 Next iteration: start = 500 end = 1000 and so on.
-
-    // Try not to cut off words in the middle
-    if (end < text.length) {  //  Checks whether this is not the final chunk. If we're already near the end of the text, there's no need to adjust anything.
-      const lastSpace = text.lastIndexOf(' ', end);  //  Looks backwards from position end until it finds the nearest space. Suppose: The quick brown fox jumps over the lazy dog If character 500 happens to be in the middle of jumps this finds the previous space instead. So the split occurs between words rather than inside them.
-      if (lastSpace > start) {  //  Makes sure a suitable space was actually found. Without this check, the code might accidentally move backwards too far.
-        end = lastSpace;  //  Moves the split point to the previous space. Instead of extraordi nary you get extraordinary which is much cleaner.
       }
-    }
-    chunks.push(text.slice(start, end));  //  Extracts the substring between start and end and stores it. Example: text = "The cat sat on the mat." might produce "The cat sat"
-    start = end;  //  Moves the starting position to the end of the previous chunk. Now the next loop continues from there.
-  }  //  Ends the while loop.
-  return chunks;  //  Returns the completed array. Example result: [ "First chunk...", "Second chunk...", "Third chunk..." ]
-}  //  End of the function. Why split into chunks? Your program sends text to eSpeak through WebAssembly. Very large strings can: consume lots of memory, become slower, occasionally exceed internal limits. Instead of sending 5000 characters at once, your code sends 500 500 500 ... and later joins the results back together. The user never notices the splitting, but the program becomes much more reliable.
-
-
-
-
-
-function getDictionaryIPA(word) {  //  Defines a new function named getDictionaryIPA. It accepts one parameter: word. word is expected to be a single word such as: "ciao" or "Perché" The function's job is simple: Look inside your custom IPA dictionary (phonitalia.json) and return the IPA transcription if the word exists.
-
-const key = word  //  Creates a new constant named key. This variable will contain a normalized version of the word before searching the dictionary. It does not modify the original word. Example: word = "Caffè" After this line: word = "Caffè" key  = (still being built)
-   .normalize('NFC')  //  Normalizes Unicode characters into NFC (Normalization Form C). This is extremely important because some accented characters can be stored in two different ways. For example, these two strings look identical: é and e + ◌́ One is a single Unicode character. The other is the letter plus a combining accent. Visually they are identical, but JavaScript considers them different strings. Calling .normalize('NFC') converts both into exactly the same representation. Example: "Caffè" becomes "Caffè" Now dictionary lookup becomes reliable.
-    .toLowerCase();  //  Converts the normalized word to lowercase. Examples: "CIAO" ↓ "ciao" "Perché" ↓ "perché" This means your dictionary only needs one entry: "ciao" instead of "Ciao" "CIAO" "CiAo" "cIaO" ... Everything becomes lowercase before searching. After these two operations together: word = "Perché" becomes key = "perché"
-
-  return ipaDictionary[key] || null;  //  This is the actual dictionary lookup. ipaDictionary is the object you loaded earlier from phonitalia.json. Suppose it contains: ipaDictionary = { "ciao": "ˈtʃao", "cane": "ˈkane", "gli": "ʎi" } JavaScript checks: ipaDictionary[key] If key = "ciao" then ipaDictionary["ciao"] returns ˈtʃao The function immediately returns that IPA. If the word is not found: ipaDictionary["computer"] returns undefined The operator || means: "If the value on the left is missing or false, use the value on the right." So undefined || null becomes null The function therefore returns null to indicate: "This word is not in the custom dictionary." This is the actual dictionary lookup. Remember that earlier your code loaded ipaDictionary = { "ciao": "tʃao", "gli": "ʎi", "occhi": "ɔkːi" } Now JavaScript checks ipaDictionary[key] Suppose key = "ciao" Then it evaluates ipaDictionary["ciao"] which returns "tʃao" So the function returns return "tʃao"; If the word is not in the dictionary: key = "javascript" then ipaDictionary["javascript"] is undefined The operator || means "if the thing on the left is missing or false, use the thing on the right." So undefined || null becomes null Therefore the function returns null instead of undefined. Returning null is intentional because later your code checks if (dictIPA) { ... } else { ... } or if (dictIPA === null) to decide whether to call eSpeak.
-}
-
-
-
-
-  
-
-
-
-
-
-  // Change for Ellisione-Dictionary
-
-function getElisionDictionaryIPA(word) {
-    // Only handle words containing an apostrophe.
-    if (!word.includes("'")) {
-        return null;
-    }
-
-    const parts = word.split("'");
-
-    // We only expect one apostrophe:
-    // quest'anno → ["quest", "anno"]
-    if (parts.length !== 2) {
-        return null;
-    }
-
-    const firstPart = parts[0];
-    const secondPart = parts[1];
-
-    if (!firstPart || !secondPart) {
-        return null;
-    }
-
-    // The elided vowel must be recovered from the dictionary.
-    // We try all five Italian vowels.
-    const vowels = ["a", "e", "i", "o", "u"];
-
-    let firstIPA = null;
-    let recoveredWord = null;
-
-    for (const vowel of vowels) {
-        const candidate = firstPart + vowel;
-
-        const candidateIPA = getDictionaryIPA(candidate);
-
-        if (candidateIPA) {
-            firstIPA = candidateIPA;
-            recoveredWord = candidate;
-            break;
-        }
-    }
-
-    // The second word must also exist in the dictionary.
-    const secondIPA = getDictionaryIPA(secondPart);
-
-    if (!firstIPA || !secondIPA) {
-        return null;
-    }
-
-    // Remove primary/secondary stress from the first word.
-    let firstClean = firstIPA
-        .replace(/[ˈˌ]/g, '');
-
-    // Remove the final vowel of the recovered first word.
-    //
-    // We deliberately remove the final IPA vowel rather than simply
-    // removing the last character, because the IPA may contain
-    // other symbols before the vowel.
-    firstClean = firstClean.replace(
-        /[aeiouɛɔəɪʊ]+$/,
-        ''
-    );
-
-    return firstClean + secondIPA;
-}
-
-
-
-
-  
-
-
-
-  
-   // g2p & validate 
-
-function validateOrReturnOriginal(originalWord, mappedString) {  //  It accepts two parameters: originalWord — the original spelling of the word. Example: ciao mappedString — the grapheme-to-phoneme alignment produced by applyG2PMapping(). Example: c(tʃ)i(a)a(o)o() or g(g)l(ʎ)i() The function will inspect mappedString and decide: ✔ keep it ✘ reject it and return the original word. Takes two inputs: originalWord: the original written word. mappedString: the IPA/G2P result created from that word.
-    if (languageValidate) {
-        return languageValidate(originalWord, mappedString);  //  If the selected language has a custom validation function, it uses it. The validation checks if the G2P result is correct.
-    }
-
- return mappedString;  //  If no language-specific validator exists, it accepts the generated pronunciation. Connection with other code: languageValidate is loaded from the language file (en.js, it.js, etc.). It checks the output created by applyG2PMapping(). Prevents incorrect pronunciation mappings from being used.
-
-}
-
-
-
- // g2p & validate 
-  
-function applyG2PMapping(text, ipa) {  //  Takes the original text and its IPA representation.
-    if (languageApplyG2P) {  
-        return languageApplyG2P(text, ipa);  //  If the selected language has a G2P mapping function, it applies language-specific pronunciation rules.
-    }
-    return ipa;  //  If no custom rules exist, it returns the original IPA unchanged. Connection with other code: languageApplyG2P is loaded dynamically from the selected language file. It modifies IPA output according to language rules. Its result is then checked by validateOrReturnOriginal() before final speech output.
-}
-
-
-
-
-
-
- async function runESpeak(text) {  //  Defines an asynchronous function named runESpeak. It accepts one parameter, text, which is the Italian text to be transcribed into IPA. Why async? Because running the WebAssembly version of eSpeak takes time. async lets the function pause while waiting for eSpeak to finish without freezing the webpage.
-
-   
-   let ipaOutput = '';  //  Creates an empty string that will collect everything eSpeak prints. Example: Initially: ipaOutput = "" Later eSpeak might output: ˈkaːne After collecting: ipaOutput = "ˈkaːne"
-    await initESpeak({  //  Starts eSpeak. Because await is used, JavaScript pauses here until eSpeak has completely finished processing. Without await, the function would immediately continue and return an empty result before eSpeak had time to generate the transcription.
-      arguments: ['-v', getVoice(), '--ipa=3', text],  //  These are exactly the command-line arguments passed to eSpeak. Equivalent terminal command: espeak-ng -v it --ipa=3 "ciao" Each argument means: -v Select a voice. 'it' Choose the Italian voice. So together: -v it means Use the Italian pronunciation rules. '--ipa=3' Tell eSpeak to output IPA instead of speech. The =3 format gives a cleaner IPA transcription. Without this option eSpeak would try to synthesize speech instead. text The text you supplied. If text = "ciao mondo" then eSpeak receives -v it --ipa=3 "ciao mondo"
-      print: (text) => {  //  Defines a function that is called every time eSpeak prints normal output. Think of it like: Whenever eSpeak says something, execute this code.
-          
-     
-
-        ipaOutput += text;  //  Append whatever eSpeak printed to the growing string. Example: First callback: text = "ˈtʃa" ipaOutput becomes "ˈtʃa" Second callback: text = "o" Now ipaOutput = "ˈtʃao" Using += means "add to the end."
-      },  //  Ends the print callback.
-      printErr: printErrFiltered  //  Whenever eSpeak prints an error or warning, it sends it to the printErrFiltered() function instead of directly to the console. That function ignores harmless startup messages but still shows real errors.
-    });  //  Finishes the initialization and waits until eSpeak has completed. At this point, ipaOutput contains the complete IPA transcription.
-
-  
-
-    return ipaOutput  //  Now the code improves eSpeak's output before returning it. Start returning the transcription. Everything after this is a chain of text replacements.
-      .replace(/[\u0300-\u036F\u200B-\u200D\uFEFF]/g, '')  //  Removes invisible Unicode characters. These include: combining accents zero-width spaces byte-order marks They can interfere with later processing.
-  //  .replace(/rɾ/g, 'rː')  //  Whenever eSpeak outputs rɾ replace it with rː Why? Italian double rr is a long trill. eSpeak sometimes represents it as rɾ Your application prefers rː
-  //  .replace(/mm/g, 'mː')
-  //  .replace(/ff/g, 'fː')
-  //  .replace(/vv/g, 'vː')
-  //  .replace(/ll/g, 'lː')
-  //  .replace(/kk/g, 'kː')
-  //  .replace(/nn/g, 'nː')
-  //  .replace(/ɲɲ/g, 'ɲː')
-  //  .replace(/oo/g, 'oː')      
-  //  .replace(/ss/g, 'sː')
-  //  .replace(/tt/g, 't')
-  //  .replace(/dd/g, 'd')
-  //    .replace(/ɾ/g, 'r')
-   //   .replace(/ɪ/g, 'i')
-    //  .replace(/ʊ/g, 'u')
-    //  .replace(/ɡ/g, 'g')
-      .trim();  //  Removes whitespace at the beginning and end. Example: "   ˈkaːne   " becomes "ˈkaːne"
-  }  //  This function does three major jobs: Sends text to eSpeak. Waits until eSpeak produces IPA. Cleans and normalizes the IPA so the rest of your G2P code receives a consistent transcription. This normalization is important because applyG2PMapping() expects IPA in a very specific format. Without these replacements, many mappings would fail because eSpeak's output would not exactly match the symbols your mapping code is designed to recognize.
-
-
-
-
-
-  
-  
-  async function waitForWasm() {  // "Async" tells JavaScript that a function may need to wait for something that takes time. Normally, JavaScript executes code line by line without stopping. Without async, JavaScript would either freeze the webpage while waiting or continue running before eSpeak is ready. So async allows the function to pause itself while letting the rest of the webpage continue running. So it's job is to wait until the WebAssembly engine has finished loading.
-  while (!wasmReady) {  //  A while loop keeps repeating as long as the condition is true. The exclamation mark means NOT. So when eSpeak is not loaded, then "wasmReady = false" and so "!wasmReady = true". When eSpeak is loaded, the condition "wasmReady = false" is not anymore true when negated, so the loop stops.
-    await new Promise(r => setTimeout(r, 100));  //  Await pauses only this function for 100 ms until something finishes. A promise represents something that will finish later, what in this case is 100ms delay. r => is an arrow function and shorthand for "function(r){setTimeout(r,100);}". So the this means: "Create Promise ↓ Wait 100 ms ↓ Resolve Promise ↓ Await Continues" or "pause this function for 100 milliseconds". So the loop repeats: "While (!wasmReady) ↓ Wait 100 ms ↓ Check Again ↓ Wait 100 ms ↓ Check Again ↓ Wait 100 ms until wasmReady = true".
-  }
-}
-
-
-
-
-async function loadDictionary() {  //  Defines an asynchronous function that loads the pronunciation dictionary. It is called during startup and whenever the user changes language.
-
-    const response = await fetch(getDictionaryFile());  //  Gets the correct dictionary file path from getDictionaryFile(). Downloads the JSON file (for example phonenglish.json or phongerman.json).
-
-    const rawDictionary = await response.json();  //  Converts the downloaded JSON data into a JavaScript object.
-
-    ipaDictionary = {};  //  Clears the old dictionary before loading the new language dictionary.
-
-    for (const [key, value] of Object.entries(rawDictionary)) {  //  Loops through every word and its IPA pronunciation in the dictionary.
-
-        ipaDictionary[  //  Stores each word in a cleaned format: normalize("NFC") fixes character formatting. toLowerCase() makes lookup case-insensitive. The pronunciation value is saved under the cleaned word.
-            key.normalize("NFC").toLowerCase()
-        ] = value;
-
-    }  //  Connection with other code: dictionaries object provides the file path. getDictionaryFile() chooses the correct JSON file based on currentLanguage. loadDictionary() fills ipaDictionary. Later, the text-to-pronunciation code uses ipaDictionary to find IPA symbols for words.
-  
-    // console.log(
-    //     `Loaded ${Object.keys(ipaDictionary).length} IPA entries`
-    // );
-}
-  
-
-
-  
-  
-  async function computeIPAMap(words) {  //  This is one of the most important functions in your program because it combines your dictionary with eSpeak into one IPA lookup table.
-
-  const map = new Map();  //  Defines an asynchronous function named computeIPAMap. async means this function is allowed to wait for asynchronous operations using await. In this function, it needs to wait for eSpeak to finish generating IPA. The function accepts one parameter: words which is expected to be an array. Example: [ "ciao", "gli", "occhi", "ciao" ] const map = new Map(); Creates a new JavaScript Map object. A Map stores pairs of key → value Unlike an array, you look up values by key instead of position. Initially it is empty: Map {} Later it will become something like "ciao"  → "tʃao" "gli"   → "ʎi" "occhi" → "ɔkːi" This Map is eventually returned.
-
-// ORIGINAL eSpeak NG           DEBUG: show raw eSpeak output for every unique input word
-const allUnique = [...new Set(words)];
-const rawESpeakAll = await runESpeak(allUnique.join("|"));
-console.log("=== RAW ESPEAK ===");
-console.log(rawESpeakAll);
-console.log("==================");
-// ORIGINAL eSpeak NG
-
-
-    
-  const espeakWords = [];  //  Creates an empty array. Its job is to collect words that are not found in your custom dictionary. Initially []
-
-for (const word of words) {
-
-  // Change for Ellisione-Dictionary
-    const dictIPA = getDictionaryIPA(word);
-
-    if (dictIPA) {
-        // Normal dictionary word
-        map.set(word, dictIPA);
-
-    } else {
-        // Try dictionary-based elision
-        const elisionIPA = getElisionDictionaryIPA(word);
-
-        if (elisionIPA) {
-            // Elision was successfully reconstructed
-            map.set(word, elisionIPA);
-
-        } else {
-            // Not in dictionary and not a valid elision
-            // → send to eSpeak
-            espeakWords.push(word);
-        }
-    }
-}
-// Change for Ellisione-Dictionary. To here.
-    
-  if (espeakWords.length > 0) {  //  Checks whether there is anything left for eSpeak. If [] there is nothing to do. If [ "occhi", "computer" ] then eSpeak must be called.
-
-    const unique = [...new Set(espeakWords)];  //  Removes duplicate words. Suppose espeakWords [ "occhi", "computer", "occhi", "computer" ] Set automatically removes duplicates. Set { "occhi", "computer" } The spread operator ... turns it back into an array. Result unique [ "occhi", "computer" ] Why? Because there's no point asking eSpeak to pronounce the same word four times.
-
-    const marked = unique.join("|");  //  Joins every word into one string. Suppose [ "occhi", "computer" ] becomes "occhi|computer" Why use "|"? Because later your code separates words again using this marker. Instead of calling eSpeak twice runESpeak("occhi") runESpeak("computer") it calls it once runESpeak("occhi|computer") which is much faster.
-
-    const ipaRaw = await runESpeak(marked);  //  Calls eSpeak. Because eSpeak is asynchronous, the function waits here until eSpeak finishes. Suppose marked "occhi|computer" eSpeak might return ɔkːi | komˈputer or ɔkːi|komˈputer depending on formatting. This entire string is stored in ipaRaw
-
-    
-    const ipaClean =
-      ipaRaw.replace(/\|/g, " ").trim();  //  Cleans the output. First replace(/\|/g, " ") changes every | into a space. Example ɔkːi|komˈputer becomes ɔkːi komˈputer Then trim() removes spaces from the beginning and end. Example " ɔkːi komˈputer " becomes "ɔkːi komˈputer"
-
-    const ipaWords =
-      ipaClean.split(/\s+/);  //  Splits the IPA string into an array. Suppose ipaClean "ɔkːi komˈputer" becomes [ "ɔkːi", "komˈputer" ] Now every IPA pronunciation matches one word.
-
-    for (let i = 0; i < unique.length; i++) {  //  Loops over every unknown word. If unique [ "occhi", "computer" ] then First iteration i = 0 Second i = 1
-
-      map.set(
-        unique[i],
-        ipaWords[i] || ""  //  Adds the new IPA into the Map. Iteration 1 unique[0] "occhi" ipaWords[0] "ɔkːi" stores occhi → ɔkːi Iteration 2 computer → komˈputer Now the Map contains both dictionary words and eSpeak words. Map ciao      → tʃao gli       → ʎi occhi     → ɔkːi computer  → komˈputer Why ipaWords[i] || "" instead of simply ipaWords[i] ? Suppose eSpeak unexpectedly returns fewer pronunciations than expected. Then ipaWords[3] would be undefined Instead, the code stores "" (an empty string) which prevents crashes later.
-      );
-    // delete
-       console.log(
-      `[ESPEAK] ${unique[i]} → ${ipaWords[i]}`
-        );
-    }
-  }
-  return map;  //  Finally returns the completed Map. Example returned object: Map { "ciao"     → "tʃao", "gli"      → "ʎi", "occhi"    → "ɔkːi", "computer" → "komˈputer" } From this point onward, the rest of your program doesn't care where the IPA came from. It simply does: const ipa = ipaMap.get(token); and receives either the pronunciation from your JSON dictionary or the one generated by eSpeak. That separation is the main purpose of computeIPAMap(): it hides the source of the pronunciation and provides a single, unified lookup table.
-}
-
-
-
-
-
-
-document  //  This code runs whenever the user selects a different language from the language dropdown.
-    .getElementById("language")  //  Finds the HTML element with the ID "language" (usually a <select> menu). It connects JavaScript to the language selector in the webpage.
-    .addEventListener("change", async (e) => {  //  Listens for the "change" event, which happens when the user selects a new language. async allows the use of await. e is the event object containing information about the selected option.
-
-        setLanguage(e.target.value);  //  Updates currentLanguage to the language chosen by the user. This value is used by other functions to know which language files to load.
-
-        await loadDictionary();  //  Loads the pronunciation dictionary for the selected language. It uses currentLanguage together with the dictionaries object to find the correct JSON file.
-
-        const language = await import(`./${currentLanguage}.js`);  //  Dynamically imports the JavaScript module for the selected language (for example, en.js or de.js). This provides language-specific pronunciation rules.
-
-        languageApplyG2P = language.applyG2PMapping;  //  Stores the imported applyG2PMapping() function. Other parts of the program call languageApplyG2P() to convert text into phonemes.
-        languageValidate = language.validateOrReturnOriginal;  //  Stores the imported validateOrReturnOriginal() function. Other code uses it to validate or correct the generated pronunciation before displaying or speaking it.
-
-    });  //  How it connects to the rest of the code setLanguage() updates currentLanguage. loadDictionary() loads the correct pronunciation dictionary using currentLanguage. import() loads the matching language rules (en.js, it.js, etc.). languageApplyG2P and languageValidate are then used by the pronunciation-generation code, so all processing matches the language the user selected.
-  
-
-  
-
-
-
-
-
-  
-
-
-// ======================================================================================================================================================================================
-//  IPA BUTTON
-// ======================================================================================================================================================================================
-  
-document.getElementById('afi').addEventListener('click', async () => {  //  What does this line do? document.getElementById('afi') Searches the HTML page for the element whose ID is "afi". That element is your first button: <button id="afi"> The browser returns a reference to that button. addEventListener('click', ...) Attaches an event listener. An event listener tells JavaScript: "Whenever someone clicks this button, execute the following function." Nothing happens yet. The code simply waits until the user presses the button. async () => { Creates an asynchronous arrow function. Because it is async, the function is allowed to use await. Execution will look like this: User clicks button │ ▼ JavaScript starts this function │ ▼ Waits for eSpeak if necessary │ ▼ Processes the text │ ▼ Displays IPA
-  showProgressPlaceholder();  //  Calls the helper function explained earlier. This immediately changes the output area to Transcription in progress... This gives instant feedback so the user knows the program is working. Without this line, the page would appear frozen during long transcriptions.
-
-    await waitForWasm();  //  Now the program waits until eSpeak has completely finished loading. Remember that earlier you created let wasmReady = false; When the page loads: wasmReady = false Later: await initESpeak(...) loads the WebAssembly module. Finally, wasmReady = true; is executed. Only then does waitForWasm() return. Without this line, someone could click the button before eSpeak was ready and the transcription would fail.
-
-  const rawInput = normalizeCurlyApostrophes(  //  This line prepares the user's text before any transcription happens. Let's break it apart. Earlier you defined function normalizeCurlyApostrophes(text) It converts ’ ‘ into ' This prevents problems caused by copying text from Word or websites. Example Input: l’acqua becomes l'acqua
-    inputElem.value.trim()  //  inputElem refers to the <textarea>. .value retrieves everything the user typed. Example: L'acqua è fredda. Removes whitespace from both ends. Internal spaces stay exactly the same.
-  ).normalize('NFC');  //  .normalize('NFC') Unicode allows some accented letters to be stored in multiple ways. For example, è may actually be stored as e + accent instead of one character. NFC converts everything into the standard composed form. That makes comparisons against your dictionary reliable. The final result is stored in const rawInput which now contains a clean version of the user's text.
-
-  // if (!wasmReady) {
-   // alert("Please wait, WASM is still loading...");
-  //  return;
-  //  }
-
-
-  if (!rawInput) {  //  Checks whether the input is empty. The ! means "not". If rawInput == "" then !rawInput is true. Examples that count as empty: "" "      " because .trim() already removed the spaces.
-    showPlaceholder();  //  Since there is no text to transcribe, restore the default placeholder: Transcription
-    return;  //  Stops the function immediately. Nothing else below will execute. This prevents unnecessary processing.
-  }  //  Ends the if statement.
-
-  try {  //  Starts a try block. Everything inside is considered "normal execution." If anything throws an error, execution immediately jumps to the later catch (e) block. This prevents the entire webpage from crashing. Instead of Page crashed the user gets a readable error message.
-    const chunks = splitTextByLength(rawInput, 500);  //  function returns something like [ "...first 500...", "...second 500...", "...third 500...", "...fourth 500..." ] Each chunk will later be processed separately.
-    let finalResult = '';  //  Creates an empty string. Every processed chunk will be appended here. Example: Initially "" After first chunk "prima frase..." After second chunk "prima frase... seconda frase..." Eventually it contains the entire transcription.
-
-    for (const chunk of chunks) {  //  Begins a for...of loop. This loop processes one chunk at a time. If chunks = [ "Prima frase.", "Seconda frase.", "Terza frase." ] then the loop runs three times. Iteration 1 chunk = "Prima frase." Iteration 2 chunk = "Seconda frase." Iteration 3 chunk = "Terza frase." Each chunk goes through exactly the same transcription pipeline. Everything after this point operates on one chunk only, and the process repeats until every chunk has been transcribed and appended to finalResult.
-
-// Change for Ellisione-Dictionary
-const tokens = chunk.match(
-    /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
-);
-
-      if (!tokens) {  //  Sometimes .match() finds nothing. In that case it returns null instead of an array. This if checks for exactly that situation.
-        finalResult += chunk;  //  If no tokens were found, the program simply copies the original chunk into the final output. Nothing is modified.
-        continue;  //  continue skips the rest of the current loop iteration. Execution immediately jumps to the next chunk. This prevents errors later, because the remaining code expects tokens to be an array.
+    });
+
+    languageElem.addEventListener('change', async event => {
+      currentLanguage = event.target.value;
+
+      try {
+        await loadDictionary();
+        await loadLanguageModule();
+      } catch (error) {
+        console.error('LANGUAGE CHANGE ERROR:', error);
       }
+    });
 
-      
-// Change for Ellisione-Dictionary
-      // Extract real words
-let words = tokens.filter(t =>
-    /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
-);
+    buttons.ipa.addEventListener('click', () => {
+      processText('ipa');
+    });
 
-      // First IPA pass
-      let ipaMap = await computeIPAMap(words);  //  Now the program asks: "What is the IPA pronunciation of each word?" The function computeIPAMap() returns a JavaScript Map. A Map stores pairs of values. One value is called the key. The other is called the value. For example, Map { "casa" => "ˈkaːza", "pane" => "ˈpaːne", "gatto" => "ˈɡatto" } Later, instead of recalculating the pronunciation every time, the program can simply ask ipaMap.get("casa") which immediately returns ˈkaːza This is much faster than calling eSpeak repeatedly for the same word. Notice the keyword await The program pauses here until all IPA transcriptions have been computed. Only after every word has a pronunciation does execution continue.
+    buttons.inline.addEventListener('click', () => {
+      processText('inline');
+    });
 
-      const converted = [];  //  Creates another empty array. This array will eventually contain the processed version of every token. Initially [] Later it might become [ "ˈkaːza", ",", "ˈbɛlla", "." ] or, in another mode, [ "casa (ˈkaːza)", ",", "bella (ˈbɛlla)", "." ] depending on which button was clicked.
+    buttons.g2p.addEventListener('click', () => {
+      processText('g2p');
+    });
 
-      for (let t = 0; t < tokens.length; t++) {  //  This loop processes every token—words, numbers, and punctuation—one by one, deciding exactly how each should appear in the final output. Starts a loop that goes through every token in the array. Suppose the tokenizer produced: tokens = [ "Ciao", ",", "come", "stai", "?" ] The loop runs five times. Iteration	t	token 1	0	"Ciao" 2	1	"," 3	2	"come" 4	3	"stai" 5	4	"?" Starts a for loop that iterates over every token in the tokens array. let t = 0 → start with the first token. t < tokens.length → continue until the last token. t++ → move to the next token after each iteration. If the sentence were: Ciao, come stai? the loop would visit: 0 → "Ciao" 1 → "," 2 → "come" 3 → "stai" 4 → "?"
+    /* ------------------------------------------------------------------
+       Start
+    ------------------------------------------------------------------ */
 
-        const token = tokens[t];  //  Gets the current token. Example: First iteration: token = "Ciao" Second: token = "," Third: token = "come". Stores the current token in a variable named token. Instead of repeatedly writing tokens[t] the code simply uses token making everything easier to read. Example: t = 2 token = "come"
-        const isWord =  //  This tests whether the token is an actual word. It returns either true or false Examples: "Ciao"      → true "l'amico"   → true "123"       → false "."         → false ","         → false
-          /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);  //  Breaking down the regular expression ^ Beginning of the string. [A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+ One or more alphabetic letters. This includes: English letters accented Italian letters many Unicode Latin letters Examples: ciao perché più università '? An apostrophe is optional. So both l'amico and amico match. [A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]* Zero or more letters after the apostrophe. Examples: l' l'amico d'accordo $ End of the string. This prevents partial matches. /u The Unicode flag. Without it, many accented letters would not be recognized correctly. .test(token) Tests whether the token matches the pattern. Returns true or false Examples: token	result "ciao"	true "l'amico"	true "123"	false "."	false "?"	false ","	false
-
-        if (!isWord) {  //  If the token is not a word if (!isWord) { The ! means NOT. So this becomes If the token is not a word...
-          converted.push(token);  //  Simply copies the token into the output unchanged. Examples: , . ? ! 42 are left exactly as they are.
-          continue;  //  Skips the rest of the loop and immediately processes the next token. So punctuation never goes through IPA conversion. Suppose the tokens are [ "Ciao", ",", "come", "?", ] Iteration by iteration: First iteration token = "Ciao" isWord = true The program continues with IPA conversion. Second iteration token = "," isWord = false It executes converted.push(","); continue; and skips all IPA processing. Third iteration token = "come" Again isWord = true The program converts it into IPA. Fourth iteration token = "?" Again isWord = false It is copied directly into the output.
-        }
-
-        let ipa = ipaMap.get(token) || "";  //  Now we reach the first important IPA lookup. This looks up the IPA transcription for the current word in ipaMap. For example, if token = "ciao" and ipaMap contains "ciao" → "tʃao" then ipa becomes "tʃao" The expression || "" means "if nothing is found, use an empty string instead." So: ipaMap.get("ciao") returns "tʃao" while ipaMap.get("xyz") returns undefined which becomes "" (an empty string).
-        let mapped = applyG2PMapping(token, ipa);  // This is one of the most important function calls in the whole program. It takes the original spelling token and its IPA pronunciation ipa and aligns them letter by letter. For example token = "ciao" ipa   = "tʃao" becomes something like ci(tʃ)a(a)o(o) or whatever alignment your mapping function produces. Notice that this function does not merely return IPA—it creates a correspondence between each written grapheme and its phonetic value. This aligned representation is then used differently by the three buttons: Only IPA extracts only the IPA symbols. Word before IPA shows word (IPA). G2P displays the full grapheme-to-phoneme alignment.
-        
-        // show in console how words map 2026 delete
-    // console.log("WORD:", token);
-    // console.log("IPA:", ipa);
-    // console.log("MAPPED:", mapped);
-        
-        // If mapping fails → recover
-        
-        if (mapped === null) {  //  This checks whether applyG2PMapping() failed. Earlier, you called: let mapped = applyG2PMapping(token, ipa); Normally, mapped contains something like ci(tʃ)a(a)o(o) However, if the function cannot correctly align the spelling with the IPA transcription, it returns null rather than an incorrect mapping. This if statement catches that failure.
-
-          // Find next real word
-          let nextWordIndex = t + 1;  //  Suppose we're processing token number 5. Then t = 5 The next possible word begins at nextWordIndex = 6; Notice that this doesn't mean token 6 is necessarily a word. It might be , or ? or 123 So the code has to search forward.
-          while (
-            nextWordIndex < tokens.length &&  //  Continue searching while we haven't reached the end of the token list, and the next token isn't a word. The first condition prevents reading beyond the end of the array.
-            !/^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u  //  This is exactly the same regular expression used earlier. It asks "Is this token a word?" The ! reverses the answer. So this becomes "Keep moving forward while this token is not a word."
-              .test(tokens[nextWordIndex])  //  Example Suppose your tokens are [ "Ciao", ",", "come", "stai", "?" ] Imagine we're processing "Ciao" The search begins at "," Is it a word? No. Move forward. Now "come" Is it a word? Yes. The loop stops. Now nextWordIndex points to "come".
-          ) {
-            nextWordIndex++;  //  Move to the next token nextWordIndex++; If the current token isn't a word, increase the index by one and check again. This continues until a word is found, or the end of the array is reached.
-          }
-
-          if (nextWordIndex >= tokens.length) {  //  Did we reach the end? If this is true, there are no more words remaining. Example: [ "ciao", "." ] Suppose mapping failed for ciao The search checks "." Not a word. Moves forward. Now nextWordIndex == tokens.length We've run out of tokens.
-            // no mapping → return original word
-            converted.push(token);  //  Since there is no later word to help recover the alignment, simply keep the original word unchanged. Instead of risking a bad IPA transcription, the output remains ciao
-            continue;  //  Skip the rest of this iteration and continue with the next token.
-          }
-
-          const remainingWords = tokens  //  Build a list of remaining words. Create a new array beginning with the remaining tokens.
-            .slice(t)  //  Take everything from the next word onward. Example: Original tokens [ "Ciao", ",", "come", "stai", "." ] If nextWordIndex = 2 then slice(2) returns [ "come", "stai", "." ]
-            .filter(tt =>  //  Now remove anything that isn't a word.
-              /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(tt)  //  Only actual words remain. So [ "come", "stai", "." ] becomes [ "come", "stai" ]
-            );
-
-          ipaMap = await computeIPAMap(remainingWords);  //  Recompute IPA. This is a clever recovery step. Instead of trying to reuse the previous IPA map, the program recomputes the IPA for only the remaining words. Why? Because eSpeak occasionally produces slightly different output depending on surrounding words. By recalculating from the point of failure onward, the alignment may succeed. The await keyword pauses execution until computeIPAMap() finishes.
-
-          ipa = ipaMap.get(token) || "";  //  Retrieve the IPA again. Try to retrieve the IPA transcription again from the newly created map. Hopefully the second attempt succeeds.
-          mapped = applyG2PMapping(token, ipa);  //  Try the mapping again. Run the alignment function a second time using the new IPA transcription. Sometimes this succeeds after recomputing the remaining words.
-        }
-
-        // If still no mapping → ORIGINAL WORD
-        if (mapped === null) {  //  Still failed? Even after recalculating the IPA, the mapping might still fail. For example, the word may contain an unusual pronunciation or a spelling pattern your alignment algorithm doesn't yet support.
-          converted.push(token);  //  Instead of generating an incorrect transcription, simply output the original word. This ensures the program never invents a wrong IPA alignment.
-          continue;  //  Skip the rest of the processing for this word and continue with the next token. This makes the program robust: a single problematic word doesn't stop the transcription of the rest of the sentence. At this point, mapped is guaranteed to contain a valid grapheme-to-phoneme alignment. The next lines validate that alignment and extract only the IPA symbols for the Only IPA output.
-        }
-
-// Only validate words that came from eSpeak
-//  if (!getDictionaryIPA(token)) {
-  mapped = validateOrReturnOriginal(token, mapped);
-//  }  //  The variable mapped overwrites the allready existing mapped variable with validated mapping. The next step is to verify that every letter-to-sound mapping is valid. This calls the function validateOrReturnOriginal(). It receives two pieces of information: token — the original word. mapped — the grapheme-to-phoneme alignment. For example: token  = "ciao" mapped = "ci(tʃ)a(a)o(o)" The function now examines every mapping. Why validate? Although applyG2PMapping() tries to align the spelling and pronunciation correctly, it doesn't know whether every mapping is linguistically acceptable. For example: c(z) would be suspicious because an Italian c is never pronounced z. Instead of accepting impossible mappings, your validator checks them against a list of allowed pronunciations. If every mapping is valid, the function simply returns the original string. Example: ci(tʃ)a(a)o(o) ↓ ci(tʃ)a(a)o(o) Nothing changes. If an illegal mapping is found, the function instead returns the original word. Example: token = "ciao" mapped = "c(z)i(i)a(a)o(o)" ↓ returns ciao This prevents displaying incorrect IPA.
-
-        // Extract IPA parentheses
-        const ipaPieces = [...mapped.matchAll(/\(([^()]*)\)/g)];  //  This line is one of the cleverest parts of the program. Instead of looking at the letters, it extracts everything inside parentheses. Suppose mapped = ci(tʃ)a(a)o(o) The regular expression searches for (...) everywhere. It finds (tʃ) (a) (o) Understanding the regular expression /\(([^()]*)\)/g Let's examine it piece by piece. \( Match a literal opening parenthesis. Example: ( ([^()]*) This is the important part. It means: Capture everything that is not another parenthesis. For (tʃ) it captures tʃ For (a) it captures a \) Match the closing parenthesis. g The global flag. Without it, JavaScript would stop after the first match. With it, it continues through the entire string. What does matchAll() return? Suppose mapped = ci(tʃ)a(a)o(o) Then mapped.matchAll(...) returns something conceptually like [ "(tʃ)", "(a)", "(o)" ] along with additional information about each match. Why use [...]? [...mapped.matchAll(...)] matchAll() returns an iterator. An iterator isn't a normal array. The spread operator ... converts it into a regular JavaScript array. Now you can use methods like map() on it. Store the IPA matches const ipaPieces = ... Now ipaPieces contains every IPA symbol that was inside parentheses. Conceptually, ipaPieces looks like [ "(tʃ)", "(a)", "(o)" ]
-        const ipaString = ipaPieces.map(x => x[1]).join("");  //  This line transforms the matches into plain IPA. Let's go from the inside outward. Step 1 ipaPieces.map(...) map() loops over every element of the array. If there are three matches, it runs three times. Step 2 x => x[1] Each match contains several pieces of information. For (tʃ) the regular expression stores x[0] = "(tʃ)" x[1] = "tʃ" Notice that x[1] contains only the captured text, without the parentheses. Suppose ipaPieces contains [ "(tʃ)", "(a)", "(o)" ] Then map(x => x[1]) produces [ "tʃ", "a", "o" ] Step 3 .join("") Now combine everything together. [ "tʃ", "a", "o" ] becomes tʃao Notice that the separator is "" (an empty string), so nothing is inserted between the sounds. At the end of these three lines, ipaString contains tʃao instead of ci(tʃ)a(a)o(o) This is exactly what the Only IPA button needs: it discards the written letters and keeps only the phonetic transcription.
-
-        // If IPA is empty → original word
-        if (!ipaString.trim()) {  //  This checks whether ipaString is empty. trim() removes any whitespace before testing. Examples: ipaString = "" ↓ empty ipaString = "   " ↓ also considered empty ipaString = "tʃao" ↓ not empty If the result is empty, something went wrong during extraction. Perhaps validation returned the original word instead of a grapheme-to-phoneme alignment. In that case, there are no parentheses to extract IPA from.
-          converted.push(token);  //  Rather than outputting nothing, the program keeps the original word. For example, ciao remains ciao instead of disappearing.
-        } else {  //  Otherwise, IPA extraction succeeded.
-          // FINAL OUTPUT: only IPA
-          converted.push(ipaString);  //  Store only the IPA transcription in the output array. For example, instead of storing ci(tʃ)a(a)o(o) the array receives tʃao When the entire sentence has been processed, converted contains every word replaced by its IPA transcription while punctuation and spacing have been preserved.
-        }  //  At this point, the array converted contains the processed version of every token. For example, suppose the user typed: Ciao, come stai? The original tokens array is [ "Ciao", ",", "come", "stai", "?" ] After processing, converted might contain [ "tʃao", ",", "ˈkome", "stai", "?" ] Notice that punctuation was never changed—only words were replaced.
-
-        }
-
-      // Reconstruct text preserving whitespace
-      let rebuilt = '';  //  Rebuild the original text let rebuilt = ''; Creates an empty string. This string will gradually become the final transcription of the current chunk. Initially, rebuilt = "";
-      let pos = 0;  //  Creates a variable that remembers where we currently are in the original text. This is extremely important because the program wants to preserve every space exactly as the user typed it. Imagine the original input was Ciao,   come! Notice there are three spaces after the comma. Those spaces are not stored inside tokens. Instead, they still exist inside the original string (chunk). pos keeps track of where we are while reading that original string.
-
-      for (const token of tokens) {  //  Process every original token again. Now the program loops through every original token a second time. Notice something important: Earlier, the loop performed IPA conversion. This loop doesn't convert anything. Instead, it simply rebuilds the sentence using the already-converted tokens. Suppose tokens = [ "Ciao", ",", "come", "!" ] The loop visits "Ciao" "," "come" "!" one by one.
-        while (chunk[pos] && /\s/.test(chunk[pos])) {  //  Preserve whitespace. This loop copies all whitespace characters from the original text. \s means space tab newline carriage return Anything considered whitespace. Suppose the original text is Ciao,     come There are five spaces. The tokenizer ignored them. Now this loop copies them back exactly as written. Is there still a character? chunk[pos] Looks at the current character. For example, C i a o , _ _ _ _ _ ↑ pos If chunk[pos] exists, the loop continues. If we've reached the end of the string, the loop stops. Is it whitespace? /\s/.test(chunk[pos]) Checks whether the current character is whitespace. Examples: " " ✓ true "\n" ✓ true "\t" ✓ true "C" ✗ false
-          rebuilt += chunk[pos++];  //  Copy the whitespace. This line does two things simultaneously. First, rebuilt += chunk[pos]; copies the character into the output. Then pos++; moves to the next character. Because of the post-increment (pos++), both happen in one statement. Example Suppose chunk C i a o , _ _ c ↑ pos The current character is " " After executing rebuilt += chunk[pos++]; the output receives " " and pos moves one position forward. If there are four spaces, the loop repeats four times, preserving them perfectly.
-        }
-        rebuilt += converted.shift();  //  Insert the converted token. Now comes the important step. converted contains the processed tokens. For example, converted = [ "tʃao", ",", "ˈkome", "?" ] shift() removes and returns the first element. So converted.shift() returns tʃao and the array becomes [ ",", "ˈkome", "?" ] That returned value is immediately appended to the rebuilt sentence. Why use shift()? Because the order of converted already matches the order of tokens. Each iteration consumes exactly one converted token. It's an elegant way to keep both arrays synchronized.
-        pos += token.length;  //  Advance past the original token. Remember, we copied the replacement word, not the original one. However, we're still reading from the original string (chunk). We therefore need to skip over the characters belonging to the original token. Example Original text Ciao, come After copying tʃao we still need to move past Ciao inside the original string. Since token.length is 4 pos advances by four characters. Now it's pointing at the comma. After the loop finishes Eventually, every original token has been replaced. Suppose Original Ciao, come stai? After reconstruction, rebuilt becomes tʃao, ˈkome stai? Notice that commas stayed exactly where they were, spaces stayed exactly where they were, punctuation stayed exactly where it was, only the words changed.
-      } 
-
-      finalResult += rebuilt;  //  Add this chunk to the final result. Remember that long texts are divided into chunks by splitTextByLength() Each chunk is processed separately. Now the finished chunk is appended to the complete transcription. If there is only one chunk, this simply copies it into finalResult. If there are several, they are appended one after another.
-    }  //  Finish the chunk loop. This closes for (const chunk of chunks) Every chunk has now been processed.
-
-    setOutput(finalResult.trim());  //  Display the transcription. Finally, the complete IPA transcription is displayed in the <pre> element. trim() removes accidental whitespace from the beginning and end. For example, "  tʃao ˈkome  " becomes "tʃao ˈkome"
-
-  } catch (e) {  //  Error handling. If anything inside the try block throws an error, execution immediately jumps here. Examples include eSpeak failing, invalid JSON, programming errors, unexpected values.
-    console.error("Error in G2P AFI:", e);  //  Prints the complete error into the browser's Developer Console. This helps you debug problems without showing technical details to the user. For example, Error in G2P AFI: TypeError: Cannot read properties of undefined
-    setOutput("Error during G2P AFI processing: " + e.message);  //  Instead of leaving the output blank, the user sees a readable error message. For example, Error during G2P AFI processing: Cannot read properties of undefined This is much friendlier than a completely broken page.
-  }
-});  //  This closes the entire click event listener for the Only IPA button. From the user's perspective, clicking the button now performs this complete sequence: Wait until eSpeak has finished loading. Read the text from the textarea. Normalize apostrophes and Unicode. Split long text into manageable chunks. Tokenize each chunk into words, numbers, and punctuation. Retrieve IPA from the dictionary or eSpeak. Align spelling with pronunciation (G2P). Validate each grapheme-to-phoneme mapping. Extract only the IPA symbols. Rebuild the original sentence while preserving all spaces and punctuation. Display the final IPA transcription. Show an error message if any step fails.
-
-
-
-
-
-
-  
-
-
-
-
-
-
-  
-
-
-// ======================================================================================================================================================================================
-//  Word IPA BUTTTON
-// ======================================================================================================================================================================================
-  
-document.getElementById('testoafi').addEventListener('click', async () => {
-  showProgressPlaceholder();
-
-  await waitForWasm();
-
-  const rawInput = normalizeCurlyApostrophes(
-    inputElem.value.trim()
-  ).normalize('NFC');
-
-
-  //  if (!wasmReady) {
-  //  alert("Please wait, WASM is still loading...");
-  //  return;
- //   }
-
-
-  
-  if (!rawInput) {
-    showPlaceholder();
-    return;
-  }
-
-  try {
-    const chunks = splitTextByLength(rawInput, 500);
-    let finalResult = '';
-
-    for (const chunk of chunks) {
-
-      // Change for Ellisione-Dictionary
-      // Tokenize text
-const tokens = chunk.match(
-    /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
-);
-
-      if (!tokens) {
-        finalResult += chunk;
-        continue;
-      }
-
-      // Change for Ellisione-Dictionary
-      // Collect word-only tokens
- let words = tokens.filter(t =>
-    /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
-);
-
-      // Initial IPA pass
-      let ipaMap = await computeIPAMap(words);
-
-      const converted = [];
-
-      for (let t = 0; t < tokens.length; t++) {
-
-        const token = tokens[t];
-        const isWord =
-          /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);
-
-        if (!isWord) {
-          converted.push(token);
-          continue;
-        }
-
-        let ipa = ipaMap.get(token) || "";
-        let mapped = applyG2PMapping(token, ipa);
-
-        // IF MAPPING FAILS → RESYNC AND RE-RUN ESPEAK FROM NEXT WORD
-        
-        if (mapped === null) {
-        // delete
-        //  console.warn("G2P failed on:", token);
-
-          // Find next real word AFTER the current token
-          let nextWordIndex = t + 1;
-          while (
-            nextWordIndex < tokens.length &&
-            !/^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u
-              .test(tokens[nextWordIndex])
-          ) {
-            nextWordIndex++;
-          }
-
-          // No more words → output original and continue
-          if (nextWordIndex >= tokens.length) {
-            converted.push(token);
-            continue;
-          }
-
-          // Collect remaining words starting from that next real word
-          const remainingWords = tokens
-            .slice(t)
-            .filter(tt =>
-              /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(tt)
-            );
-           // delete console
-          // console.log("Re-running eSpeak for:", remainingWords);
-
-          // Rebuild IPA map for remaining sequence
-          ipaMap = await computeIPAMap(remainingWords);
-
-          // Retry mapping the *current* token
-          ipa = ipaMap.get(token) || "";
-          mapped = applyG2PMapping(token, ipa);
-        }
-          
-          // If still failing, output original
-          if (mapped === null) {
-            converted.push(token);
-            continue;
-          }
-        
-
-// Only validate words that came from eSpeak
-//  if (!getDictionaryIPA(token)) {
-  mapped = validateOrReturnOriginal(token, mapped);
-//  }
-
-        // Pull all IPA inside parentheses
-        const ipaPieces = [...mapped.matchAll(/\(([^()]*)\)/g)];
-        const ipaString = ipaPieces.map(x => x[1]).join("");
-
-        if (!ipaString.trim()) {
-          converted.push(token);
-          } else {
-
-        // Final inline form: WORD (IPA)
-        converted.push(`${token} (${ipaString})`);  //  This is the only line where testoafi button part of code differs with afi button.
-      }
-      }
-
-
-      // Reconstruct output preserving EXACT original whitespace
-   
-      let rebuilt = '';
-      let pos = 0;
-
-      for (const token of tokens) {
-        while (chunk[pos] && /\s/.test(chunk[pos])) {
-          rebuilt += chunk[pos++];
-        }
-        rebuilt += converted.shift();
-        pos += token.length;
-      }
-
-      finalResult += rebuilt;
-    }
-
-    setOutput(finalResult.trim());
-
-  } catch (e) {
-    console.error("Error in G2P Inline:", e);
-    setOutput("Error during G2P Inline processing: " + e.message);
-  }
-});
-
-
-
-
-
-
-  
-
-
-
-  
-
-
-
-
-
-  
-
-
-// ======================================================================================================================================================================================
-//  G2P BUTTON
-// ======================================================================================================================================================================================
-
-document.getElementById('g2p').addEventListener('click', async () => {
-  showProgressPlaceholder();
-
-  await waitForWasm();
-
-  const rawInput = normalizeCurlyApostrophes(
-    inputElem.value.trim()
-  ).normalize('NFC');
-
-  //  if (!wasmReady) {
-  //  alert('Please wait, WASM is still loading...');
-  //  return;
- //   }
-  
-  if (!rawInput) {
-    showPlaceholder();
-    return;
-  }
-
-  try {
-    const chunks = splitTextByLength(rawInput, 500);
-    let finalResult = '';
-
-    for (const chunk of chunks) {
-      
-      // Change for Ellisione-Dictionary
-   const tokens = chunk.match(
-    /[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+(?:'[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+)*|[0-9]+(?:[.,][0-9]+)?|[^\s]/gu
-);
-
-      if (!tokens) {
-        finalResult += chunk;
-        continue;
-      }
-
-// Change for Ellisione-Dictionary
-// Extract real words, Collect word-only tokens
-let words = tokens.filter(t =>
-    /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(t)
-);
-
-// First IPA pass, Initial IPA pass
-let ipaMap = await computeIPAMap(words);
-
-  const converted = [];
-      
-for (let t = 0; t < tokens.length; t++) {
-  
-  const token = tokens[t];
-  const isWord = /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(token);
-
-  if (!isWord) {
-    converted.push(token);
-    continue;
-  }
-
-  let ipa = ipaMap.get(token) || "";
- let mapped = applyG2PMapping(token, ipa);
-
-// If mapping failed, retry with a fresh IPA calculation
-        if (mapped === null) {
-        // delete
-        //  console.warn("G2P failed on:", token);
-
-          // Find next real word AFTER the current token
-          let nextWordIndex = t + 1;
-          while (
-            nextWordIndex < tokens.length &&
-            !/^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u
-              .test(tokens[nextWordIndex])
-          ) {
-            nextWordIndex++;
-          }
-
-          // No more words → output original and continue
-          if (nextWordIndex >= tokens.length) {
-            converted.push(token);
-            continue;
-          }
-
-          // Collect remaining words starting from that next real word
-          const remainingWords = tokens
-            .slice(t)
-            .filter(tt =>
-              /^[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]+'?[A-Za-zÀ-ÖØ-öø-ÿĀ-žḀ-ỿ]*$/u.test(tt)
-            );
-           // delete console
-          // console.log("Re-running eSpeak for:", remainingWords);
-
-          // Rebuild IPA map for remaining sequence
-          ipaMap = await computeIPAMap(remainingWords);
-
-          // Retry mapping the *current* token
-          ipa = ipaMap.get(token) || "";
-          mapped = applyG2PMapping(token, ipa);
-        }
-          
-          // If still failing, output original
-          if (mapped === null) {
-            converted.push(token);
-            continue;
-          }
-
-// Only validate words that came from eSpeak
-//  if (!getDictionaryIPA(token)) {
-  mapped = validateOrReturnOriginal(token, mapped);
-//  }
-
-converted.push(mapped);
-
-}
-
-      // Reconstruct chunk preserving spaces
-      let reconstructed = '';
-      let index = 0;
-      for (const token of tokens) {
-        while (chunk[index] && /\s/.test(chunk[index])) {
-          reconstructed += chunk[index++];
-        }
-        reconstructed += converted.shift();
-        index += token.length;
-      }
-
-      finalResult += reconstructed;
-    }
-
-    setOutput(finalResult.trim());
-  } catch (e) {
-    console.error('Error during G2P processing:', e);
-    setOutput('Error during G2P processing: ' + e.message);
-  }
-});
-
-
-  
-</script>
-
-
-
+    window.addEventListener('load', initialize);
+  </script>
 
 </body>
 </html>
